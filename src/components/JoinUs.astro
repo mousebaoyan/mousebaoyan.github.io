@@ -1,0 +1,148 @@
+---
+import { site } from "../site.config";
+
+const rules = [
+  "文明交流，禁止广告与无关链接",
+  "乐于分享，收到的帮助也记得回馈群友",
+  "信息仅供参考，重要节点以官方通知为准",
+];
+---
+
+<section class="join" id="join">
+  <div class="container join__inner">
+    <div class="join__copy">
+      <span class="join__eyebrow">加入我们</span>
+      <h2 class="join__title">在 QQ 群里一起备战</h2>
+      <p class="join__lead">
+        搜索群号加入「{site.name}」，群里会同步夏令营信息、经验贴，也可以随时提问交流。
+      </p>
+
+      <div class="join__card">
+        <span class="join__qqlabel">QQ 群号</span>
+        <strong class="join__qqnum">{site.qqGroup}</strong>
+        <button class="join__copybtn" data-copy={site.qqGroup}>复制群号</button>
+      </div>
+
+      <ul class="join__rules">
+        {
+          rules.map((r) => (
+            <li>
+              <svg class="join__check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>{r}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .join {
+    background: var(--bg-dark);
+    color: var(--on-dark);
+    padding-block: clamp(72px, 11vw, 140px);
+  }
+  .join__inner {
+    max-width: 720px;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .join__eyebrow {
+    display: block;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 600;
+    color: #5ea0ef;
+    margin-bottom: 10px;
+  }
+  .join__title {
+    color: #fff;
+    font-size: clamp(2rem, 4.6vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+  .join__lead {
+    margin: 18px auto 0;
+    max-width: 46ch;
+    color: var(--on-dark-2);
+    font-size: clamp(1.08rem, 2vw, 1.28rem);
+    line-height: 1.45;
+  }
+  .join__card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 32px;
+    padding: 24px 40px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--r-lg);
+  }
+  .join__qqlabel {
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    color: var(--on-dark-2);
+  }
+  .join__qqnum {
+    font-family: var(--font-mono);
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .join__copybtn {
+    font: inherit;
+    font-size: 0.9rem;
+    margin-top: 14px;
+    padding: 9px 22px;
+    border-radius: var(--r-pill);
+    border: 0;
+    background: var(--blue);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .join__copybtn:hover {
+    background: var(--blue-hover);
+  }
+  .join__rules {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin: 36px auto 0;
+  }
+  .join__rules li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--on-dark-2);
+    font-size: 0.98rem;
+    line-height: 1.4;
+  }
+  .join__check {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: #5ea0ef;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".join__copybtn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const text = btn.dataset.copy ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        const old = btn.textContent;
+        btn.textContent = "已复制";
+        setTimeout(() => (btn.textContent = old), 1600);
+      } catch {
+        btn.textContent = "复制失败";
+      }
+    });
+  });
+</script>

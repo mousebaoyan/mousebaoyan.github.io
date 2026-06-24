@@ -1,20 +1,20 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import Features from "../components/Features.astro";
+import Timeline from "../components/Timeline.astro";
+import Tools from "../components/Tools.astro";
+import Experiences from "../components/Experiences.astro";
+import Faq from "../components/Faq.astro";
+import JoinUs from "../components/JoinUs.astro";
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <title>mousebaoyan.github.io</title>
-  </head>
-  <body>
-    <main>
-      <h1>mousebaoyan.github.io</h1>
-    </main>
-  </body>
-</html>
+<BaseLayout>
+  <Hero />
+  <Features />
+  <Timeline />
+  <Tools />
+  <Experiences />
+  <Faq />
+  <JoinUs />
+</BaseLayout>

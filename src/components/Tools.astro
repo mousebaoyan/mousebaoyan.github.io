@@ -1,0 +1,100 @@
+---
+const tools = [
+  { name: "推免服务系统", cat: "官方", desc: "教育部推免服务系统，九推阶段填报志愿的官方入口。", url: "#" },
+  { name: "夏令营信息汇总", cat: "情报", desc: "各校计算机夏令营 / 预推免开营时间与报名入口汇总。", url: "#" },
+  { name: "简历 / PS 模板", cat: "材料", desc: "适合保研申请的简历与个人陈述模板，附填写要点。", url: "#" },
+  { name: "套磁邮件指南", cat: "技巧", desc: "如何写一封导师愿意回复的套磁邮件，含示例。", url: "#" },
+  { name: "机试 / 面试题库", cat: "备考", desc: "常见机试与综合面试考点整理，配套练习资源。", url: "#" },
+  { name: "院校梯度选择", cat: "选校", desc: "结合背景做冲稳保梯度规划的思路与工具。", url: "#" },
+];
+---
+
+<section class="section section--grey" id="tools">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">推荐工具</span>
+      <h2 class="section__title">备战时趁手的资源</h2>
+      <p class="section__lead">群里整理的一些实用工具和资料，会慢慢补充。</p>
+    </div>
+
+    <div class="tools">
+      {
+        tools.map((t) => (
+          <a class="tool" href={t.url}>
+            <span class="tool__cat">{t.cat}</span>
+            <h3 class="tool__name">{t.name}</h3>
+            <p class="tool__desc">{t.desc}</p>
+            <span class="tool__go" aria-hidden="true">
+              打开
+              <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+  .tool {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border-radius: var(--r-lg);
+    padding: clamp(22px, 2.6vw, 30px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .tool:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .tool__cat {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--blue);
+  }
+  .tool__name {
+    margin-top: 10px;
+    font-size: 1.32rem;
+    letter-spacing: -0.02em;
+  }
+  .tool__desc {
+    margin-top: 8px;
+    flex: 1;
+    color: var(--ink-2);
+    font-size: 1.02rem;
+    line-height: 1.45;
+  }
+  .tool__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 20px;
+    color: var(--blue);
+    font-size: 0.98rem;
+  }
+  .tool__go svg {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.2s ease;
+  }
+  .tool:hover .tool__go svg {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 860px) {
+    .tools {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 540px) {
+    .tools {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+import { site, navLinks } from "../site.config";
+---
+
+<header class="nav" id="top">
+  <div class="nav__bar container container--wide">
+    <a class="nav__brand" href="#top" aria-label={site.name}>
+      <img class="nav__logo" src="/logo.jpg" alt="" width="28" height="28" />
+      <span class="nav__brand-text">{site.name}</span>
+    </a>
+
+    <nav class="nav__links" aria-label="主导航">
+      {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="nav__actions">
+      <a class="nav__join" href="#join">加入鼠群</a>
+      <button
+        class="nav__toggle"
+        aria-label="展开菜单"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <nav class="nav__mobile" id="mobile-menu" aria-label="移动端导航" hidden>
+    {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+    <a class="nav__mobile-join" href="#join">加入鼠群</a>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav__bar {
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 1.04rem;
+    letter-spacing: -0.02em;
+  }
+  .nav__logo {
+    border-radius: 7px;
+    object-fit: cover;
+  }
+  .nav__links {
+    display: flex;
+    gap: clamp(20px, 3vw, 36px);
+    margin-inline: auto;
+  }
+  .nav__links a {
+    color: var(--ink);
+    opacity: 0.85;
+    font-size: 0.86rem;
+    font-weight: 400;
+    transition: opacity 0.2s ease;
+  }
+  .nav__links a:hover {
+    opacity: 1;
+  }
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .nav__join {
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.82rem;
+    padding: 6px 15px;
+    border-radius: var(--r-pill);
+    transition: background 0.2s ease;
+  }
+  .nav__join:hover {
+    background: var(--blue-hover);
+  }
+
+  /* 汉堡 */
+  .nav__toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  .nav__toggle span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    margin-inline: auto;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  .nav__toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(3.25px) rotate(45deg);
+  }
+  .nav__toggle[aria-expanded="true"] span:nth-child(2) {
+    transform: translateY(-3.25px) rotate(-45deg);
+  }
+
+  .nav__mobile {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px var(--gutter) 22px;
+    border-top: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+  .nav__mobile a {
+    padding: 13px 6px;
+    color: var(--ink);
+    font-size: 1.15rem;
+    font-weight: 500;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav__mobile-join {
+    border-bottom: 0 !important;
+    color: var(--blue) !important;
+  }
+
+  @media (max-width: 800px) {
+    .nav__links,
+    .nav__join {
+      display: none;
+    }
+    .nav__toggle {
+      display: flex;
+    }
+    .nav__mobile:not([hidden]) {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>(".nav__toggle");
+  const menu = document.getElementById("mobile-menu");
+  if (toggle && menu) {
+    const close = () => {
+      toggle.setAttribute("aria-expanded", "false");
+      menu.hidden = true;
+    };
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", String(!open));
+      menu.hidden = open;
+    });
+    menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", close));
+  }
+</script>

@@ -1,0 +1,133 @@
+---
+const posts = [
+  {
+    school: "示例 · 某 985 计算机",
+    title: "双非逆袭：从夏令营被刷到预推免上岸",
+    summary: "背景、时间安排、套磁与面试复盘，附踩坑提醒。",
+    tags: ["夏令营", "预推免"],
+    url: "#",
+  },
+  {
+    school: "示例 · 某 211 软院",
+    title: "科研经历不亮眼，我是如何包装项目的",
+    summary: "把课程项目讲成有故事的科研经历的思路。",
+    tags: ["简历", "面试"],
+    url: "#",
+  },
+  {
+    school: "示例 · 某中科院所",
+    title: "夏令营连投十校的真实数据与心得",
+    summary: "投递清单、命中率、各校风格对比。",
+    tags: ["选校", "数据"],
+    url: "#",
+  },
+];
+---
+
+<section class="section" id="experiences">
+  <div class="container">
+    <div class="section__head experiences__head">
+      <div>
+        <span class="eyebrow">上岸经验贴</span>
+        <h2 class="section__title">看看学长学姐<br class="mobile-br" />怎么走过来的</h2>
+      </div>
+      <a class="link-arrow experiences__cta" href="#join">
+        投稿你的经验
+        <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+    <div class="posts">
+      {
+        posts.map((p) => (
+          <a class="post" href={p.url}>
+            <span class="post__school">{p.school}</span>
+            <h3 class="post__title">{p.title}</h3>
+            <p class="post__summary">{p.summary}</p>
+            <div class="post__tags">
+              {p.tags.map((t) => (
+                <span class="post__tag">{t}</span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .experiences__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: none;
+  }
+  .experiences__cta {
+    flex: none;
+    padding-bottom: 6px;
+  }
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+  .post {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-grey);
+    border-radius: var(--r-lg);
+    padding: clamp(22px, 2.6vw, 30px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .post:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .post__school {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .post__title {
+    margin: 12px 0 10px;
+    font-size: 1.34rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .post__summary {
+    flex: 1;
+    color: var(--ink-2);
+    font-size: 1.02rem;
+    line-height: 1.45;
+  }
+  .post__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .post__tag {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    color: var(--ink-2);
+  }
+
+  .mobile-br {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    .posts {
+      grid-template-columns: 1fr;
+    }
+    .experiences__head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

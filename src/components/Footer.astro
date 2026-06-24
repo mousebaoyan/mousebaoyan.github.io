@@ -1,0 +1,117 @@
+---
+import { site, navLinks } from "../site.config";
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container container--wide footer__inner">
+    <div class="footer__cols">
+      <div class="footer__brand">
+        <a class="footer__logo" href="#top">
+          <img src="/logo.jpg" alt="" width="26" height="26" />
+          <span>{site.name}</span>
+        </a>
+        <p class="footer__desc">{site.description}</p>
+      </div>
+
+      <nav class="footer__col" aria-label="页脚导航">
+        <h3>站内导航</h3>
+        <ul>
+          {navLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h3>参与共建</h3>
+        <ul>
+          <li><a href="#join">加入鼠群</a></li>
+          <li><a href="#experiences">投稿经验贴</a></li>
+          <li><a href="#tools">推荐工具</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h3>联系</h3>
+        <ul>
+          <li><span class="footer__qq">QQ 群 {site.qqGroup}</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {year} {site.name} · 由社群志愿者维护</span>
+      <span>本站为非营利信息互助平台，信息仅供参考。</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--bg-grey);
+    color: var(--ink-3);
+    padding-block: clamp(40px, 6vw, 64px);
+    font-size: 0.86rem;
+  }
+  .footer__cols {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: clamp(28px, 5vw, 56px);
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--line);
+  }
+  .footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+  }
+  .footer__logo img {
+    border-radius: 6px;
+    object-fit: cover;
+  }
+  .footer__desc {
+    margin-top: 14px;
+    max-width: 38ch;
+    line-height: 1.6;
+    color: var(--ink-3);
+  }
+  .footer__col h3 {
+    color: var(--ink);
+    font-size: 0.86rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .footer__col li {
+    margin-bottom: 11px;
+  }
+  .footer__col a {
+    color: var(--ink-2);
+    transition: color 0.2s ease;
+  }
+  .footer__col a:hover {
+    color: var(--blue);
+  }
+  .footer__qq {
+    font-family: var(--font-mono);
+    color: var(--ink-2);
+  }
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 24px;
+    justify-content: space-between;
+    padding-top: 22px;
+  }
+
+  @media (max-width: 720px) {
+    .footer__cols {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

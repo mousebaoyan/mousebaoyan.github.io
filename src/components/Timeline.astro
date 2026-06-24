@@ -1,0 +1,109 @@
+---
+const steps = [
+  {
+    period: "大三上 / 寒假",
+    title: "打地基",
+    desc: "稳住 GPA 与排名，确定方向，开始接触科研或项目，准备英语成绩。",
+  },
+  {
+    period: "3 – 5 月",
+    title: "信息搜集 & 套磁",
+    desc: "锁定目标院校与导师，整理简历与个人陈述，关注夏令营开营信息。",
+  },
+  {
+    period: "6 – 8 月",
+    title: "夏令营",
+    desc: "投递、笔面试，争取优秀营员或拟录取，这是四非比较重要的一波机会。",
+  },
+  {
+    period: "9 月初",
+    title: "预推免",
+    desc: "夏令营未上岸的补录窗口，名额多、节奏快，提前备好材料随时投。",
+  },
+  {
+    period: "9.28 前后",
+    title: "九推 · 系统填报",
+    desc: "推免服务系统开放，确认 offer、填报志愿、完成录取，尘埃落定。",
+  },
+];
+---
+
+<section class="section" id="timeline">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">保研时间线</span>
+      <h2 class="section__title">一条线看懂推免季</h2>
+      <p class="section__lead">
+        下面的节点是通用参考，具体时间以当年各校通知为准。早点动手会从容很多。
+      </p>
+    </div>
+
+    <ol class="tl">
+      {
+        steps.map((s, i) => (
+          <li class="tl__item">
+            <div class="tl__index">
+              <span class="tl__num">{String(i + 1).padStart(2, "0")}</span>
+              <span class="tl__rail" />
+            </div>
+            <div class="tl__content">
+              <span class="tl__period">{s.period}</span>
+              <h3 class="tl__title">{s.title}</h3>
+              <p class="tl__desc">{s.desc}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .tl {
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+  .tl__item {
+    display: grid;
+    grid-template-columns: clamp(64px, 10vw, 110px) 1fr;
+    gap: clamp(16px, 3vw, 40px);
+    padding-block: clamp(26px, 3.5vw, 40px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .tl__index {
+    position: relative;
+  }
+  .tl__num {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+  }
+  .tl__period {
+    display: inline-block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0;
+  }
+  .tl__title {
+    margin-top: 6px;
+    font-size: clamp(1.3rem, 2.4vw, 1.85rem);
+    letter-spacing: -0.02em;
+  }
+  .tl__desc {
+    margin-top: 10px;
+    color: var(--ink-2);
+    font-size: 1.08rem;
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+
+  @media (max-width: 520px) {
+    .tl__item {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

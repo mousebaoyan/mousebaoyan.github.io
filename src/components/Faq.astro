@@ -1,0 +1,107 @@
+---
+const faqs = [
+  {
+    q: "四非真的能保研到好学校吗？",
+    a: "可以。每年都有四非同学通过夏令营 / 预推免上岸 985、211 及科研院所。关键在于尽早准备、信息充分、扬长避短。",
+  },
+  {
+    q: "没有科研经历是不是没机会？",
+    a: "科研是加分项而非硬门槛。高质量的课程项目、竞赛、实习同样能体现能力，重要的是讲清楚你做了什么、收获了什么。",
+  },
+  {
+    q: "英语 / 六级有要求吗？",
+    a: "多数院校把六级或等价成绩作为参考，部分热门项目要求较高。建议尽早把英语成绩刷到有竞争力的水平。",
+  },
+  {
+    q: "什么时候开始准备最合适？",
+    a: "越早越好。大二到大三上稳住成绩与排名，大三下进入信息搜集与套磁，暑期主攻夏令营。",
+  },
+  {
+    q: "加入鼠群需要付费吗？",
+    a: "不需要。这是一个非营利的信息互助社群，欢迎一起分享、共建。",
+  },
+];
+---
+
+<section class="section section--alt" id="faq">
+  <div class="container faq">
+    <div class="section__head section__head--center">
+      <span class="eyebrow">常见问题</span>
+      <h2 class="section__title">关于四非保研，<br class="mobile-br" />你可能想问</h2>
+    </div>
+
+    <div class="faq__list">
+      {
+        faqs.map((f, i) => (
+          <details class="faq__item" open={i === 0}>
+            <summary>
+              <span class="faq__q">{f.q}</span>
+              <span class="faq__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </span>
+            </summary>
+            <p class="faq__a">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    max-width: 800px;
+  }
+  .faq__list {
+    border-top: 1px solid var(--line);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 4px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__q {
+    font-size: clamp(1.1rem, 2vw, 1.32rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .faq__icon {
+    flex: none;
+    color: var(--blue);
+  }
+  .faq__icon svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.25s ease;
+  }
+  .faq__item[open] .faq__icon svg {
+    transform: rotate(45deg);
+  }
+  .faq__a {
+    padding: 0 4px 26px;
+    color: var(--ink-2);
+    font-size: 1.08rem;
+    line-height: 1.55;
+    max-width: 64ch;
+  }
+
+  .mobile-br {
+    display: none;
+  }
+  @media (max-width: 520px) {
+    .mobile-br {
+      display: inline;
+    }
+  }
+</style>

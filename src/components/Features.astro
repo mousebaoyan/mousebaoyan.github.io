@@ -1,0 +1,141 @@
+---
+// 内联 SVG 图标（Lucide 风格描边），不用 emoji
+const features = [
+  {
+    key: "info",
+    title: "保研信息",
+    desc: "夏令营 / 预推免开营、是否卡四非、报名截止时间，群里会随时同步，省得自己到处翻。",
+    span: "wide",
+  },
+  {
+    key: "timeline",
+    title: "时间线参考",
+    desc: "从大三寒假到九推，每个阶段大概该做什么，有个参考不至于手忙脚乱。",
+    span: "",
+  },
+  {
+    key: "experience",
+    title: "上岸经验",
+    desc: "四非学长学姐的复盘，背景、套磁、面试这些细节，比鸡汤实在。",
+    span: "",
+  },
+  {
+    key: "community",
+    title: "一起交流",
+    desc: "一群同样出身普通院校的同学，互相答疑、组队、交换信息，少走点弯路。",
+    span: "wide",
+  },
+];
+---
+
+<section class="section section--alt section--full" id="about">
+  <div class="container">
+    <div class="section__head section__head--center">
+      <span class="eyebrow">这里有什么</span>
+      <h2 class="section__title">四非保研难，<br class="mobile-br" />但不是没办法</h2>
+      <p class="section__lead">
+        出身不占优势的时候，信息和经验往往是能补上的那块。
+      </p>
+    </div>
+
+    <div class="bento">
+      {
+        features.map((f) => (
+          <article class={`bento__card ${f.span === "wide" ? "bento__card--wide" : ""}`}>
+            <span class="bento__icon" aria-hidden="true">
+              {f.key === "info" && (
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+              )}
+              {f.key === "timeline" && (
+                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+              )}
+              {f.key === "experience" && (
+                <svg class="icon" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4v15H6z"/><path d="M14 2.5v4h4M9 13h6M9 17h6"/></svg>
+              )}
+              {f.key === "community" && (
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.2a3 3 0 0 1 0 5.8M20.5 20a5.2 5.2 0 0 0-4-5"/></svg>
+              )}
+            </span>
+            <div class="bento__body">
+              <h3 class="bento__title">{f.title}</h3>
+              <p class="bento__desc">{f.desc}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+  .bento__card {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: var(--bg);
+    border-radius: var(--r-lg);
+    padding: clamp(26px, 3vw, 40px);
+    min-height: 220px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .bento__card--wide {
+    grid-column: span 3;
+  }
+  .bento__card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .bento__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--blue-soft);
+    color: var(--blue);
+  }
+  .bento__body {
+    margin-top: auto;
+  }
+  .bento__title {
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    letter-spacing: -0.02em;
+  }
+  .bento__desc {
+    margin-top: 8px;
+    color: var(--ink-2);
+    font-size: 1.04rem;
+    line-height: 1.45;
+    max-width: 46ch;
+  }
+
+  .mobile-br {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    .bento {
+      grid-template-columns: 1fr 1fr;
+    }
+    .bento__card,
+    .bento__card--wide {
+      grid-column: span 1;
+      min-height: 0;
+    }
+  }
+  @media (max-width: 540px) {
+    .bento {
+      grid-template-columns: 1fr;
+    }
+    .mobile-br {
+      display: inline;
+    }
+  }
+</style>

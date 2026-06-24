@@ -1,0 +1,268 @@
+/* ============================================================
+   四非保研鼠群 — 设计系统
+   风格：Apple-inspired · 极简瑞士 · 大留白大字
+   ============================================================ */
+
+:root {
+  /* —— 中性色（Apple 体系）—— */
+  --bg: #ffffff;
+  --bg-alt: #fbfbfd;
+  --bg-grey: #f5f5f7;
+  --bg-dark: #000000;
+
+  --ink: #1d1d1f;          /* 主文字 */
+  --ink-2: #6e6e73;        /* 次要文字 */
+  --ink-3: #86868b;        /* 弱化文字 */
+  --on-dark: #f5f5f7;      /* 深色底上的主文字 */
+  --on-dark-2: #a1a1a6;    /* 深色底上的次要文字 */
+
+  --line: #d2d2d7;         /* 发丝线 */
+  --line-soft: #e8e8ed;
+
+  /* —— 单一强调色 —— */
+  --blue: #0071e3;
+  --blue-hover: #0077ed;
+  --blue-soft: #e8f1fd;
+
+  /* —— 圆角 —— */
+  --r-sm: 12px;
+  --r: 18px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+  --r-pill: 980px;
+
+  /* —— 阴影（克制）—— */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+  /* —— 排版 —— */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Inter", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui,
+    sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Consolas, monospace;
+
+  /* —— 布局 —— */
+  --maxw: 1280px;
+  --maxw-wide: 1400px;
+  --gutter: clamp(20px, 5vw, 40px);
+  --nav-h: 52px;
+
+  /* —— z 轴 —— */
+  --z-nav: 50;
+}
+
+/* —— Reset —— */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 20px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.08;
+  color: var(--ink);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* —— 布局工具 —— */
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.container--wide {
+  max-width: var(--maxw-wide);
+}
+
+.section {
+  padding-block: clamp(72px, 11vw, 140px);
+}
+.section--full {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.section--alt {
+  background: var(--bg-alt);
+}
+.section--grey {
+  background: var(--bg-grey);
+}
+
+.section__head {
+  max-width: 720px;
+  margin-bottom: clamp(40px, 6vw, 72px);
+}
+.section__head--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: block;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+
+.section__title {
+  font-size: clamp(2rem, 4.4vw, 3.1rem);
+  letter-spacing: -0.025em;
+}
+
+.section__lead {
+  margin-top: 18px;
+  color: var(--ink-2);
+  font-size: clamp(1.12rem, 2vw, 1.32rem);
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+/* —— 按钮 —— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font: inherit;
+  font-weight: 400;
+  font-size: 1.0rem;
+  letter-spacing: -0.01em;
+  padding: 11px 22px;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease,
+    opacity 0.22s ease;
+  white-space: nowrap;
+}
+.btn:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+.btn--primary {
+  background: var(--blue);
+  color: #fff;
+}
+.btn--primary:hover {
+  background: var(--blue-hover);
+}
+.btn--light {
+  background: #fff;
+  color: var(--ink);
+}
+.btn--light:hover {
+  opacity: 0.9;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn--ghost:hover {
+  border-color: var(--ink-3);
+}
+
+/* —— 箭头文字链接（Apple "Learn more ›"）—— */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--blue);
+  font-size: 1.06rem;
+  letter-spacing: -0.01em;
+  transition: opacity 0.2s ease;
+}
+.link-arrow:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-arrow svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+.link-arrow:hover svg {
+  transform: translateX(2px);
+}
+
+/* —— 通用 —— */
+.grid {
+  display: grid;
+  gap: clamp(14px, 1.8vw, 22px);
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
