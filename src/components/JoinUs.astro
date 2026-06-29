@@ -39,9 +39,18 @@ const rules = [
 
 <style>
   .join {
-    background: var(--bg-dark);
+    background: var(--bg-dark-gradient);
     color: var(--on-dark);
     padding-block: clamp(72px, 11vw, 140px);
+    position: relative;
+    overflow: hidden;
+  }
+  .join::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
   }
   .join__inner {
     max-width: 720px;
@@ -52,7 +61,10 @@ const rules = [
     display: block;
     font-size: clamp(1rem, 2vw, 1.25rem);
     font-weight: 600;
-    color: #5ea0ef;
+    background: linear-gradient(90deg, #5ea0ef, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 10px;
   }
   .join__title {
@@ -76,9 +88,11 @@ const rules = [
     gap: 4px;
     margin-top: 32px;
     padding: 24px 40px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
     border-radius: var(--r-lg);
+    box-shadow: 0 0 60px rgba(0, 113, 227, 0.08), inset 0 1px 0 rgba(255,255,255,0.05);
   }
   .join__qqlabel {
     font-size: 0.85rem;
@@ -103,10 +117,11 @@ const rules = [
     background: var(--blue);
     color: #fff;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, box-shadow 0.3s ease;
   }
   .join__copybtn:hover {
     background: var(--blue-hover);
+    box-shadow: 0 0 24px rgba(0, 113, 227, 0.3);
   }
   .join__rules {
     display: flex;

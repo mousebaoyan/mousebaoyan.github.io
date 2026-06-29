@@ -20,7 +20,9 @@ import { site } from "../site.config";
 <style>
   .hero {
     background:
-      radial-gradient(110% 90% at 80% 10%, var(--blue-soft) 0%, transparent 55%),
+      radial-gradient(ellipse 90% 60% at 75% 15%, rgba(0, 113, 227, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 50% at 20% 80%, rgba(110, 86, 207, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 60% 70%, rgba(232, 89, 12, 0.03) 0%, transparent 50%),
       var(--bg);
     overflow: hidden;
     min-height: calc(100svh - var(--nav-h));
@@ -47,6 +49,10 @@ import { site } from "../site.config";
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.02;
+    background: linear-gradient(135deg, var(--ink) 40%, var(--blue) 80%, var(--purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   .hero__sub {
     margin-top: 20px;
@@ -62,6 +68,22 @@ import { site } from "../site.config";
     font-size: 1.02rem;
     color: var(--ink-3);
   }
+  .hero__trust::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #34c759;
+    margin-right: 8px;
+    vertical-align: middle;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
 
   .hero__stage {
     position: relative;
@@ -71,15 +93,24 @@ import { site } from "../site.config";
   .hero__stage::before {
     content: "";
     position: absolute;
-    width: clamp(300px, 42vw, 460px);
+    width: clamp(340px, 46vw, 520px);
     aspect-ratio: 1;
-    background: radial-gradient(closest-side, rgba(0, 113, 227, 0.16), transparent 70%);
-    filter: blur(8px);
+    background:
+      radial-gradient(closest-side, rgba(0, 113, 227, 0.14), transparent 50%),
+      radial-gradient(closest-side at 60% 60%, rgba(110, 86, 207, 0.10), transparent 60%);
+    filter: blur(20px);
+    animation: hero-glow 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-glow {
+    from { transform: scale(1); opacity: 0.8; }
+    to { transform: scale(1.08); opacity: 1; }
   }
   .hero__logo {
     position: relative;
     width: clamp(200px, 34vw, 340px);
-    aspect-ratio: 1;
+    height: clamp(200px, 34vw, 340px);
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 50%;
     box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.28);
@@ -99,6 +130,7 @@ import { site } from "../site.config";
     }
     .hero__logo {
       width: clamp(180px, 50vw, 260px);
+      height: clamp(180px, 50vw, 260px);
     }
   }
 </style>

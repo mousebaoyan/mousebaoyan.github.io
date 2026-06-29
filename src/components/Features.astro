@@ -40,8 +40,8 @@ const features = [
 
     <div class="bento">
       {
-        features.map((f) => (
-          <article class={`bento__card ${f.span === "wide" ? "bento__card--wide" : ""}`}>
+        features.map((f, i) => (
+          <article class={`bento__card reveal reveal--delay-${i + 1} ${f.span === "wide" ? "bento__card--wide" : ""}`}>
             <span class="bento__icon" aria-hidden="true">
               {f.key === "info" && (
                 <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
@@ -78,19 +78,25 @@ const features = [
     display: flex;
     flex-direction: column;
     gap: 18px;
-    background: var(--bg);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
     border-radius: var(--r-lg);
     padding: clamp(26px, 3vw, 40px);
     min-height: 220px;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
   }
   .bento__card--wide {
     grid-column: span 3;
   }
   .bento__card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(0, 113, 227, 0.15);
   }
   .bento__icon {
     display: inline-grid;
@@ -98,8 +104,13 @@ const features = [
     width: 52px;
     height: 52px;
     border-radius: 14px;
-    background: var(--blue-soft);
+    background: var(--gradient-accent-soft);
     color: var(--blue);
+  }
+  .bento__card:nth-child(2) .bento__icon,
+  .bento__card:nth-child(3) .bento__icon {
+    background: var(--purple-soft);
+    color: var(--purple);
   }
   .bento__body {
     margin-top: auto;

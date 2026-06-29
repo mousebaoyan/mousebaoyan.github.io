@@ -19,10 +19,23 @@
   --line: #d2d2d7;         /* 发丝线 */
   --line-soft: #e8e8ed;
 
-  /* —— 单一强调色 —— */
+  /* —— 强调色 —— */
   --blue: #0071e3;
   --blue-hover: #0077ed;
   --blue-soft: #e8f1fd;
+
+  --purple: #6e56cf;
+  --purple-hover: #7c63d8;
+  --purple-soft: #f3f0ff;
+
+  /* —— 渐变 —— */
+  --gradient-accent: linear-gradient(135deg, #0071e3 0%, #6e56cf 100%);
+  --gradient-accent-soft: linear-gradient(135deg, #e8f1fd 0%, #f3f0ff 100%);
+
+  /* —— 深色表面 —— */
+  --bg-dark-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(110, 86, 207, 0.15), transparent),
+                       radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 113, 227, 0.1), transparent),
+                       #000000;
 
   /* —— 圆角 —— */
   --r-sm: 12px;
@@ -31,9 +44,17 @@
   --r-xl: 36px;
   --r-pill: 980px;
 
-  /* —— 阴影（克制）—— */
+  /* —— 阴影（层次感）—— */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-glow-blue: 0 0 40px rgba(0, 113, 227, 0.12);
+
+  /* —— 玻璃效果 —— */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-blur: blur(16px) saturate(180%);
 
   /* —— 排版 —— */
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
@@ -125,10 +146,10 @@ ul {
   justify-content: center;
 }
 .section--alt {
-  background: var(--bg-alt);
+  background: linear-gradient(180deg, #fbfbfd 0%, #ffffff 100%);
 }
 .section--grey {
-  background: var(--bg-grey);
+  background: linear-gradient(180deg, #f5f5f7 0%, #fafafa 60%, #ffffff 100%);
 }
 
 .section__head {
@@ -145,13 +166,16 @@ ul {
   font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--blue);
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 10px;
 }
 
 .section__title {
-  font-size: clamp(2rem, 4.4vw, 3.1rem);
-  letter-spacing: -0.025em;
+  font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+  letter-spacing: -0.028em;
 }
 
 .section__lead {
@@ -185,11 +209,24 @@ ul {
   outline-offset: 3px;
 }
 .btn--primary {
-  background: var(--blue);
+  background: var(--gradient-accent);
   color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.15) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 .btn--primary:hover {
-  background: var(--blue-hover);
+  background: var(--gradient-accent);
+}
+.btn--primary:hover::after {
+  opacity: 1;
 }
 .btn--light {
   background: #fff;
@@ -255,6 +292,31 @@ ul {
   white-space: nowrap;
 }
 
+/* —— 入场动画 —— */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal--delay-1 { transition-delay: 0.08s; }
+.reveal--delay-2 { transition-delay: 0.16s; }
+.reveal--delay-3 { transition-delay: 0.24s; }
+.reveal--delay-4 { transition-delay: 0.32s; }
+.reveal--delay-5 { transition-delay: 0.40s; }
+
+/* —— 渐变文字工具 —— */
+.text-gradient {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -264,5 +326,9 @@ ul {
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
   }
 }
