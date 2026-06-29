@@ -82,15 +82,16 @@ import { site, navLinks } from "../site.config";
     gap: 12px;
   }
   .nav__join {
-    background: var(--blue);
+    background: var(--gradient-accent);
     color: #fff;
     font-size: 0.82rem;
     padding: 6px 15px;
     border-radius: var(--r-pill);
-    transition: background 0.2s ease;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
   }
   .nav__join:hover {
-    background: var(--blue-hover);
+    box-shadow: 0 0 16px rgba(0, 113, 227, 0.25);
+    transform: scale(1.03);
   }
 
   /* 汉堡 */

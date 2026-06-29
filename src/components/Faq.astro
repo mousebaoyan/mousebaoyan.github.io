@@ -33,7 +33,7 @@ const faqs = [
     <div class="faq__list">
       {
         faqs.map((f, i) => (
-          <details class="faq__item" open={i === 0}>
+          <details class={`faq__item reveal reveal--delay-${i + 1}`} open={i === 0}>
             <summary>
               <span class="faq__q">{f.q}</span>
               <span class="faq__icon" aria-hidden="true">

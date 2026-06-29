@@ -19,8 +19,8 @@ const tools = [
 
     <div class="tools">
       {
-        tools.map((t) => (
-          <a class="tool" href={t.url}>
+        tools.map((t, i) => (
+          <a class={`tool reveal reveal--delay-${(i % 6) + 1}`} href={t.url}>
             <span class="tool__cat">{t.cat}</span>
             <h3 class="tool__name">{t.name}</h3>
             <p class="tool__desc">{t.desc}</p>
@@ -45,18 +45,30 @@ const tools = [
     display: flex;
     flex-direction: column;
     background: var(--bg);
+    border: 1px solid var(--line-soft);
     border-radius: var(--r-lg);
     padding: clamp(22px, 2.6vw, 30px);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
   }
   .tool:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(0, 113, 227, 0.12);
   }
   .tool__cat {
     font-size: 0.84rem;
     font-weight: 600;
     color: var(--blue);
+  }
+  .tool:nth-child(2) .tool__cat,
+  .tool:nth-child(5) .tool__cat {
+    color: var(--purple);
+  }
+  .tool:nth-child(3) .tool__cat,
+  .tool:nth-child(6) .tool__cat {
+    color: #e8590c;
   }
   .tool__name {
     margin-top: 10px;

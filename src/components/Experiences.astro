@@ -39,8 +39,8 @@ const posts = [
 
     <div class="posts">
       {
-        posts.map((p) => (
-          <a class="post" href={p.url}>
+        posts.map((p, i) => (
+          <a class={`post reveal reveal--delay-${i + 1}`} href={p.url}>
             <span class="post__school">{p.school}</span>
             <h3 class="post__title">{p.title}</h3>
             <p class="post__summary">{p.summary}</p>
@@ -79,11 +79,12 @@ const posts = [
     background: var(--bg-grey);
     border-radius: var(--r-lg);
     padding: clamp(22px, 2.6vw, 30px);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .post:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow);
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: var(--shadow-card-hover);
   }
   .post__school {
     font-size: 0.85rem;
@@ -115,6 +116,14 @@ const posts = [
     border-radius: var(--r-pill);
     background: var(--bg);
     color: var(--ink-2);
+  }
+  .post__tag:nth-child(2) {
+    background: var(--purple-soft);
+    color: var(--purple);
+  }
+  .post__tag:nth-child(3) {
+    background: #fef1e7;
+    color: #e8590c;
   }
 
   .mobile-br {
