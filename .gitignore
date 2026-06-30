@@ -26,3 +26,4 @@ pnpm-debug.log*
 # local agent/tooling state
 .claude/
 .codex/
+.serena/
