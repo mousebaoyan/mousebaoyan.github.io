@@ -1,20 +1,25 @@
 ---
 import { site, navLinks } from "../site.config";
+const { pathname } = Astro.url;
+const isActive = (href: string) =>
+  href === "/" ? pathname === "/" : pathname.startsWith(href);
 ---
 
 <header class="nav" id="top">
   <div class="nav__bar container container--wide">
-    <a class="nav__brand" href="#top" aria-label={site.name}>
+    <a class="nav__brand" href="/" aria-label={site.name}>
       <img class="nav__logo" src="/logo.jpg" alt="" width="28" height="28" />
       <span class="nav__brand-text">{site.name}</span>
     </a>
 
     <nav class="nav__links" aria-label="主导航">
-      {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+      {navLinks.map((l) => (
+        <a href={l.href} class={isActive(l.href) ? "active" : ""}>{l.label}</a>
+      ))}
     </nav>
 
     <div class="nav__actions">
-      <a class="nav__join" href="#join">加入鼠群</a>
+      <a class="nav__join" href="/join">加入鼠群</a>
       <button
         class="nav__toggle"
         aria-label="展开菜单"
@@ -27,8 +32,10 @@ import { site, navLinks } from "../site.config";
   </div>
 
   <nav class="nav__mobile" id="mobile-menu" aria-label="移动端导航" hidden>
-    {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
-    <a class="nav__mobile-join" href="#join">加入鼠群</a>
+    {navLinks.map((l) => (
+      <a href={l.href} class={isActive(l.href) ? "active" : ""}>{l.label}</a>
+    ))}
+    <a class="nav__mobile-join" href="/join">加入鼠群</a>
   </nav>
 </header>
 
@@ -73,8 +80,10 @@ import { site, navLinks } from "../site.config";
     font-weight: 400;
     transition: opacity 0.2s ease;
   }
-  .nav__links a:hover {
+  .nav__links a:hover,
+  .nav__links a.active {
     opacity: 1;
+    font-weight: 600;
   }
   .nav__actions {
     display: flex;

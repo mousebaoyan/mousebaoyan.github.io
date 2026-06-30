@@ -1,0 +1,154 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+
+export async function getStaticPaths() {
+  const tools = await getCollection("tools");
+  return tools.map((tool) => ({
+    params: { slug: tool.id },
+    props: { tool },
+  }));
+}
+
+const { tool } = Astro.props;
+const { Content } = await render(tool);
+---
+
+<BaseLayout title={`${tool.data.name} — 推荐工具`} description={tool.data.description}>
+  <div class="container">
+    <Breadcrumb crumbs={[
+      { label: "首页", href: "/" },
+      { label: "推荐工具", href: "/tools" },
+      { label: tool.data.name },
+    ]} />
+
+    <article class="tool-detail">
+      <header class="tool-detail__header">
+        <span class="tool-detail__cat">{tool.data.category}</span>
+        <h1 class="tool-detail__title">{tool.data.name}</h1>
+        <p class="tool-detail__desc">{tool.data.description}</p>
+        <div class="tool-detail__meta">
+          <div class="tool-detail__tags">
+            {tool.data.tags.map((t) => (
+              <span class="tag-pill">{t}</span>
+            ))}
+          </div>
+          <a class="tool-detail__cta" href={tool.data.link} target="_blank" rel="noopener noreferrer">
+            打开工具
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+
+    <a class="back-link" href="/tools">← 返回工具列表</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .tool-detail {
+    max-width: 740px;
+    padding: clamp(32px, 5vw, 56px) 0;
+  }
+  .tool-detail__cat {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--blue);
+  }
+  .tool-detail__title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: -0.03em;
+    margin: 10px 0 12px;
+  }
+  .tool-detail__desc {
+    font-size: 1.1rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .tool-detail__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 20px 0;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 36px;
+  }
+  .tool-detail__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag-pill {
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: var(--r-pill);
+    background: var(--bg-grey);
+    color: var(--ink-2);
+  }
+  .tool-detail__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 9px 20px;
+    border-radius: var(--r-pill);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+  .tool-detail__cta:hover {
+    box-shadow: 0 0 16px rgba(0, 113, 227, 0.25);
+    transform: scale(1.03);
+  }
+  .prose {
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 1.05rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    margin: 2em 0 0.6em;
+  }
+  .prose :global(h3) {
+    font-size: 1.15rem;
+    margin: 1.6em 0 0.5em;
+  }
+  .prose :global(p) {
+    margin: 0 0 1em;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.4em;
+    margin-bottom: 1em;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4em;
+  }
+  .prose :global(strong) {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .back-link {
+    display: inline-block;
+    color: var(--ink-3);
+    font-size: 0.9rem;
+    margin-bottom: 48px;
+    transition: color 0.2s;
+  }
+  .back-link:hover {
+    color: var(--ink);
+  }
+</style>

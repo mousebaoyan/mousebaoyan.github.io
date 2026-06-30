@@ -1,0 +1,65 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import PageHeader from "../../components/PageHeader.astro";
+
+const tools = await getCollection("tools");
+const sorted = tools.sort((a, b) => a.data.name.localeCompare(b.data.name, "zh"));
+const categories = [...new Set(sorted.map((t) => t.data.category))];
+---
+
+<BaseLayout title="推荐工具 — 四非保研鼠群" description="群内整理的保研备战实用工具和资料。">
+  <div class="container">
+    <PageHeader
+      eyebrow="推荐工具"
+      title="备战时趁手的资源"
+      lead="群里整理的实用工具和资料，覆盖情报收集、材料准备、备考练习全流程。"
+    />
+
+    {categories.map((cat) => (
+      <section class="cat-section">
+        <h2 class="cat-section__title">{cat}</h2>
+        <div class="tools-grid">
+          {sorted
+            .filter((t) => t.data.category === cat)
+            .map((t) => (
+              <ToolCard
+                name={t.data.name}
+                description={t.data.description}
+                category={t.data.category}
+                link={t.data.link}
+                tags={t.data.tags}
+                slug={t.id}
+              />
+            ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .cat-section {
+    margin-bottom: clamp(40px, 6vw, 64px);
+  }
+  .cat-section__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+  @media (max-width: 860px) {
+    .tools-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 540px) {
+    .tools-grid { grid-template-columns: 1fr; }
+  }
+</style>

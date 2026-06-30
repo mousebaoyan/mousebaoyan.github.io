@@ -1,0 +1,73 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ExperienceCard from "../../components/ExperienceCard.astro";
+import PageHeader from "../../components/PageHeader.astro";
+
+const experiences = await getCollection("experiences");
+const sorted = experiences.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const allTags = [...new Set(sorted.flatMap((e) => e.data.tags))];
+---
+
+<BaseLayout title="经验贴 — 四非保研鼠群" description="学长学姐的保研上岸经验分享。">
+  <div class="container">
+    <PageHeader
+      eyebrow="上岸经验贴"
+      title="看看学长学姐怎么走过来的"
+      lead="真实的背景、选校逻辑、面试复盘，帮你少走弯路。"
+    />
+
+    <div class="tag-filter">
+      {allTags.map((tag) => (
+        <span class="tag-pill">{tag}</span>
+      ))}
+    </div>
+
+    <div class="exp-grid">
+      {sorted.map((e) => (
+        <ExperienceCard
+          title={e.data.title}
+          author={e.data.author}
+          school={e.data.school}
+          target={e.data.target}
+          excerpt={e.data.excerpt}
+          tags={e.data.tags}
+          slug={e.id}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .tag-pill {
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: var(--r-pill);
+    background: var(--bg-grey);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .tag-pill:hover {
+    background: var(--line-soft);
+  }
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+  @media (max-width: 860px) {
+    .exp-grid { grid-template-columns: 1fr; }
+  }
+</style>

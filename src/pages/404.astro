@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="404 — 页面不存在" description="页面不存在">
+  <div class="container not-found">
+    <p class="not-found__code">404</p>
+    <h1 class="not-found__title">找不到这个页面</h1>
+    <p class="not-found__msg">你要找的页面不存在，可能已被移动或删除。</p>
+    <a class="not-found__btn" href="/">返回首页</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 60vh;
+    gap: 16px;
+  }
+  .not-found__code {
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--blue);
+    opacity: 0.15;
+    line-height: 1;
+    margin: 0;
+  }
+  .not-found__title {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .not-found__msg {
+    color: var(--ink-2);
+    font-size: 1.05rem;
+    margin: 0;
+  }
+  .not-found__btn {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 10px 24px;
+    border-radius: var(--r-pill);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  .not-found__btn:hover {
+    box-shadow: 0 0 16px rgba(0, 113, 227, 0.25);
+    transform: scale(1.03);
+  }
+</style>

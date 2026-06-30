@@ -1,0 +1,62 @@
+---
+import { getCollection } from "astro:content";
+import ExperienceCard from "./ExperienceCard.astro";
+
+const experiences = await getCollection("experiences");
+const featured = experiences
+  .filter((e) => e.data.featured)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+---
+
+{featured.length > 0 && (
+  <section class="section featured-exp">
+    <div class="container">
+      <div class="featured-exp__head">
+        <div>
+          <span class="eyebrow">上岸经验贴</span>
+          <h2 class="section__title">看看学长学姐怎么走过来的</h2>
+        </div>
+        <a class="link-arrow" href="/experiences">
+          查看全部
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="exp-grid">
+        {featured.map((e) => (
+          <ExperienceCard
+            title={e.data.title}
+            author={e.data.author}
+            school={e.data.school}
+            target={e.data.target}
+            excerpt={e.data.excerpt}
+            tags={e.data.tags}
+            slug={e.id}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .featured-exp {
+    border-top: 1px solid var(--line-soft);
+  }
+  .featured-exp__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: clamp(28px, 4vw, 40px);
+  }
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+  @media (max-width: 860px) {
+    .exp-grid { grid-template-columns: 1fr; }
+    .featured-exp__head { flex-direction: column; align-items: flex-start; }
+  }
+</style>

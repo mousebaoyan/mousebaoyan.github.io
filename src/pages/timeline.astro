@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Timeline from "../components/Timeline.astro";
+import PageHeader from "../components/PageHeader.astro";
+---
+
+<BaseLayout title="保研时间线 — 四非保研鼠群" description="计算机保研从大三到上岸的完整时间线和备战节点。">
+  <div class="container">
+    <PageHeader
+      eyebrow="保研时间线"
+      title="从大三到上岸"
+      lead="把保研的关键节点梳理清楚，按时间线推进，不错过任何窗口期。"
+    />
+  </div>
+  <Timeline />
+</BaseLayout>

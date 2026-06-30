@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Faq from "../components/Faq.astro";
+import PageHeader from "../components/PageHeader.astro";
+---
+
+<BaseLayout title="常见问题 — 四非保研鼠群" description="四非计算机同学保研常见疑问解答。">
+  <div class="container">
+    <PageHeader
+      eyebrow="FAQ"
+      title="常见问题解答"
+      lead="群里被问最多的问题，汇总在这里。"
+    />
+  </div>
+  <Faq />
+</BaseLayout>

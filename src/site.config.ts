@@ -9,11 +9,11 @@ export const site = {
   qqJoinUrl: "https://qm.qq.com/q/", // TODO: 替换为一键加群链接
 };
 
-// 导航锚点 —— Nav 与页脚共用
+// 导航链接 —— Nav 与页脚共用
 export const navLinks = [
-  { href: "#about", label: "关于" },
-  { href: "#timeline", label: "保研时间线" },
-  { href: "#tools", label: "推荐工具" },
-  { href: "#experiences", label: "经验贴" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/", label: "首页" },
+  { href: "/timeline", label: "保研时间线" },
+  { href: "/tools", label: "推荐工具" },
+  { href: "/experiences", label: "经验贴" },
+  { href: "/faq", label: "FAQ" },
 ];

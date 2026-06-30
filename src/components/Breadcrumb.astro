@@ -1,0 +1,47 @@
+---
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  crumbs: Crumb[];
+}
+const { crumbs } = Astro.props;
+---
+
+<nav class="breadcrumb" aria-label="面包屑导航">
+  {crumbs.map((c, i) => (
+    <>
+      {i > 0 && <span class="breadcrumb__sep" aria-hidden="true">/</span>}
+      {c.href
+        ? <a class="breadcrumb__link" href={c.href}>{c.label}</a>
+        : <span class="breadcrumb__current" aria-current="page">{c.label}</span>
+      }
+    </>
+  ))}
+</nav>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    padding: 20px 0 0;
+  }
+  .breadcrumb__link {
+    color: var(--ink-3);
+    transition: color 0.2s;
+  }
+  .breadcrumb__link:hover {
+    color: var(--ink);
+  }
+  .breadcrumb__sep {
+    color: var(--ink-3);
+    opacity: 0.5;
+  }
+  .breadcrumb__current {
+    color: var(--ink-2);
+  }
+</style>

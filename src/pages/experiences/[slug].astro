@@ -1,0 +1,197 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+
+export async function getStaticPaths() {
+  const experiences = await getCollection("experiences");
+  return experiences.map((exp) => ({
+    params: { slug: exp.id },
+    props: { exp },
+  }));
+}
+
+const { exp } = Astro.props;
+const { Content } = await render(exp);
+const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
+---
+
+<BaseLayout title={`${exp.data.title} — 经验贴`} description={exp.data.excerpt}>
+  <div class="container">
+    <Breadcrumb crumbs={[
+      { label: "首页", href: "/" },
+      { label: "经验贴", href: "/experiences" },
+      { label: exp.data.title },
+    ]} />
+
+    <article class="exp-detail">
+      <header class="exp-detail__header">
+        <div class="exp-detail__tags">
+          {exp.data.tags.map((t) => (
+            <span class="tag-pill">{t}</span>
+          ))}
+        </div>
+        <h1 class="exp-detail__title">{exp.data.title}</h1>
+        <p class="exp-detail__excerpt">{exp.data.excerpt}</p>
+
+        <div class="exp-detail__meta">
+          <div class="exp-detail__info">
+            <span class="meta-item">
+              <span class="meta-label">作者</span>
+              <span>{exp.data.author}</span>
+            </span>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="meta-item">
+              <span class="meta-label">本科</span>
+              <span>{exp.data.school}</span>
+            </span>
+            <span class="meta-sep" aria-hidden="true">→</span>
+            <span class="meta-item">
+              <span class="meta-label">录取</span>
+              <span>{exp.data.target}</span>
+            </span>
+          </div>
+          <time class="exp-detail__date" datetime={exp.data.date.toISOString()}>{dateStr}</time>
+        </div>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+
+    <a class="back-link" href="/experiences">← 返回经验贴列表</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .exp-detail {
+    max-width: 740px;
+    padding: clamp(32px, 5vw, 56px) 0;
+  }
+  .exp-detail__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tag-pill {
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: var(--r-pill);
+    background: var(--bg-grey);
+    color: var(--ink-2);
+  }
+  .exp-detail__title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .exp-detail__excerpt {
+    font-size: 1.1rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .exp-detail__meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 18px 0;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 36px;
+  }
+  .exp-detail__info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .meta-label {
+    color: var(--ink-3);
+  }
+  .meta-sep {
+    color: var(--ink-3);
+    opacity: 0.5;
+  }
+  .exp-detail__date {
+    font-size: 0.84rem;
+    color: var(--ink-3);
+    flex-shrink: 0;
+  }
+  .prose {
+    color: var(--ink);
+    line-height: 1.75;
+    font-size: 1.05rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    margin: 2em 0 0.6em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .prose :global(h3) {
+    font-size: 1.15rem;
+    margin: 1.6em 0 0.5em;
+  }
+  .prose :global(p) {
+    margin: 0 0 1em;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.4em;
+    margin-bottom: 1em;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4em;
+  }
+  .prose :global(strong) {
+    font-weight: 600;
+  }
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--blue);
+    margin: 1.5em 0;
+    padding: 12px 20px;
+    background: var(--bg-grey);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    color: var(--ink-2);
+  }
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin: 1.5em 0;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    padding: 10px 14px;
+    border: 1px solid var(--line-soft);
+    text-align: left;
+  }
+  .prose :global(th) {
+    background: var(--bg-grey);
+    font-weight: 600;
+  }
+  .back-link {
+    display: inline-block;
+    color: var(--ink-3);
+    font-size: 0.9rem;
+    margin-bottom: 48px;
+    transition: color 0.2s;
+  }
+  .back-link:hover {
+    color: var(--ink);
+  }
+</style>

@@ -14,7 +14,7 @@ const rules = [
       <span class="join__eyebrow">加入我们</span>
       <h2 class="join__title">在 QQ 群里一起备战</h2>
       <p class="join__lead">
-        搜索群号加入「{site.name}」，群里会同步夏令营信息、经验贴，也可以随时提问交流。
+        搜索群号加入「{site.name}」，可以随时提问交流。
       </p>
 
       <div class="join__card">
@@ -27,7 +27,16 @@ const rules = [
         {
           rules.map((r) => (
             <li>
-              <svg class="join__check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg class="join__check" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
               <span>{r}</span>
             </li>
           ))
@@ -92,7 +101,9 @@ const rules = [
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
     border-radius: var(--r-lg);
-    box-shadow: 0 0 60px rgba(0, 113, 227, 0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow:
+      0 0 60px rgba(0, 113, 227, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
   .join__qqlabel {
     font-size: 0.85rem;
@@ -117,7 +128,9 @@ const rules = [
     background: var(--blue);
     color: #fff;
     cursor: pointer;
-    transition: background 0.2s ease, box-shadow 0.3s ease;
+    transition:
+      background 0.2s ease,
+      box-shadow 0.3s ease;
   }
   .join__copybtn:hover {
     background: var(--blue-hover);
@@ -147,17 +160,19 @@ const rules = [
 </style>
 
 <script>
-  document.querySelectorAll<HTMLButtonElement>(".join__copybtn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const text = btn.dataset.copy ?? "";
-      try {
-        await navigator.clipboard.writeText(text);
-        const old = btn.textContent;
-        btn.textContent = "已复制";
-        setTimeout(() => (btn.textContent = old), 1600);
-      } catch {
-        btn.textContent = "复制失败";
-      }
+  document
+    .querySelectorAll<HTMLButtonElement>(".join__copybtn")
+    .forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const text = btn.dataset.copy ?? "";
+        try {
+          await navigator.clipboard.writeText(text);
+          const old = btn.textContent;
+          btn.textContent = "已复制";
+          setTimeout(() => (btn.textContent = old), 1600);
+        } catch {
+          btn.textContent = "复制失败";
+        }
+      });
     });
-  });
 </script>

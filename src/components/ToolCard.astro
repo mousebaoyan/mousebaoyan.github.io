@@ -1,0 +1,98 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  category: string;
+  link: string;
+  tags: string[];
+  slug: string;
+}
+const { name, description, category, link, tags, slug } = Astro.props;
+---
+
+<a class="tool-card" href={`/tools/${slug}`}>
+  <span class="tool-card__cat">{category}</span>
+  <h3 class="tool-card__name">{name}</h3>
+  <p class="tool-card__desc">{description}</p>
+  <div class="tool-card__footer">
+    <div class="tool-card__tags">
+      {tags.slice(0, 3).map((t) => <span class="tool-card__tag">{t}</span>)}
+    </div>
+    <span class="tool-card__go" aria-hidden="true">
+      详情
+      <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+  </div>
+</a>
+
+<style>
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-lg);
+    padding: clamp(22px, 2.6vw, 30px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
+  }
+  .tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(0, 113, 227, 0.12);
+  }
+  .tool-card__cat {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--blue);
+  }
+  .tool-card__name {
+    margin-top: 10px;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+  .tool-card__desc {
+    margin-top: 8px;
+    flex: 1;
+    color: var(--ink-2);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .tool-card__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .tool-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tool-card__tag {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: var(--r-pill);
+    background: var(--bg-grey);
+    color: var(--ink-2);
+  }
+  .tool-card__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+    color: var(--blue);
+    font-size: 0.9rem;
+  }
+  .tool-card__go svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+  .tool-card:hover .tool-card__go svg {
+    transform: translateX(3px);
+  }
+</style>

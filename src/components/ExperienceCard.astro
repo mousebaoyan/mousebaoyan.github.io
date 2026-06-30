@@ -1,0 +1,82 @@
+---
+interface Props {
+  title: string;
+  author: string;
+  school: string;
+  target: string;
+  excerpt: string;
+  tags: string[];
+  slug: string;
+}
+const { title, author, school, target, excerpt, tags, slug } = Astro.props;
+---
+
+<a class="exp-card" href={`/experiences/${slug}`}>
+  <span class="exp-card__school">{school} → {target}</span>
+  <h3 class="exp-card__title">{title}</h3>
+  <p class="exp-card__excerpt">{excerpt}</p>
+  <div class="exp-card__footer">
+    <div class="exp-card__tags">
+      {tags.slice(0, 3).map((t) => <span class="exp-card__tag">{t}</span>)}
+    </div>
+    <span class="exp-card__author">{author}</span>
+  </div>
+</a>
+
+<style>
+  .exp-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-grey);
+    border-radius: var(--r-lg);
+    padding: clamp(22px, 2.6vw, 30px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .exp-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: var(--shadow-card-hover);
+  }
+  .exp-card__school {
+    font-size: 0.84rem;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .exp-card__title {
+    margin: 10px 0 8px;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .exp-card__excerpt {
+    flex: 1;
+    color: var(--ink-2);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .exp-card__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .exp-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .exp-card__tag {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    color: var(--ink-2);
+  }
+  .exp-card__author {
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    flex-shrink: 0;
+  }
+</style>

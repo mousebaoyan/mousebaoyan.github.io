@@ -4,25 +4,25 @@ const features = [
   {
     key: "info",
     title: "保研信息",
-    desc: "夏令营 / 预推免开营、是否卡四非、报名截止时间，群里会随时同步，省得自己到处翻。",
+    desc: "夏令营 / 预推免开营、是否卡四非、报名截止时间，群里都会同步",
     span: "wide",
   },
   {
     key: "timeline",
     title: "时间线参考",
-    desc: "从大三寒假到九推，每个阶段大概该做什么，有个参考不至于手忙脚乱。",
+    desc: "从大三寒假到九推，每个阶段大概该做什么，有个参考不至于手忙脚乱",
     span: "",
   },
   {
     key: "experience",
     title: "上岸经验",
-    desc: "四非学长学姐的复盘，背景、套磁、面试这些细节，比鸡汤实在。",
+    desc: "四非学长学姐的复盘，背景、套磁、面试这些细节，比鸡汤实在",
     span: "",
   },
   {
     key: "community",
     title: "一起交流",
-    desc: "一群同样出身普通院校的同学，互相答疑、组队、交换信息，少走点弯路。",
+    desc: "一群同样出身普通院校的同学，互相答疑、交换信息，少走点弯路",
     span: "wide",
   },
 ];
@@ -32,28 +32,44 @@ const features = [
   <div class="container">
     <div class="section__head section__head--center">
       <span class="eyebrow">这里有什么</span>
-      <h2 class="section__title">四非保研难，<br class="mobile-br" />但不是没办法</h2>
+      <h2 class="section__title">
+        四非保研难，<br class="mobile-br" />但不是没办法
+      </h2>
       <p class="section__lead">
-        出身不占优势的时候，信息和经验往往是能补上的那块。
+        出身不占优势的时候，信息和经验往往是能补上的那块
       </p>
     </div>
 
     <div class="bento">
       {
         features.map((f, i) => (
-          <article class={`bento__card reveal reveal--delay-${i + 1} ${f.span === "wide" ? "bento__card--wide" : ""}`}>
+          <article
+            class={`bento__card reveal reveal--delay-${i + 1} ${f.span === "wide" ? "bento__card--wide" : ""}`}
+          >
             <span class="bento__icon" aria-hidden="true">
               {f.key === "info" && (
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+                <svg class="icon" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8h.01M11 12h1v4h1" />
+                </svg>
               )}
               {f.key === "timeline" && (
-                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+                <svg class="icon" viewBox="0 0 24 24">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2.5" />
+                  <path d="M3 9h18M8 2.5v4M16 2.5v4" />
+                </svg>
               )}
               {f.key === "experience" && (
-                <svg class="icon" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4v15H6z"/><path d="M14 2.5v4h4M9 13h6M9 17h6"/></svg>
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path d="M6 2.5h8l4 4v15H6z" />
+                  <path d="M14 2.5v4h4M9 13h6M9 17h6" />
+                </svg>
               )}
               {f.key === "community" && (
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.2a3 3 0 0 1 0 5.8M20.5 20a5.2 5.2 0 0 0-4-5"/></svg>
+                <svg class="icon" viewBox="0 0 24 24">
+                  <circle cx="9" cy="8" r="3.2" />
+                  <path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.2a3 3 0 0 1 0 5.8M20.5 20a5.2 5.2 0 0 0-4-5" />
+                </svg>
               )}
             </span>
             <div class="bento__body">
@@ -86,9 +102,10 @@ const features = [
     padding: clamp(26px, 3vw, 40px);
     min-height: 220px;
     box-shadow: var(--shadow-card);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.3s ease;
+    transition:
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.3s ease;
   }
   .bento__card--wide {
     grid-column: span 3;
