@@ -5,19 +5,21 @@ const features = [
     key: "info",
     title: "保研信息",
     desc: "夏令营 / 预推免开营、是否卡四非、报名截止时间，群里都会同步",
-    span: "wide",
+  },
+  {
+    key: "tools",
+    title: "推荐工具",
+    desc: "推免系统、选校表格、简历模板……群友整理的实用资源，少踩坑",
   },
   {
     key: "experience",
     title: "上岸经验",
     desc: "四非学长学姐的复盘，背景、套磁、面试这些细节，比鸡汤实在",
-    span: "",
   },
   {
     key: "community",
     title: "一起交流",
     desc: "一群同样出身普通院校的同学，互相答疑、交换信息，少走点弯路",
-    span: "",
   },
 ];
 ---
@@ -38,7 +40,7 @@ const features = [
       {
         features.map((f, i) => (
           <article
-            class={`bento__card reveal reveal--delay-${i + 1} ${f.span === "wide" ? "bento__card--wide" : ""}`}
+            class={`bento__card reveal reveal--delay-${i + 1}`}
           >
             <span class="bento__icon" aria-hidden="true">
               {f.key === "info" && (
@@ -59,6 +61,11 @@ const features = [
                   <path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.2a3 3 0 0 1 0 5.8M20.5 20a5.2 5.2 0 0 0-4-5" />
                 </svg>
               )}
+              {f.key === "tools" && (
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3-3a6 6 0 0 1-7.36 7.68L7.6 20.7A2.12 2.12 0 0 1 4.5 17.6l6.37-6.14a6 6 0 0 1 3.83-5.2z" />
+                </svg>
+              )}
             </span>
             <div class="bento__body">
               <h3 class="bento__title">{f.title}</h3>
@@ -74,7 +81,7 @@ const features = [
 <style>
   .bento {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: clamp(14px, 1.6vw, 20px);
   }
   .bento__card {
