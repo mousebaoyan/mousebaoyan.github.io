@@ -1,0 +1,64 @@
+name: 推荐资源
+description: 推荐一个对保研有帮助的网站、工具或资料
+title: "[资源] "
+labels: ["投稿", "推荐资源"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢推荐！填写以下信息，管理员审核后会将资源添加到网站。
+
+  - type: input
+    id: name
+    attributes:
+      label: 资源名称
+      placeholder: 例：保研论坛
+    validations:
+      required: true
+
+  - type: input
+    id: description
+    attributes:
+      label: 一句话描述
+      description: 说明这个资源的用途和价值，显示在资源卡片上
+      placeholder: 例：汇聚全国高校保研信息的综合论坛，可查各校往年名额和招生要求
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 分类
+      options:
+        - 官方
+        - 情报
+        - 材料
+        - 技巧
+        - 备考
+        - 选校
+        - 工具
+        - 其他
+    validations:
+      required: true
+
+  - type: input
+    id: link
+    attributes:
+      label: 链接
+      placeholder: https://
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 推荐理由（选填）
+      description: 为什么推荐这个资源？有什么使用技巧？
+      placeholder: 详细说明使用场景或注意事项
+
+  - type: input
+    id: tags
+    attributes:
+      label: 标签（选填）
+      description: 用英文逗号分隔
+      placeholder: 例：夏令营, 选校, 信息收集

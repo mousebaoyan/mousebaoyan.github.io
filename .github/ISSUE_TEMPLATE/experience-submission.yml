@@ -1,0 +1,82 @@
+name: 投稿经验贴
+description: 分享你的保研经历，帮助更多四非同学
+title: "[经验贴] "
+labels: ["投稿", "经验贴"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢投稿！填写以下信息，管理员审核后会将你的经验贴添加到网站。
+        匿名投稿请在「作者署名」处填写"匿名"。
+
+  - type: input
+    id: title
+    attributes:
+      label: 标题
+      placeholder: 例：普通二本 CS 逆袭 985 直博经历
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: 作者署名
+      description: 将显示在文章中，填写"匿名"可隐去真实身份
+      placeholder: 匿名 / 你的名字或昵称
+    validations:
+      required: true
+
+  - type: input
+    id: school
+    attributes:
+      label: 本科院校 · 专业
+      placeholder: 例：某二本院校 · 计算机科学与技术
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: 目标院校及学院
+      placeholder: 例：浙江大学计算机学院
+    validations:
+      required: true
+
+  - type: input
+    id: major
+    attributes:
+      label: 目标方向（选填）
+      placeholder: 例：机器学习、系统方向
+
+  - type: textarea
+    id: excerpt
+    attributes:
+      label: 摘要
+      description: 一两句话概括核心内容，显示在列表页
+      placeholder: 例：从三跨考研转保研，分享夏令营投递策略和面试准备经验
+    validations:
+      required: true
+
+  - type: textarea
+    id: body
+    attributes:
+      label: 正文内容
+      description: 支持 Markdown，建议包含：背景介绍、经历过程、关键心得、给后来者的建议
+      placeholder: |
+        ## 我的背景
+
+        ## 经历过程
+
+        ## 关键心得
+
+        ## 给后来者的建议
+      render: markdown
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: 标签（选填）
+      description: 用英文逗号分隔
+      placeholder: 例：夏令营, 直博, 985
