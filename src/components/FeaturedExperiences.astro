@@ -4,7 +4,7 @@ import ExperienceCard from "./ExperienceCard.astro";
 
 const experiences = await getCollection("experiences");
 const featured = experiences
-  .filter((e) => e.data.featured)
+  .filter((e) => e.data.featured && !e.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 ---

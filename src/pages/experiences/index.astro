@@ -5,7 +5,7 @@ import ExperienceCard from "../../components/ExperienceCard.astro";
 import PageHeader from "../../components/PageHeader.astro";
 
 const experiences = await getCollection("experiences");
-const sorted = experiences.sort(
+const sorted = experiences.filter((e) => !e.data.draft).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 ---

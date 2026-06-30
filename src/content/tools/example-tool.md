@@ -4,6 +4,7 @@ description: 一句话描述这个工具的用途和价值。
 category: 其他
 link: https://example.com
 featured: false
+draft: true
 tags: [标签一, 标签二]
 ---
 

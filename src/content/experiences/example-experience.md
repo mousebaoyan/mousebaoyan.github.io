@@ -7,6 +7,7 @@ target: 目标院校及学院
 major: 目标方向（选填）
 excerpt: 一两句话概括这篇经验贴的核心内容，会显示在列表页。
 featured: false
+draft: true
 tags: [标签一, 标签二]
 ---
 

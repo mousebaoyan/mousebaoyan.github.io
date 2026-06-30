@@ -3,8 +3,8 @@ name: AutoEmailSender
 description: 面向导师套磁场景的智能邮件助手
 category: 工具
 link: https://github.com/JunieXD/AutoEmailSender
-featured: false
-tags: [套磁, 导师, 批量发信]
+featured: true
+tags: [套磁, 爬虫, 信息整理]
 ---
 
 ## 它解决什么问题

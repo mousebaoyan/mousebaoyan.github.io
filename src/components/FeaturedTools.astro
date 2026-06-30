@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import ToolCard from "./ToolCard.astro";
 
 const tools = await getCollection("tools");
-const featured = tools.filter((t) => t.data.featured).slice(0, 3);
+const featured = tools.filter((t) => t.data.featured && !t.data.draft).slice(0, 3);
 ---
 
 {featured.length > 0 && (

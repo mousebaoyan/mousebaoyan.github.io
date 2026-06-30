@@ -5,7 +5,7 @@ import ToolCard from "../../components/ToolCard.astro";
 import PageHeader from "../../components/PageHeader.astro";
 
 const tools = await getCollection("tools");
-const sorted = tools.sort((a, b) =>
+const sorted = tools.filter((t) => !t.data.draft).sort((a, b) =>
   a.data.name.localeCompare(b.data.name, "zh"),
 );
 const categories = [...new Set(sorted.map((t) => t.data.category))];
