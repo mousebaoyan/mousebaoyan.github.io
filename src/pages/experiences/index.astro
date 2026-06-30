@@ -8,7 +8,6 @@ const experiences = await getCollection("experiences");
 const sorted = experiences.sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
-const allTags = [...new Set(sorted.flatMap((e) => e.data.tags))];
 ---
 
 <BaseLayout
@@ -21,10 +20,6 @@ const allTags = [...new Set(sorted.flatMap((e) => e.data.tags))];
       title="看看学长学姐怎么走过来的"
       lead="真实的背景、选校逻辑、面试复盘，帮你少走弯路"
     />
-
-    <div class="tag-filter">
-      {allTags.map((tag) => <span class="tag-pill">{tag}</span>)}
-    </div>
 
     <div class="exp-grid">
       {
@@ -45,25 +40,6 @@ const allTags = [...new Set(sorted.flatMap((e) => e.data.tags))];
 </BaseLayout>
 
 <style>
-  .tag-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 32px;
-  }
-  .tag-pill {
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 5px 12px;
-    border-radius: var(--r-pill);
-    background: var(--bg-grey);
-    color: var(--ink-2);
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .tag-pill:hover {
-    background: var(--line-soft);
-  }
   .exp-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
