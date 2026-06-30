@@ -6,7 +6,7 @@ const tools = defineCollection({
   schema: z.object({
     name: z.string(),
     description: z.string(),
-    category: z.enum(["官方", "情报", "材料", "技巧", "备考", "选校", "其他"]),
+    category: z.enum(["官方", "情报", "材料", "技巧", "备考", "选校", "工具", "其他"]),
     link: z.string().url(),
     featured: z.boolean().default(false),
     tags: z.array(z.string()),
