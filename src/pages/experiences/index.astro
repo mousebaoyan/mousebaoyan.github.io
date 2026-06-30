@@ -21,6 +21,10 @@ const sorted = experiences.filter((e) => !e.data.draft).sort(
       lead="真实的背景、选校逻辑、面试复盘，帮你少走弯路"
     />
 
+    <div class="page-actions">
+      <a class="submit-btn" href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" target="_blank" rel="noopener">投稿经验贴</a>
+    </div>
+
     <div class="exp-grid">
       {
         sorted.map((e) => (
@@ -40,6 +44,24 @@ const sorted = experiences.filter((e) => !e.data.draft).sort(
 </BaseLayout>
 
 <style>
+  .page-actions {
+    margin-bottom: clamp(24px, 4vw, 36px);
+  }
+  .submit-btn {
+    display: inline-block;
+    padding: 9px 22px;
+    border-radius: var(--r-pill);
+    border: 1.5px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .submit-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: rgba(0, 113, 227, 0.04);
+  }
   .exp-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

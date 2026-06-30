@@ -22,6 +22,10 @@ const categories = [...new Set(sorted.map((t) => t.data.category))];
       lead="群友整理的工具、网站和参考资料，覆盖情报收集到材料准备全流程"
     />
 
+    <div class="page-actions">
+      <a class="submit-btn" href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml" target="_blank" rel="noopener">推荐资源</a>
+    </div>
+
     {
       categories.map((cat) => (
         <section class="cat-section">
@@ -47,6 +51,24 @@ const categories = [...new Set(sorted.map((t) => t.data.category))];
 </BaseLayout>
 
 <style>
+  .page-actions {
+    margin-bottom: clamp(24px, 4vw, 36px);
+  }
+  .submit-btn {
+    display: inline-block;
+    padding: 9px 22px;
+    border-radius: var(--r-pill);
+    border: 1.5px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .submit-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: rgba(0, 113, 227, 0.04);
+  }
   .cat-section {
     margin-bottom: clamp(40px, 6vw, 64px);
   }

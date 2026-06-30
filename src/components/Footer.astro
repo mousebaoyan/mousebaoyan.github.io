@@ -33,6 +33,14 @@ const year = new Date().getFullYear();
           <li><span class="footer__qq">QQ 群 {site.qqGroup}</span></li>
         </ul>
       </div>
+
+      <div class="footer__col">
+        <h3>参与</h3>
+        <ul>
+          <li><a href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" target="_blank" rel="noopener">投稿经验贴</a></li>
+          <li><a href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml" target="_blank" rel="noopener">推荐资源</a></li>
+        </ul>
+      </div>
     </div>
 
     <div class="footer__bottom">
@@ -51,7 +59,7 @@ const year = new Date().getFullYear();
   }
   .footer__cols {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: clamp(28px, 5vw, 56px);
     padding-bottom: 26px;
     border-bottom: 1px solid var(--line);

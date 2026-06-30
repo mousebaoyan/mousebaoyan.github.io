@@ -11,10 +11,7 @@ import { site } from "../site.config";
         给非 985/211/双一流 的计算机同学，一个交流保研信息和经验的地方
       </p>
       <p class="hero__trust">已经有 1,000+ 名四非同学在群里</p>
-      <div class="hero__actions">
-        <a class="hero__cta" href="#join">加入鼠群</a>
-        <a class="hero__cta hero__cta--outline" href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new/choose" target="_blank" rel="noopener">投稿</a>
-      </div>
+      <a class="hero__cta" href="#join">加入鼠群</a>
     </div>
 
     <div class="hero__stage" aria-hidden="true">
@@ -91,14 +88,9 @@ import { site } from "../site.config";
     font-size: 1.02rem;
     color: var(--ink-3);
   }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 24px;
-  }
   .hero__cta {
     display: inline-block;
+    margin-top: 24px;
     background: var(--gradient-accent);
     color: #fff;
     font-size: 0.96rem;
@@ -110,16 +102,6 @@ import { site } from "../site.config";
   .hero__cta:hover {
     box-shadow: 0 0 20px rgba(0, 113, 227, 0.25);
     transform: scale(1.03);
-  }
-  .hero__cta--outline {
-    background: transparent;
-    color: var(--ink-2);
-    border: 1.5px solid var(--border);
-  }
-  .hero__cta--outline:hover {
-    box-shadow: none;
-    background: var(--bg-2, rgba(0, 0, 0, 0.04));
-    color: var(--ink);
   }
   .hero__trust::before {
     content: "";
