@@ -22,7 +22,7 @@ const sorted = experiences.filter((e) => !e.data.draft).sort(
     />
 
     <div class="page-actions">
-      <a class="submit-btn" href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" target="_blank" rel="noopener">投稿经验贴</a>
+      <a class="submit-btn" href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" target="_blank" rel="noopener">我要投稿</a>
     </div>
 
     <div class="exp-grid">
@@ -47,14 +47,14 @@ const sorted = experiences.filter((e) => !e.data.draft).sort(
   .page-actions {
     margin-bottom: clamp(24px, 4vw, 36px);
   }
-  .submit-btn {
+    .submit-btn {
     display: inline-block;
     padding: 9px 22px;
     border-radius: var(--r-pill);
-    border: 1.5px solid var(--border);
+    border: 1.5px solid transparent;
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--ink-2);
+    color: var(--ink-3);
     transition: border-color 0.2s, color 0.2s, background 0.2s;
   }
   .submit-btn:hover {
