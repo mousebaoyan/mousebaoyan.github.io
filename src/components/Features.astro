@@ -8,12 +8,6 @@ const features = [
     span: "wide",
   },
   {
-    key: "timeline",
-    title: "时间线参考",
-    desc: "从大三寒假到九推，每个阶段大概该做什么，有个参考不至于手忙脚乱",
-    span: "",
-  },
-  {
     key: "experience",
     title: "上岸经验",
     desc: "四非学长学姐的复盘，背景、套磁、面试这些细节，比鸡汤实在",
@@ -23,7 +17,7 @@ const features = [
     key: "community",
     title: "一起交流",
     desc: "一群同样出身普通院校的同学，互相答疑、交换信息，少走点弯路",
-    span: "wide",
+    span: "",
   },
 ];
 ---
@@ -53,12 +47,6 @@ const features = [
                   <path d="M12 8h.01M11 12h1v4h1" />
                 </svg>
               )}
-              {f.key === "timeline" && (
-                <svg class="icon" viewBox="0 0 24 24">
-                  <rect x="3" y="4.5" width="18" height="16" rx="2.5" />
-                  <path d="M3 9h18M8 2.5v4M16 2.5v4" />
-                </svg>
-              )}
               {f.key === "experience" && (
                 <svg class="icon" viewBox="0 0 24 24">
                   <path d="M6 2.5h8l4 4v15H6z" />
@@ -86,11 +74,11 @@ const features = [
 <style>
   .bento {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: clamp(14px, 1.6vw, 20px);
   }
   .bento__card {
-    grid-column: span 2;
+    grid-column: span 1;
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -106,9 +94,6 @@ const features = [
       transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.3s ease;
-  }
-  .bento__card--wide {
-    grid-column: span 3;
   }
   .bento__card:hover {
     transform: translateY(-6px);

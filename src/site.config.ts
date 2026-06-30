@@ -12,7 +12,6 @@ export const site = {
 // 导航链接 —— Nav 与页脚共用
 export const navLinks = [
   { href: "/", label: "首页" },
-  { href: "/timeline", label: "保研时间线" },
   { href: "/tools", label: "推荐工具" },
   { href: "/experiences", label: "经验贴" },
   { href: "/faq", label: "FAQ" },
