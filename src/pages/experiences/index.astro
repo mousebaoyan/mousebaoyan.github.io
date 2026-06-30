@@ -44,8 +44,10 @@ const sorted = experiences.filter((e) => !e.data.draft).sort(
 </BaseLayout>
 
 <style>
+  :global(.page-header) {
+    padding-bottom: 12px;
+  }
   .page-actions {
-    margin-top: -clamp(24px, 4vw, 44px);
     margin-bottom: clamp(24px, 4vw, 36px);
   }
       .submit-btn {
