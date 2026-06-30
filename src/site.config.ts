@@ -6,7 +6,7 @@ export const site = {
   description:
     "汇集计算机保研夏令营情报、保研时间线与上岸经验，和四非的同学一起打破信息差",
   qqGroup: "752140536",
-  qqJoinUrl: "https://qm.qq.com/q/", // TODO: 替换为一键加群链接
+  qqJoinUrl: "https://qm.qq.com/q/20geYjRZlq",
 };
 
 // 导航链接 —— Nav 与页脚共用

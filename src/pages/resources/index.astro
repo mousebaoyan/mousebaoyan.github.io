@@ -54,14 +54,14 @@ const categories = [...new Set(sorted.map((t) => t.data.category))];
   .page-actions {
     margin-bottom: clamp(24px, 4vw, 36px);
   }
-    .submit-btn {
+      .submit-btn {
     display: inline-block;
     padding: 9px 22px;
     border-radius: var(--r-pill);
-    border: 1.5px solid transparent;
+    border: 1.5px solid var(--border);
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--ink-3);
+    color: var(--ink-2);
     transition: border-color 0.2s, color 0.2s, background 0.2s;
   }
   .submit-btn:hover {
