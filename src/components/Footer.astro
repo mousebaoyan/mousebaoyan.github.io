@@ -17,18 +17,15 @@ const year = new Date().getFullYear();
       <nav class="footer__col" aria-label="页脚导航">
         <h3>站内导航</h3>
         <ul>
-          {navLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          {
+            navLinks.map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))
+          }
         </ul>
       </nav>
-
-      <div class="footer__col">
-        <h3>参与共建</h3>
-        <ul>
-          <li><a href="#join">加入鼠群</a></li>
-          <li><a href="#experiences">投稿经验贴</a></li>
-          <li><a href="#tools">推荐工具</a></li>
-        </ul>
-      </div>
 
       <div class="footer__col">
         <h3>联系</h3>
@@ -40,7 +37,7 @@ const year = new Date().getFullYear();
 
     <div class="footer__bottom">
       <span>© {year} {site.name} · 由社群志愿者维护</span>
-      <span>本站为非营利信息互助平台，信息仅供参考。</span>
+      <span>本站为非营利信息互助平台，信息仅供参考</span>
     </div>
   </div>
 </footer>
@@ -54,7 +51,7 @@ const year = new Date().getFullYear();
   }
   .footer__cols {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     gap: clamp(28px, 5vw, 56px);
     padding-bottom: 26px;
     border-bottom: 1px solid var(--line);
