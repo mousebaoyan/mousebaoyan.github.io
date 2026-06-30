@@ -4,7 +4,7 @@ export const site = {
   shortName: "保研鼠群",
   tagline: "计算机保研信息与经验交流社群",
   description:
-    "汇集计算机保研夏令营情报、保研时间线与上岸经验，和四非的同学一起打破信息差。",
+    "汇集计算机保研夏令营情报、保研时间线与上岸经验，和四非的同学一起打破信息差",
   qqGroup: "752140536",
   qqJoinUrl: "https://qm.qq.com/q/", // TODO: 替换为一键加群链接
 };
