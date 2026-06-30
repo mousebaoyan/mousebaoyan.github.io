@@ -15,11 +15,11 @@ const { tool } = Astro.props;
 const { Content } = await render(tool);
 ---
 
-<BaseLayout title={`${tool.data.name} — 推荐工具`} description={tool.data.description}>
+<BaseLayout title={`${tool.data.name} — 推荐资源`} description={tool.data.description}>
   <div class="container">
     <Breadcrumb crumbs={[
       { label: "首页", href: "/" },
-      { label: "推荐工具", href: "/tools" },
+      { label: "推荐资源", href: "/resources" },
       { label: tool.data.name },
     ]} />
 
@@ -35,7 +35,7 @@ const { Content } = await render(tool);
             ))}
           </div>
           <a class="tool-detail__cta" href={tool.data.link} target="_blank" rel="noopener noreferrer">
-            打开工具
+          打开资源
             <svg viewBox="0 0 24 24" width="16" height="16"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
         </div>
@@ -46,7 +46,7 @@ const { Content } = await render(tool);
       </div>
     </article>
 
-    <a class="back-link" href="/tools">← 返回工具列表</a>
+    <a class="back-link" href="/resources">← 返回资源列表</a>
   </div>
 </BaseLayout>
 
