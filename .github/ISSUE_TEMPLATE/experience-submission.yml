@@ -70,7 +70,6 @@ body:
         ## 关键心得
 
         ## 给后来者的建议
-      render: markdown
     validations:
       required: true
 
