@@ -19,7 +19,7 @@ const isActive = (href: string) =>
     </nav>
 
     <div class="nav__actions">
-      <a class="nav__join" href="/join">加入鼠群</a>
+      <a class="nav__join" href="/#join">加入鼠群</a>
       <button
         class="nav__toggle"
         aria-label="展开菜单"
@@ -35,7 +35,7 @@ const isActive = (href: string) =>
     {navLinks.map((l) => (
       <a href={l.href} class={isActive(l.href) ? "active" : ""}>{l.label}</a>
     ))}
-    <a class="nav__mobile-join" href="/join">加入鼠群</a>
+    <a class="nav__mobile-join" href="/#join">加入鼠群</a>
   </nav>
 </header>
 

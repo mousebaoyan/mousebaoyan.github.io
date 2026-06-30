@@ -11,6 +11,7 @@ import { site } from "../site.config";
         给非 985/211/双一流 的计算机同学，一个交流保研信息和经验的地方
       </p>
       <p class="hero__trust">已经有 1,000+ 名四非同学在群里</p>
+      <a class="hero__cta" href="#join">加入鼠群</a>
     </div>
 
     <div class="hero__stage" aria-hidden="true">
@@ -86,6 +87,21 @@ import { site } from "../site.config";
     margin-top: clamp(28px, 4vw, 40px);
     font-size: 1.02rem;
     color: var(--ink-3);
+  }
+  .hero__cta {
+    display: inline-block;
+    margin-top: 24px;
+    background: var(--gradient-accent);
+    color: #fff;
+    font-size: 0.96rem;
+    font-weight: 500;
+    padding: 11px 28px;
+    border-radius: var(--r-pill);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  .hero__cta:hover {
+    box-shadow: 0 0 20px rgba(0, 113, 227, 0.25);
+    transform: scale(1.03);
   }
   .hero__trust::before {
     content: "";
