@@ -7,6 +7,7 @@ body:
     attributes:
       value: |
         感谢推荐！填写以下信息，管理员审核后会将资源添加到网站。
+        管理员可先编辑此 Issue 的内容，再添加「审核通过」标签自动发布。请保留表单的字段标题和顺序。
 
   - type: input
     id: name
@@ -45,6 +46,7 @@ body:
     id: link
     attributes:
       label: 链接
+      description: 请填写完整的 HTTPS 或 HTTP 地址
       placeholder: https://
     validations:
       required: true
@@ -53,7 +55,7 @@ body:
     id: notes
     attributes:
       label: 推荐理由（选填）
-      description: 为什么推荐这个资源？有什么使用技巧？
+      description: 为什么推荐这个资源？有什么使用技巧？支持 Markdown，不支持原始 HTML，图片请使用完整的 HTTPS 链接。
       placeholder: 详细说明使用场景或注意事项
 
   - type: input

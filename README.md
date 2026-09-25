@@ -21,6 +21,14 @@ npm run build   # 产出在 dist/
 
 ## 如何投稿
 
+推荐使用网站上的「我要投稿」或「我要推荐资源」按钮提交 GitHub Issue。
+管理员可以先编辑投稿，再添加 **「审核通过」** 标签，系统会自动生成内容、构建并部署网站。
+发布成功后，Issue 会收到文章链接并自动关闭。
+
+管理员操作、首次配置、更新文章和失败重试见 [投稿审核指南](docs/submission-review.md)。
+
+也可以按下面的方式直接提交 Markdown 文件。
+
 ### 添加经验贴
 
 1. 在 `src/content/experiences/` 新建一个 `.md` 文件，文件名用英文或拼音（如 `my-camp-story.md`）
@@ -43,14 +51,14 @@ npm run build   # 产出在 dist/
 
 ### 添加推荐工具
 
-1. 在 `src/content/tools/` 新建一个 `.md` 文件
-2. 复制 `src/content/tools/example-tool.md` 的 frontmatter，填写以下字段：
+1. 在 `src/content/resources/` 新建一个 `.md` 文件
+2. 复制 `src/content/resources/example-tool.md` 的 frontmatter，填写以下字段：
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `name` | 字符串 | 工具名称 |
 | `description` | 字符串 | 一句话描述，显示在卡片上 |
-| `category` | 枚举 | 只能是：`官方` `情报` `材料` `技巧` `备考` `选校` `其他` |
+| `category` | 枚举 | 只能是：`官方` `情报` `材料` `技巧` `备考` `选校` `工具` `其他` |
 | `link` | URL | 工具的访问链接 |
 | `featured` | 布尔 | 是否在首页精选展示，默认 `false` |
 | `tags` | 字符串数组 | 如 `[简历, 必备]` |
@@ -62,4 +70,6 @@ npm run build   # 产出在 dist/
 
 示例文件：
 - `src/content/experiences/example-experience.md`
-- `src/content/tools/example-tool.md`
+- `src/content/resources/example-tool.md`
+
+复制示例文件时，请将 `draft: true` 改为 `draft: false` 才会显示在列表中。

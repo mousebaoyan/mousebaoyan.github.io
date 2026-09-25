@@ -8,6 +8,7 @@ body:
       value: |
         感谢投稿！填写以下信息，管理员审核后会将你的经验贴添加到网站。
         匿名投稿请在「作者署名」处填写"匿名"。
+        管理员可先编辑此 Issue 的内容，再添加「审核通过」标签自动发布。请保留表单的字段标题和顺序。
 
   - type: input
     id: title
@@ -68,7 +69,7 @@ body:
     id: body
     attributes:
       label: 正文内容
-      description: 支持 Markdown，建议包含：背景介绍、经历过程、关键心得、给后来者的建议
+      description: 支持 Markdown（不支持原始 HTML），图片请直接上传到 Issue 或使用完整的 HTTPS 链接。建议包含背景介绍、经历过程、关键心得、给后来者的建议。
       placeholder: |
         ## 我的背景
 
