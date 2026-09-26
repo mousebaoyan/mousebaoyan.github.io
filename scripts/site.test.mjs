@@ -17,6 +17,28 @@ function filesIn(directory) {
 
 assert.ok(existsSync(join(dist, "index.html")), "Run npm run build before npm run test:site.");
 
+test("search index contains published content only, with real section targets", () => {
+  const documents = JSON.parse(readFileSync(join(dist, "search-index.json"), "utf8"));
+  const urls = new Set(documents.map((document) => document.url));
+  assert.equal(urls.size, documents.length, "Do not duplicate pages in search results");
+  for (const collection of ["experiences", "resources"]) {
+    for (const path of filesIn(join(root, "src/content", collection)).filter((path) => path.endsWith(".md"))) {
+      const metadata = parse(readFileSync(path, "utf8").split(/^---\s*$/m)[1]);
+      const slug = relative(join(root, "src/content", collection), path).replace(/\.md$/, "");
+      assert.equal(urls.has(`/${collection}/${slug}/`), !metadata.draft);
+    }
+  }
+  assert.ok(documents.some((document) => document.kind === "常见问题"));
+  for (const document of documents) {
+    for (const target of [document.url, ...document.sections.map((section) => section.url)]) {
+      const url = new URL(target, "https://mousebaoyan.github.io");
+      assert.equal(url.origin, "https://mousebaoyan.github.io");
+      const html = readFileSync(join(dist, decodeURIComponent(url.pathname), "index.html"), "utf8");
+      if (url.hash) assert.ok(html.includes(`id="${decodeURIComponent(url.hash.slice(1))}"`), `Missing search target: ${target}`);
+    }
+  }
+});
+
 test("published content has detail pages while drafts have no generated route", () => {
   for (const collection of ["experiences", "resources"]) {
     const directory = join(root, "src/content", collection);

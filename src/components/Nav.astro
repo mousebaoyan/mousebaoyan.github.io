@@ -19,6 +19,10 @@ const isActive = (href: string) =>
     </nav>
 
     <div class="nav__actions">
+      <button class="nav__search" type="button" data-search-open aria-label="搜索站内内容" aria-haspopup="dialog" aria-controls="site-search" hidden>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5" /></svg>
+        <span>搜索</span><kbd data-search-shortcut>Ctrl K</kbd>
+      </button>
       <a class="nav__join" href="/join">
         加入鼠群
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
@@ -101,6 +105,16 @@ const isActive = (href: string) =>
     display: flex;
     align-items: center;
     justify-self: end;
+    gap: 12px;
+  }
+  .nav__search:not([hidden]) { display: inline-flex; align-items: center; gap: 8px; }
+  .nav__search { height: 38px; padding: 0 11px; border: 1px solid var(--line-soft); border-radius: 10px; color: var(--ink-2); background: var(--bg-alt); font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .nav__search:hover { color: var(--ink); border-color: var(--line); }
+  .nav__search kbd { padding: 1px 5px; border: 1px solid var(--line-soft); border-radius: 4px; background: white; color: var(--ink-2); font: inherit; font-size: 10px; }
+  .nav__search:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+  @media (max-width: 1100px) {
+    .nav__search { width: 38px; justify-content: center; padding: 0; }
+    .nav__search span, .nav__search kbd { display: none; }
   }
   .nav__join {
     display: inline-flex;
@@ -193,7 +207,7 @@ const isActive = (href: string) =>
     background: var(--ink);
     color: #fff;
   }
-  @media (max-width: 800px) {
+  @media (max-width: 900px) {
     .nav__bar {
       grid-template-columns: 1fr auto;
       gap: 12px;
@@ -209,6 +223,8 @@ const isActive = (href: string) =>
     .nav__toggle {
       display: flex;
     }
+    .nav__search { width: 44px; height: 44px; background: transparent; }
+    .nav__actions { gap: 8px; }
     .nav__mobile:not([hidden]) {
       display: flex;
     }
@@ -240,7 +256,7 @@ const isActive = (href: string) =>
     document.addEventListener("click", (event) => {
       if (event.target instanceof Node && !menu.hidden && !menu.contains(event.target) && !toggle.contains(event.target)) close();
     });
-    window.matchMedia("(min-width: 801px)").addEventListener("change", (event) => {
+    window.matchMedia("(min-width: 901px)").addEventListener("change", (event) => {
       if (event.matches) close();
     });
   }

@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import SiteSearch from "../components/SiteSearch.astro";
 import { site } from "../site.config";
 
 interface Props {
@@ -42,6 +43,7 @@ const {
       <slot />
     </main>
     <Footer />
+    <SiteSearch />
     <script>
       const reveals = document.querySelectorAll<HTMLElement>('.reveal');
       if (reveals.length > 0 && 'IntersectionObserver' in window) {

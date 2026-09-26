@@ -32,6 +32,8 @@
 
 经验贴与资源详情页下方提供 Giscus 评论区，使用 GitHub 账号参与讨论，评论存储在本仓库的 Discussions 中。
 
+顶部搜索支持经验贴、资源介绍和常见问题的全文检索，可按内容类型筛选、查看关键词高亮摘要，并跳转到对应章节或展开具体问题。点击搜索按钮，或使用 `⌘ K` / `Ctrl K` 打开。
+
 ## 加入鼠群
 
 **QQ 群号：`752140536`** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qm.qq.com/q/20geYjRZlq)
@@ -77,8 +79,8 @@ npm run dev -- --background
 | `npm run astro -- dev status` | 查看后台服务状态 |
 | `npm run astro -- dev logs` | 查看开发日志 |
 | `npm run astro -- dev stop` | 停止后台服务 |
-| `npm test` | 运行投稿转换、审核和发布流程测试 |
-| `npm run test:site` | 构建后检查草稿隔离、站内链接与静态资源 |
+| `npm test` | 运行投稿流程与全文搜索测试 |
+| `npm run test:site` | 构建后检查草稿隔离、搜索索引及章节链接、站内链接与静态资源 |
 | `npm run build` | 构建静态网站，输出到 `dist/` |
 | `npm run preview` | 本地预览已构建的网站 |
 
@@ -164,6 +166,14 @@ public/                     # Logo 等静态文件
 示例文件带有 `draft: true`，复制后请改为 `draft: false` 才会出现在列表中。草稿不会生成详情页；但本仓库公开，草稿源文件仍可在 GitHub 上查看，请勿写入私人信息。
 
 通过 Issue 自动发布的内容使用 `submission-<Issue 编号>.md` 命名。后续修改应以原 Issue 为来源，重新审核会更新同一文件和页面；直接修改生成文件的内容可能被后续审核覆盖。
+
+## 全文搜索
+
+搜索索引由 [`src/pages/search-index.json.ts`](src/pages/search-index.json.ts) 生成，开发服务和静态构建均可使用。仅收录已发布的经验贴、资源及 [`src/data/faq.ts`](src/data/faq.ts) 中的常见问题；导航、评论和草稿不参与搜索。
+
+索引在首次打开搜索时下载，检索在浏览器内完成，不依赖第三方搜索服务。支持中文子串、英文大小写及全角字符匹配；空格分隔的关键词需全部匹配，标题匹配优先。结果使用实际生成的章节锚点，更新内容后重新构建即可更新索引。
+
+[`SiteSearch.astro`](src/components/SiteSearch.astro) 负责弹窗与交互，[`src/lib/search.ts`](src/lib/search.ts) 负责排序和摘要。常见问题与搜索共用数据源，无需维护两份答案。
 
 ## 评论区
 

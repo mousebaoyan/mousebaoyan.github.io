@@ -1,0 +1,286 @@
+<dialog class="site-search" id="site-search" aria-labelledby="search-title">
+  <div class="search-shell">
+    <header class="search-head">
+      <div><span class="search-eyebrow">站内全文检索</span><h2 id="search-title">搜索</h2></div>
+      <button class="search-close" type="button" aria-label="关闭搜索" data-search-close>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
+      </button>
+    </header>
+    <div class="search-field">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5" /></svg>
+      <label class="visually-hidden" for="site-search-input">搜索经验贴、资源和常见问题</label>
+      <input id="site-search-input" type="search" placeholder="搜索经验、资源或问题…" autocomplete="off" spellcheck="false" maxlength="100" aria-describedby="search-status" autofocus />
+      <button type="button" class="search-clear" data-search-clear hidden>清空</button>
+    </div>
+    <div class="search-filters" role="group" aria-label="搜索范围">
+      {["全部", "经验贴", "推荐资源", "常见问题"].map((kind) => <button type="button" data-search-kind={kind} aria-pressed={kind === "全部"}>{kind}</button>)}
+    </div>
+    <div class="search-body">
+      <p id="search-status" class="search-status" role="status" aria-live="polite"></p>
+      <div class="search-start" data-search-start>
+        <p class="search-label">常用关键词</p>
+        <div class="search-suggestions">
+          {["夏令营", "面试", "导师", "申请材料", "入群"].map((term) => <button type="button" data-search-suggestion={term}>{term}<span aria-hidden="true">↗</span></button>)}
+        </div>
+        <div class="search-guide"><span aria-hidden="true">⌕</span><p>支持标题与正文检索。<br /><small>多个关键词可用空格分隔，例如「导师 联系」。</small></p></div>
+      </div>
+      <ol class="search-results" data-search-results aria-label="搜索结果"></ol>
+      <div class="search-empty" data-search-empty hidden><strong>没有找到相关内容</strong><p>可缩短关键词，或切换到“全部”。</p></div>
+      <button class="search-more" type="button" data-search-more hidden>显示更多结果</button>
+      <button class="search-more" type="button" data-search-retry hidden>重新加载</button>
+    </div>
+    <footer class="search-footer"><span class="search-keys"><kbd>↑</kbd><kbd>↓</kbd> 选择 <kbd>↵</kbd> 打开 <kbd>esc</kbd> 关闭</span><span>站内全文搜索</span></footer>
+  </div>
+</dialog>
+
+<script>
+  import { queryTerms, searchDocuments, type SearchDocument, type SearchResult } from "../lib/search";
+  const dialog = document.querySelector<HTMLDialogElement>("#site-search")!;
+  const input = dialog.querySelector<HTMLInputElement>("input")!;
+  const results = dialog.querySelector<HTMLOListElement>("[data-search-results]")!;
+  const status = dialog.querySelector<HTMLElement>("#search-status")!;
+  const start = dialog.querySelector<HTMLElement>("[data-search-start]")!;
+  const empty = dialog.querySelector<HTMLElement>("[data-search-empty]")!;
+  const clear = dialog.querySelector<HTMLButtonElement>("[data-search-clear]")!;
+  const more = dialog.querySelector<HTMLButtonElement>("[data-search-more]")!;
+  const retry = dialog.querySelector<HTMLButtonElement>("[data-search-retry]")!;
+  const filters = [...dialog.querySelectorAll<HTMLButtonElement>("[data-search-kind]")];
+  let documents: SearchDocument[] | undefined;
+  let loading: Promise<void> | undefined;
+  let error = false;
+  let kind = "全部";
+  let limit = 10;
+  let matches: SearchResult[] = [];
+  let opener: HTMLElement | null;
+  let previousOverflow = "";
+  let scrollLocked = false;
+  let composing = false;
+  let debounce: ReturnType<typeof setTimeout>;
+
+  function highlight(element: HTMLElement, text: string) {
+    const terms = queryTerms(input.value).sort((a, b) => b.length - a.length);
+    // Build text nodes, never HTML from a query or Markdown content.
+    const escaped = terms.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const regex = new RegExp(`(${escaped.join("|")})`, "giu");
+    let offset = 0;
+    for (const match of text.matchAll(regex)) {
+      element.append(document.createTextNode(text.slice(offset, match.index)));
+      const mark = document.createElement("mark");
+      mark.textContent = match[0];
+      element.append(mark);
+      offset = match.index! + match[0].length;
+    }
+    element.append(document.createTextNode(text.slice(offset)));
+  }
+
+  function render() {
+    const query = input.value.trim();
+    clear.hidden = !input.value;
+    start.hidden = Boolean(query);
+    empty.hidden = true;
+    more.hidden = true;
+    retry.hidden = !error;
+    results.replaceChildren();
+    if (error) { status.textContent = "搜索暂时无法加载，请重试。"; return; }
+    if (!documents) { status.textContent = "正在加载搜索内容…"; return; }
+    if (!query) { status.textContent = "搜索范围：经验贴、推荐资源与常见问题。"; return; }
+    matches = searchDocuments(documents, query, kind);
+    status.textContent = `找到 ${matches.length} 条结果${kind === "全部" ? "" : ` · ${kind}`}`;
+    empty.hidden = matches.length > 0;
+    for (const match of matches.slice(0, limit)) {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = match.target;
+      link.className = "search-result";
+      const context = document.createElement("span");
+      context.className = "search-result__context";
+      const badge = document.createElement("span");
+      badge.className = "search-result__badge";
+      badge.textContent = match.kind;
+      context.append(badge);
+      const section = document.createElement("span");
+      section.className = "search-result__section";
+      section.textContent = match.heading || match.meta;
+      context.append(section);
+      const title = document.createElement("h3");
+      highlight(title, match.title);
+      const snippet = document.createElement("p");
+      highlight(snippet, match.excerpt);
+      link.append(context, title, snippet);
+      link.addEventListener("click", close);
+      item.append(link);
+      results.append(item);
+    }
+    more.hidden = matches.length <= limit;
+  }
+
+  async function load() {
+    if (documents || loading) return loading;
+    error = false;
+    render();
+    loading = (async () => {
+      try {
+        const response = await fetch("/search-index.json", { signal: AbortSignal.timeout(12000) });
+        if (!response.ok) throw new Error("Search index unavailable");
+        const data = await response.json();
+        if (!Array.isArray(data)) throw new Error("Invalid search index");
+        documents = data;
+      } catch { error = true; }
+      finally { loading = undefined; render(); }
+    })();
+    return loading;
+  }
+  function open() {
+    if (dialog.open || document.querySelector("dialog[open]")) return;
+    opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    previousOverflow = document.documentElement.style.overflow;
+    scrollLocked = true;
+    dialog.showModal();
+    document.documentElement.style.overflow = "hidden";
+    input.focus();
+    input.select();
+    render();
+    void load();
+  }
+  function releaseScroll() {
+    if (!scrollLocked || dialog.open) return;
+    document.documentElement.style.overflow = previousOverflow;
+    scrollLocked = false;
+    opener?.focus({ preventScroll: true });
+  }
+  function close() {
+    dialog.close();
+    releaseScroll();
+  }
+  document.querySelectorAll<HTMLButtonElement>("[data-search-open]").forEach((button) => {
+    button.hidden = false;
+    button.addEventListener("click", open);
+  });
+  dialog.querySelector("[data-search-close]")!.addEventListener("click", close);
+  dialog.addEventListener("click", (event) => { if (event.target === dialog) close(); });
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    if (!composing) close();
+  });
+  dialog.addEventListener("close", releaseScroll);
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k" && !event.isComposing) {
+      event.preventDefault();
+      if (dialog.open) close(); else open();
+    }
+  });
+  input.addEventListener("compositionstart", () => { composing = true; clearTimeout(debounce); });
+  input.addEventListener("compositionend", () => { composing = false; limit = 10; render(); });
+  input.addEventListener("input", () => {
+    clearTimeout(debounce);
+    if (!composing) debounce = setTimeout(() => { limit = 10; render(); }, 120);
+  });
+  dialog.addEventListener("keydown", (event) => {
+    if (event.isComposing || composing) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      close();
+      return;
+    }
+    if (event.target === input && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+      clearTimeout(debounce);
+      render();
+    }
+    const links = [...results.querySelectorAll<HTMLAnchorElement>("a")];
+    const current = links.indexOf(document.activeElement as HTMLAnchorElement);
+    if ((event.key === "ArrowDown" || event.key === "ArrowUp") && (event.target === input || current >= 0)) {
+      event.preventDefault();
+      if (!links.length) return;
+      const next = current < 0 ? (event.key === "ArrowDown" ? 0 : links.length - 1) : (current + (event.key === "ArrowDown" ? 1 : -1) + links.length) % links.length;
+      links[next].focus();
+    }
+    if (event.key === "Enter" && event.target === input) {
+      event.preventDefault();
+      clearTimeout(debounce);
+      render();
+      results.querySelector<HTMLAnchorElement>("a")?.click();
+    }
+  });
+  clear.addEventListener("click", () => { input.value = ""; render(); input.focus(); });
+  filters.forEach((button) => button.addEventListener("click", () => {
+    kind = button.dataset.searchKind!;
+    limit = 10;
+    filters.forEach((filter) => filter.setAttribute("aria-pressed", String(filter === button)));
+    render();
+  }));
+  dialog.querySelectorAll<HTMLButtonElement>("[data-search-suggestion]").forEach((button) => button.addEventListener("click", () => {
+    input.value = button.dataset.searchSuggestion!;
+    render();
+    input.focus();
+  }));
+  more.addEventListener("click", () => { const previous = limit; limit += 10; render(); results.querySelectorAll<HTMLAnchorElement>("a")[previous]?.focus(); });
+  retry.addEventListener("click", () => void load());
+  const shortcut = document.querySelector<HTMLElement>("[data-search-shortcut]");
+  if (shortcut) shortcut.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K";
+</script>
+
+<style>
+  .site-search { position: fixed; inset: 0; margin: min(12vh, 100px) auto auto; padding: 0; width: min(680px, calc(100% - 40px)); max-width: none; max-height: calc(100dvh - 140px); border: 1px solid var(--line-soft); border-radius: 18px; color: var(--ink); background: var(--bg); box-shadow: 0 24px 80px #1d1d1f26; overflow: hidden; }
+  .site-search::backdrop { background: #191e2e55; backdrop-filter: blur(5px); }
+  .search-shell { display: flex; flex-direction: column; max-height: inherit; }
+  .search-head { display: flex; flex: none; align-items: center; justify-content: space-between; padding: 24px 26px 18px; }
+  .search-eyebrow { display: block; font-size: 11px; color: var(--ink-2); letter-spacing: .08em; margin-bottom: 6px; }
+  .search-head h2 { font-size: 23px; line-height: 1.3; }
+  .site-search button { font: inherit; cursor: pointer; }
+  .search-close { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--line-soft); color: var(--ink-2); background: white; }
+  .search-close:hover { background: var(--bg-grey); color: var(--ink); }
+  .search-field { display: flex; flex: none; align-items: center; gap: 12px; margin-inline: 26px; padding: 0 15px; border: 1px solid var(--line); border-radius: 11px; background: var(--bg-alt); color: var(--ink-2); }
+  .search-field:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px #0071e312; background: white; }
+  .search-field svg { flex: none; }
+  .search-field input { width: 100%; min-width: 0; height: 52px; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: 16px; }
+  .search-field input::placeholder { color: #898c94; }
+  .search-field input::-webkit-search-cancel-button { display: none; }
+  .search-clear { flex: none; border: 0; background: transparent; color: var(--ink-2); font-size: 12px !important; padding: 8px 0 8px 8px; }
+  .search-filters { display: flex; flex: none; gap: 6px; padding: 17px 26px; border-bottom: 1px solid var(--line-soft); }
+  .search-filters button { border: 0; border-radius: 7px; padding: 7px 12px; background: transparent; color: var(--ink-2); font-size: 13px; white-space: nowrap; }
+  .search-filters button:hover { background: var(--bg-grey); }
+  .search-filters button[aria-pressed="true"] { color: #0063c7; background: var(--blue-soft); font-weight: 500; }
+  .search-body { min-height: min(240px, max(0px, calc(100dvh - 440px))); overflow-y: auto; overscroll-behavior: contain; padding: 18px 18px 22px; }
+  .search-status { font-size: 12px; color: var(--ink-2); margin: 0 8px 14px; }
+  .search-start { padding: 5px 8px 0; }
+  .search-label { font-size: 13px; color: var(--ink); margin-bottom: 12px; }
+  .search-suggestions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .search-suggestions button { display: inline-flex; align-items: center; gap: 20px; padding: 8px 12px; border: 1px solid var(--line-soft); border-radius: 8px; color: #535863; background: var(--bg-alt); font-size: 13px; }
+  .search-suggestions button:hover { color: var(--blue); border-color: #b8d7f5; }
+  .search-suggestions span { color: #9196a0; }
+  .search-guide { display: flex; align-items: center; gap: 16px; padding: 28px 0 8px; color: var(--ink-2); font-size: 13px; line-height: 1.9; }
+  .search-guide > span { font-size: 30px; color: #a1a9b5; }
+  .search-guide small { font-size: 12px; }
+  .search-results { padding: 0; margin: 0; list-style: none; }
+  .search-results :global(li + li) { margin-top: 5px; }
+  .search-results :global(.search-result) { display: block; padding: 15px 14px; border: 1px solid transparent; border-radius: 10px; }
+  .search-results :global(.search-result:hover), .search-results :global(.search-result:focus-visible) { background: #f5f8fd; border-color: #d9e6f5; outline: none; }
+  .search-results :global(.search-result__context) { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; font-size: 11px; color: var(--ink-2); }
+  .search-results :global(.search-result__badge) { padding: 2px 6px; border-radius: 4px; background: #f0f2f6; color: #5b6779; flex: none; }
+  .search-results :global(.search-result__section) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-results :global(h3) { font-size: 15px; line-height: 1.65; font-weight: 550; overflow-wrap: anywhere; }
+  .search-results :global(p) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin-top: 6px; color: #747780; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+  .search-results :global(mark) { background: #e3eeff; color: #075eae; border-radius: 2px; }
+  .search-empty { text-align: center; padding: 42px 14px; }
+  .search-empty strong { font-size: 15px; font-weight: 500; }
+  .search-empty p { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+  .search-more { display: block; margin: 12px auto 0; padding: 9px 16px; border: 1px solid var(--line-soft); border-radius: 8px; color: var(--blue); background: white; font-size: 13px !important; }
+  [hidden] { display: none !important; }
+  .search-footer { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 26px; border-top: 1px solid var(--line-soft); background: var(--bg-alt); font-size: 11px; color: var(--ink-2); }
+  .search-keys { display: flex; align-items: center; gap: 6px; }
+  kbd { padding: 1px 5px; border: 1px solid var(--line-soft); border-radius: 4px; background: white; font: inherit; }
+  .site-search button:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  @media (max-width: 600px) {
+    .site-search { margin: 12px auto auto; width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 14px; }
+    .search-head { padding: 20px 18px 16px; }
+    .search-field { margin-inline: 18px; }
+    .search-filters { padding: 14px 18px; gap: 2px; }
+    .search-filters button { padding: 7px 10px; font-size: 12px; }
+    .search-body { padding: 16px 10px 20px; min-height: min(230px, max(0px, calc(100dvh - 300px))); }
+    .search-footer { padding: 12px 18px; }
+    .search-keys { display: none; }
+    .search-results :global(.search-result) { padding: 13px 8px; }
+    .search-results :global(p) { -webkit-line-clamp: 3; }
+  }
+</style>
