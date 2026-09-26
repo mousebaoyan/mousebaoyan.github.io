@@ -11,7 +11,7 @@
 
 审核者需要仓库 **Write / Maintain / Admin** 权限。只有 Triage 权限的成员即使能添加标签，也不能触发内容发布。
 
-正文支持 Markdown，不支持原始 HTML。HTML 示例请写在代码块里；图片请上传到 GitHub Issue 或使用完整的 HTTPS / HTTP 地址。
+正文支持 Markdown。GitHub 上传图片生成的普通 `<img>` 标签会自动转换为 Markdown 图片（保留图片地址、替代文本和标题，显示尺寸由页面控制）；不支持其他原始 HTML 或带事件、样式等额外属性的图片标签。HTML 示例请写在代码块里；图片请上传到 GitHub Issue 或使用完整的 HTTPS / HTTP 地址。
 
 ## 发布后修改
 

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { parse } from "yaml";
 import { createSubmission } from "./convert.mjs";
+import { fromMarkdown } from "mdast-util-from-markdown";
 
 async function fixture(type, overrides = {}) {
   const template = parse(await readFile(new URL(`../../.github/ISSUE_TEMPLATE/${type}-submission.yml`, import.meta.url), "utf8"));
@@ -64,6 +65,47 @@ test("CRLF, images, links, quotations and Markdown hard breaks are preserved", a
   const issue = await fixture("experience", { body });
   issue.body = issue.body.replaceAll("\n", "\r\n");
   assert.ok(createSubmission(issue).content.endsWith(`${body}\n`));
+});
+
+test("GitHub uploaded HTML images convert to Markdown for both submission types", async () => {
+  const body = '正文。\n\n<img width="1530" height="1100" alt="Image" src="https://github.com/user-attachments/assets/example" />\n\n后文。';
+  for (const type of ["experience", "resource"]) {
+    const submission = createSubmission(await fixture(type, { body, notes: body }));
+    assert.ok(submission.content.endsWith('正文。\n\n![Image](<https://github.com/user-attachments/assets/example>)\n\n后文。\n'));
+  }
+});
+
+test("image conversion handles entities, Markdown characters and multiple images without touching code", async () => {
+  const body = '<img src="https://example.com/a.png?a=1&amp;b=2" alt="[示例] &lt;script&gt;" title="A &quot;quote&quot;" />\n<img src="https://example.com/b.png">\n\n`<img src=x>`\n\n```html\n<img src=x onerror=alert(1)>\n```';
+  const content = createSubmission(await fixture("experience", { body })).content.split(/^---\s*$/m).slice(2).join("---");
+  const images = [];
+  const visit = (node) => {
+    assert.notEqual(node.type, "html");
+    if (node.type === "image") images.push(node);
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(fromMarkdown(content));
+  assert.equal(images.length, 2);
+  assert.equal(images[0].url, "https://example.com/a.png?a=1&b=2");
+  assert.equal(images[0].alt, "[示例] <script>");
+  assert.equal(images[0].title, 'A "quote"');
+  assert.ok(content.includes('```html\n<img src=x onerror=alert(1)>\n```'));
+});
+
+test("image compatibility does not allow arbitrary HTML, event handlers or unsafe sources", async () => {
+  for (const body of [
+    '<img src="https://example.com/a.png" onerror="alert(1)">',
+    '<img src="https://example.com/a.png" style="display:none">',
+    '<img src="https://example.com/a.png"><script>alert(1)</script>',
+    '<div><img src="https://example.com/a.png"></div>',
+    '<img src="jav&#x61;script:alert(1)">',
+    '<img src="data:image/svg+xml,test">',
+    '<img src="/local.png">',
+    '<img alt="missing source">',
+  ]) {
+    const issue = await fixture("experience", { body });
+    assert.throws(() => createSubmission(issue), /HTML|图片/);
+  }
 });
 
 test("YAML-looking field values cannot inject publication metadata", async () => {

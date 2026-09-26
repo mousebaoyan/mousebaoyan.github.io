@@ -72,7 +72,7 @@ body:
     id: body
     attributes:
       label: 正文内容
-      description: 支持 Markdown（不支持原始 HTML），图片请直接上传到 Issue 或使用完整的 HTTPS 链接。建议包含背景介绍、经历过程、关键心得、给后来者的建议。
+      description: 支持 Markdown，图片可直接上传到 Issue（上传生成的普通 img 标签会自动转换）或使用完整的 HTTPS 链接。不支持其他 HTML。建议包含背景介绍、经历过程、关键心得、给后来者的建议。
       placeholder: |
         ## 我的背景
 

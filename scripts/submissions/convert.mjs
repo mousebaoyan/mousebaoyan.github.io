@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { parse, stringify } from "yaml";
+import { parseFragment } from "parse5";
 
 // The Issue Forms are the source of truth for field names, order and validation.
 const forms = await Promise.all(
@@ -48,6 +49,46 @@ function readForm(body) {
   return { type: form.type, values };
 }
 
+// GitHub's image uploader emits HTML when it includes image dimensions.
+// Convert only plain image tags, rather than enabling HTML in published posts.
+function normalizeUploadedImages(markdown) {
+  const replacements = [];
+  const visit = (node) => {
+    if (node.type === "html") {
+      const fragment = parseFragment(node.value);
+      let imageCount = 0;
+      const converted = [];
+      const unsupported = () => {
+        throw new Error(`正文第 ${node.position.start.line} 行包含不支持的 HTML。仅支持普通图片标签，其余内容请使用 Markdown；代码示例请放在代码块内。`);
+      };
+      for (const child of fragment.childNodes) {
+        if (child.nodeName === "#text" && !child.value.trim()) {
+          converted.push(child.value);
+          continue;
+        }
+        if (child.tagName !== "img" || child.attrs.some(({ name }) => !["src", "alt", "title", "width", "height"].includes(name))) unsupported();
+        const attributes = Object.fromEntries(child.attrs.map(({ name, value }) => [name, value]));
+        if (!/^https?:\/\//i.test(attributes.src ?? "") || !URL.canParse(attributes.src)) {
+          throw new Error(`正文第 ${node.position.start.line} 行的图片请使用完整的 HTTPS 或 HTTP 地址，可先上传到 GitHub Issue。`);
+        }
+        const src = new URL(attributes.src).href.replaceAll("<", "%3C").replaceAll(">", "%3E");
+        const alt = (attributes.alt ?? "").replace(/\s+/g, " ").replace(/[\\`*{}\[\]()#+.!_<>~|]/g, "\\$&");
+        const title = attributes.title === undefined ? "" : ` "${attributes.title.replace(/\s+/g, " ").replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+        converted.push(`![${alt}](<${src}>${title})`);
+        imageCount++;
+      }
+      if (!imageCount) unsupported();
+      replacements.push({ start: node.position.start.offset, end: node.position.end.offset, value: converted.join("") });
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(fromMarkdown(markdown));
+  for (const replacement of replacements.reverse()) {
+    markdown = markdown.slice(0, replacement.start) + replacement.value + markdown.slice(replacement.end);
+  }
+  return markdown;
+}
+
 function validateMarkdown(markdown) {
   const tree = fromMarkdown(markdown);
   const imageReferences = new Set();
@@ -79,7 +120,7 @@ export function createSubmission(issue) {
   if (!Number.isSafeInteger(issue.number) || issue.number < 1) throw new Error("无效的 Issue 编号。");
   const { type, values } = readForm((issue.body ?? "").replace(/\r\n/g, "\n"));
   const tags = [...new Set(values.tags.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean))];
-  const body = values.body ?? values.notes;
+  const body = normalizeUploadedImages(values.body ?? values.notes);
   validateMarkdown(body);
 
   let metadata;

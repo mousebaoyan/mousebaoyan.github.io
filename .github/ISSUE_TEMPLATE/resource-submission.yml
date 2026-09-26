@@ -60,7 +60,7 @@ body:
     id: notes
     attributes:
       label: 推荐理由（选填）
-      description: 为什么推荐这个资源？有什么使用技巧？支持 Markdown，不支持原始 HTML，图片请使用完整的 HTTPS 链接。
+      description: 为什么推荐这个资源？有什么使用技巧？支持 Markdown，图片可直接上传到 Issue（上传生成的普通 img 标签会自动转换）或使用完整的 HTTPS 链接。不支持其他 HTML。
       placeholder: 详细说明使用场景或注意事项
 
   - type: input
