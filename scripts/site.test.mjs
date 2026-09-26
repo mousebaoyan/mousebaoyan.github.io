@@ -47,3 +47,21 @@ test("generated pages have no broken local links or asset references", () => {
   }
   assert.deepEqual(missing, []);
 });
+
+test("detail pages have unique comment mappings and production backlinks", () => {
+  const mappings = new Set();
+  for (const file of filesIn(dist).filter((path) => path.endsWith(".html"))) {
+    const route = `/${relative(dist, file).replace(/index\.html$/, "")}`;
+    const html = readFileSync(file, "utf8");
+    const isDetail = /^\/(experiences|resources)\/(?!page\/)[^/]+\/$/.test(route);
+    const term = html.match(/data-term="([^"]+)"/)?.[1];
+    assert.equal(Boolean(term), isDetail, `${route}: incorrect comment visibility`);
+    if (!isDetail) continue;
+    assert.equal(term, route, `${route}: comments must use a stable, normalized route`);
+    assert.ok(!mappings.has(term), `${route}: comment mapping reused by another page`);
+    mappings.add(term);
+    assert.ok(html.includes(`name="giscus:backlink" content="https://mousebaoyan.github.io${route}"`));
+  }
+  assert.ok(mappings.size > 0);
+  assert.ok(isFile(join(dist, "giscus/mouse-light.css")));
+});

@@ -1,0 +1,146 @@
+---
+import { comments } from "../site.config";
+
+interface Props { path: string }
+// Explicit paths keep comments stable across titles, hosts and trailing slashes.
+const term = `/${Astro.props.path.replace(/^\/+|\/+$/g, "")}/`;
+const discussionUrl = `https://github.com/${comments.repo}/discussions/categories/announcements`;
+---
+
+<section class="comments" id="comments" aria-labelledby="comments-title"
+  data-comments data-term={term} data-config={JSON.stringify(comments)}>
+  <header class="comments__header">
+    <div>
+      <h2 id="comments-title">评论与交流</h2>
+      <p>欢迎补充信息、分享见解或提出问题。</p>
+    </div>
+    <a class="comments__github" href={discussionUrl} target="_blank" rel="noopener noreferrer" data-discussion-link>
+      GitHub 讨论
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><path d="M7 17 17 7M7 7h10v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </a>
+  </header>
+  <p class="comments__note">使用 GitHub 账号登录后即可评论。评论公开可见，请友好交流，注意保护个人信息。</p>
+  <div class="comments__status" data-comment-status role="status" hidden>
+    <span data-comment-message>正在加载评论…</span>
+    <button type="button" data-comment-retry hidden>重新加载</button>
+  </div>
+  <div class="giscus" aria-label="文章评论" aria-busy="true"></div>
+  <noscript><p class="comments__noscript">启用 JavaScript 后可查看评论，或通过上方链接前往 GitHub 讨论。</p></noscript>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>("[data-comments]");
+  if (section) {
+    const mount = section.querySelector<HTMLElement>(".giscus")!;
+    const status = section.querySelector<HTMLElement>("[data-comment-status]")!;
+    const message = section.querySelector<HTMLElement>("[data-comment-message]")!;
+    const retry = section.querySelector<HTMLButtonElement>("[data-comment-retry]")!;
+    const discussionLink = section.querySelector<HTMLAnchorElement>("[data-discussion-link]")!;
+    const config = JSON.parse(section.dataset.config!);
+    let started = false;
+    let failed = false;
+    let localTheme: string | undefined;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const fail = () => {
+      failed = true;
+      clearTimeout(timeout);
+      mount.hidden = true;
+      mount.setAttribute("aria-busy", "false");
+      status.hidden = false;
+      message.textContent = "评论暂时无法加载，请重试或前往 GitHub 讨论。";
+      retry.hidden = false;
+    };
+
+    window.addEventListener("message", (event) => {
+      const iframe = mount.querySelector("iframe");
+      if (event.origin !== "https://giscus.app" || !iframe || event.source !== iframe.contentWindow) return;
+      const data = event.data?.giscus;
+      if (!data || typeof data !== "object") return;
+      if (data.resizeHeight && localTheme) {
+        // HTTPS iframes cannot fetch an HTTP development stylesheet. Giscus
+        // accepts a CSS data URL through its documented theme update API.
+        iframe.contentWindow?.postMessage({ giscus: { setConfig: { theme: localTheme } } }, "https://giscus.app");
+        localTheme = undefined;
+      }
+      // A new page has no discussion until its first comment; this is normal.
+      if (typeof data.error === "string" && !data.error.includes("Discussion not found")) {
+        fail();
+        return;
+      }
+      if (typeof data.resizeHeight === "number" && data.resizeHeight > 0 && !failed) {
+        clearTimeout(timeout);
+        status.hidden = true;
+        mount.setAttribute("aria-busy", "false");
+        iframe.title = "评论与交流";
+      }
+      const url = data.discussion?.url;
+      if (typeof url === "string" && url.startsWith(`https://github.com/${config.repo}/discussions/`)) {
+        discussionLink.href = url;
+      }
+    });
+
+    const load = async () => {
+      if (started) return;
+      started = true;
+      status.hidden = false;
+      const themeUrl = new URL("/giscus/mouse-light.css", location.origin).href;
+      const localPreview = location.protocol === "http:";
+      if (localPreview) {
+        try {
+          const response = await fetch(themeUrl, { signal: AbortSignal.timeout(5000) });
+          if (response.ok) localTheme = `data:text/css;charset=utf-8,${encodeURIComponent(await response.text())}`;
+        } catch { /* Keep Giscus's built-in light theme if the preview CSS is unavailable. */ }
+      }
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      Object.assign(script.dataset, {
+        repo: config.repo, repoId: config.repoId,
+        category: config.category, categoryId: config.categoryId,
+        mapping: "specific", term: section.dataset.term, strict: "1",
+        reactionsEnabled: "0", emitMetadata: "1", inputPosition: "top",
+        theme: localPreview ? "light" : themeUrl,
+        lang: "zh-CN",
+      });
+      script.addEventListener("error", fail, { once: true });
+      timeout = setTimeout(fail, 20000);
+      mount.append(script);
+    };
+    retry.addEventListener("click", () => location.reload());
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          load();
+        }
+      }, { rootMargin: "400px" });
+      observer.observe(section);
+    } else load();
+  }
+</script>
+
+<style>
+  .comments { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line-soft); min-width: 0; scroll-margin-top: calc(var(--nav-h) + 24px); }
+  .comments__header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .comments h2 { font-size: 22px; line-height: 1.4; letter-spacing: -0.02em; }
+  .comments__header p { margin-top: 8px; color: var(--ink-2); font-size: 14px; line-height: 1.7; }
+  .comments__github { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; color: var(--ink-2); font-size: 12px; padding-block: 6px; }
+  .comments__github:hover { color: var(--blue); }
+  .comments__note { margin: 16px 0 24px; color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+  .comments__status { padding: 24px; border: 1px solid var(--line-soft); border-radius: 12px; background: var(--bg-alt); color: var(--ink-2); font-size: 14px; line-height: 1.8; }
+  .comments__status:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .comments__status button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+  .comments__status button:hover { border-color: var(--blue); color: var(--blue); }
+  .comments :is(a, button):focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 4px; }
+  .comments__noscript { font-size: 14px; color: var(--ink-2); }
+  .giscus { width: 100%; }
+  .giscus :global(iframe.giscus-frame) { display: block; width: 100%; border: 0; color-scheme: light; }
+  @media (max-width: 600px) {
+    .comments { margin-top: 36px; padding-top: 26px; }
+    .comments h2 { font-size: 20px; }
+    .comments__header { gap: 12px; }
+  }
+  @media print { .comments { display: none; } }
+</style>

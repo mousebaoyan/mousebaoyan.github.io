@@ -4,6 +4,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ArticleOutline from "../../components/ArticleOutline.astro";
 import ImageLightbox from "../../components/ImageLightbox.astro";
+import Comments from "../../components/Comments.astro";
+import { site } from "../../site.config";
 import "../../styles/article.css";
 
 export async function getStaticPaths() {
@@ -29,6 +31,7 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
 ---
 
 <BaseLayout title={`${exp.data.title} — 经验贴`} description={exp.data.excerpt}>
+  <meta slot="head" name="giscus:backlink" content={`${site.url}/experiences/${exp.id}/`} />
   <div class="reading-progress" hidden aria-hidden="true"><span data-reading-bar></span></div>
   <div class="reading-page">
     <Breadcrumb crumbs={[
@@ -71,6 +74,7 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
           <span class="article-end">全文完</span>
           <a class="article-back" href="/experiences"><span aria-hidden="true">←</span> 浏览更多经验贴</a>
         </footer>
+        <Comments path={`/experiences/${exp.id}/`} />
       </article>
       <aside class="reader-sidebar" aria-label="阅读辅助">
         <ArticleOutline headings={outline} />

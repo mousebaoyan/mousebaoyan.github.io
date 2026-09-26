@@ -30,6 +30,8 @@
 
 网站适配桌面和手机，使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
+经验贴与资源详情页下方提供 Giscus 评论区，使用 GitHub 账号参与讨论，评论存储在本仓库的 Discussions 中。
+
 ## 加入鼠群
 
 **QQ 群号：`752140536`** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qm.qq.com/q/20geYjRZlq)
@@ -162,6 +164,17 @@ public/                     # Logo 等静态文件
 示例文件带有 `draft: true`，复制后请改为 `draft: false` 才会出现在列表中。草稿不会生成详情页；但本仓库公开，草稿源文件仍可在 GitHub 上查看，请勿写入私人信息。
 
 通过 Issue 自动发布的内容使用 `submission-<Issue 编号>.md` 命名。后续修改应以原 Issue 为来源，重新审核会更新同一文件和页面；直接修改生成文件的内容可能被后续审核覆盖。
+
+## 评论区
+
+经验贴与资源详情页共用 [`Comments.astro`](src/components/Comments.astro)。评论临近视口时加载，支持回复与 Markdown；阅读评论无需登录，发表评论需要 GitHub 账号。网络加载失败时保留重试和 GitHub 讨论入口。
+
+- **仓库设置**：开启 Discussions，并为本仓库安装 [Giscus App](https://github.com/apps/giscus/installations/new)。仅授权本仓库即可，无需个人访问令牌。
+- **讨论分类**：使用 `Announcements`（公告类型），由 Giscus 创建页面讨论，访客可在讨论下评论。公开仓库 ID、分类 ID 集中在 [`src/site.config.ts`](src/site.config.ts)；更换仓库或分类时应一并更新。
+- **页面关联**：使用带前后斜杠的固定路径（如 `/experiences/submission-1/`），开启严格匹配。改标题不会改变关联；更换文章文件名或路径会产生新关联，请先安排旧讨论迁移。首次评论时才创建对应 Discussion。
+- **样式**：[`public/giscus/mouse-light.css`](public/giscus/mouse-light.css) 是 iframe 内的独立主题，包含本站字体、灰白底色、蓝紫按钮和圆角。正式站点通过 HTTPS 加载主题；本地 HTTP 预览由页面读取同一 CSS，再通过 Giscus 的主题更新接口传入，避免 HTTPS iframe 无法读取本地 HTTP 样式的问题。无需安装额外服务。
+- **来源限制**：根目录 [`giscus.json`](giscus.json) 允许正式域名和本地调试地址，推送到默认分支后生效。更换域名时同时更新该文件及 `site.url`，后者用于讨论的正式页面回链。
+- **管理评论**：在 GitHub Discussions 中处理评论、锁定讨论或限制用户。评论和 GitHub 身份公开可见，请勿提交个人隐私信息。
 
 ## 审核与部署
 
