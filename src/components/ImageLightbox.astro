@@ -1,0 +1,263 @@
+<dialog class="image-viewer" aria-labelledby="image-viewer-title" aria-describedby="image-viewer-caption">
+  <header class="image-viewer__toolbar">
+    <h2 id="image-viewer-title">图片预览</h2>
+    <div class="image-viewer__actions">
+      <button type="button" data-image-zoom aria-pressed="false" disabled>放大 2 倍</button>
+      <button type="button" class="image-viewer__close" data-image-close aria-label="关闭图片预览（Esc）">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+      </button>
+    </div>
+  </header>
+  <div class="image-viewer__stage">
+    <p class="image-viewer__status" role="status"></p>
+    <img class="image-viewer__image" alt="" hidden />
+  </div>
+  <p class="image-viewer__caption" id="image-viewer-caption"></p>
+</dialog>
+
+<style>
+  .image-viewer {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(15, 18, 24, 0.92);
+    color: #fff;
+    overflow: hidden;
+  }
+  .image-viewer[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .image-viewer::backdrop {
+    background: transparent;
+  }
+  .image-viewer__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: none;
+    gap: 16px;
+    padding: max(16px, env(safe-area-inset-top)) 24px 16px;
+  }
+  .image-viewer__toolbar h2 {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .image-viewer__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .image-viewer button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .image-viewer button:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+  .image-viewer button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .image-viewer button:focus-visible {
+    outline: 2px solid #a9d1ff;
+    outline-offset: 3px;
+  }
+  .image-viewer .image-viewer__close {
+    padding: 10px;
+  }
+  .image-viewer__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    margin: 0 24px;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .image-viewer__image {
+    flex: none;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+  }
+  .image-viewer__image[hidden] {
+    display: none;
+  }
+  .image-viewer[data-zoomed] .image-viewer__stage {
+    display: block;
+  }
+  .image-viewer[data-zoomed] .image-viewer__image {
+    width: var(--image-zoom-width);
+    max-width: none;
+    max-height: none;
+    margin-inline: auto;
+    cursor: zoom-out;
+  }
+  .image-viewer__status {
+    color: #d1d6df;
+    font-size: 14px;
+    line-height: 1.7;
+    text-align: center;
+  }
+  .image-viewer__status:empty {
+    display: none;
+  }
+  .image-viewer__caption {
+    flex: none;
+    max-height: 88px;
+    padding: 16px 24px max(20px, env(safe-area-inset-bottom));
+    overflow: auto;
+    text-align: center;
+    color: #d1d6df;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  :global(img[data-image-preview]) {
+    cursor: zoom-in;
+  }
+  :global(img[data-image-preview]:focus-visible) {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
+  }
+  @media (max-width: 600px) {
+    .image-viewer__toolbar {
+      padding-inline: 16px;
+    }
+    .image-viewer__stage {
+      margin-inline: 12px;
+    }
+    .image-viewer__caption {
+      padding-inline: 16px;
+    }
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>(".image-viewer");
+  if (dialog) {
+    const preview = dialog.querySelector<HTMLImageElement>(".image-viewer__image")!;
+    const stage = dialog.querySelector<HTMLElement>(".image-viewer__stage")!;
+    const caption = dialog.querySelector<HTMLElement>(".image-viewer__caption")!;
+    const status = dialog.querySelector<HTMLElement>(".image-viewer__status")!;
+    const zoom = dialog.querySelector<HTMLButtonElement>("[data-image-zoom]")!;
+    const close = dialog.querySelector<HTMLButtonElement>("[data-image-close]")!;
+    let trigger: HTMLImageElement | undefined;
+    let previousOverflow = "";
+    let previousGutter = "";
+    let scrollLocked = false;
+
+    const resetZoom = () => {
+      delete dialog.dataset.zoomed;
+      zoom.setAttribute("aria-pressed", "false");
+      zoom.textContent = "放大 2 倍";
+      stage.scrollTo(0, 0);
+    };
+    const toggleZoom = () => {
+      if (zoom.disabled) return;
+      if (dialog.hasAttribute("data-zoomed")) {
+        resetZoom();
+      } else {
+        dialog.style.setProperty("--image-zoom-width", `${preview.getBoundingClientRect().width * 2}px`);
+        dialog.dataset.zoomed = "";
+        zoom.setAttribute("aria-pressed", "true");
+        zoom.textContent = "适应屏幕";
+      }
+    };
+    const open = (image: HTMLImageElement) => {
+      if (dialog.open) return;
+      trigger = image;
+      resetZoom();
+      preview.hidden = true;
+      zoom.disabled = true;
+      status.textContent = "图片加载中…";
+      caption.textContent = image.alt;
+      preview.alt = image.alt;
+      previousOverflow = document.documentElement.style.overflow;
+      previousGutter = document.documentElement.style.scrollbarGutter;
+      document.documentElement.style.scrollbarGutter = "stable";
+      document.documentElement.style.overflow = "hidden";
+      scrollLocked = true;
+      dialog.showModal();
+      close.focus();
+      preview.src = image.currentSrc || image.src;
+    };
+    preview.addEventListener("load", () => {
+      status.textContent = "";
+      preview.hidden = false;
+      zoom.disabled = false;
+    });
+    preview.addEventListener("error", () => {
+      status.textContent = "图片暂时无法加载，请关闭后重试。";
+      preview.hidden = true;
+      zoom.disabled = true;
+    });
+    zoom.addEventListener("click", toggleZoom);
+    preview.addEventListener("click", toggleZoom);
+    const restorePage = () => {
+      if (!scrollLocked) return;
+      document.documentElement.style.overflow = previousOverflow;
+      document.documentElement.style.scrollbarGutter = previousGutter;
+      scrollLocked = false;
+      resetZoom();
+      trigger?.focus({ preventScroll: true });
+    };
+    const dismiss = () => {
+      dialog.close();
+      restorePage();
+    };
+    close.addEventListener("click", dismiss);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog || event.target === stage) dismiss();
+    });
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      dismiss();
+    });
+    dialog.addEventListener("close", () => {
+      if (!dialog.open) restorePage();
+    });
+    window.addEventListener("resize", () => { if (dialog.open) resetZoom(); });
+
+    document.querySelectorAll<HTMLImageElement>(".experience-prose img, .prose img").forEach((image) => {
+      // Preserve images that authors already use as links or controls.
+      if (image.closest("a, button")) return;
+      image.dataset.imagePreview = "";
+      image.tabIndex = 0;
+      image.setAttribute("role", "button");
+      image.setAttribute("aria-haspopup", "dialog");
+      image.setAttribute("aria-label", image.alt ? `放大图片：${image.alt}` : "放大图片");
+      image.addEventListener("click", () => open(image));
+      image.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open(image);
+        }
+      });
+    });
+  }
+</script>

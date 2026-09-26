@@ -24,7 +24,7 @@
 | --- | --- |
 | [首页](https://mousebaoyan.github.io/) | 鼠群介绍、精选资源、近期经验贴与入群入口 |
 | [推荐资源](https://mousebaoyan.github.io/resources/) | 按类别整理保研相关网站、工具与参考资料 |
-| [经验贴](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览申请经历，每页 6 篇；文章支持目录定位、阅读进度和字号切换 |
+| [经验贴](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览申请经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
 | [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
 | [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、申请步骤、群号复制与 QQ 入群链接 |
 

@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import ImageLightbox from "../../components/ImageLightbox.astro";
 
 export async function getStaticPaths() {
   const tools = await getCollection("tools", ({ data }) => !data.draft);
@@ -48,6 +49,7 @@ const { Content } = await render(tool);
 
     <a class="back-link" href="/resources">← 返回资源列表</a>
   </div>
+  <ImageLightbox />
 </BaseLayout>
 
 <style>

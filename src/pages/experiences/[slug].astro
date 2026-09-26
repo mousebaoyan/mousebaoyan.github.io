@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ArticleOutline from "../../components/ArticleOutline.astro";
+import ImageLightbox from "../../components/ImageLightbox.astro";
 import "../../styles/article.css";
 
 export async function getStaticPaths() {
@@ -76,6 +77,7 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
       </aside>
     </div>
   </div>
+  <ImageLightbox />
 </BaseLayout>
 
 <script>
@@ -253,14 +255,15 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     color: #73757d;
   }
   .article-background {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: 40px;
     border-block: 1px solid var(--line-soft);
     padding-block: 19px;
   }
   .article-background > div {
-    flex: 1;
     min-width: 0;
   }
   .article-background dt {
@@ -272,22 +275,7 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     font-size: 14px;
     line-height: 1.6;
     color: #3e4148;
-  }
-  .article-target {
-    position: relative;
-    padding-left: 24px;
-  }
-  .article-target::before {
-    content: "→";
-    position: absolute;
-    left: -8px;
-    top: 12px;
-    color: #a1a4ab;
-  }
-  .article-background .article-major {
-    flex: 0.65;
-    border-left: 1px solid var(--line-soft);
-    padding-left: 20px;
+    overflow-wrap: anywhere;
   }
   .reader-sidebar {
     position: sticky;
@@ -390,17 +378,17 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
       margin-block: 22px;
     }
     .article-background {
-      flex-wrap: wrap;
-      gap: 16px 12px;
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 32px;
     }
     .article-background .article-major {
-      flex-basis: 100%;
+      grid-column: 1 / -1;
       display: flex;
       align-items: baseline;
       gap: 12px;
-      border-left: 0;
       padding: 12px 0 0;
-      border-top: 1px dashed var(--line-soft);
+      border-top: 1px solid var(--line-soft);
     }
     .article-major dt {
       margin-bottom: 0;
