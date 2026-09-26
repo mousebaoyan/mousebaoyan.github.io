@@ -4,19 +4,19 @@ import { searchDocuments, excerpt } from "../src/lib/search.ts";
 import { markdownSections } from "../src/lib/search-index.ts";
 
 const documents = [
-  { title: "我的申请经历", kind: "经验贴", url: "/experiences/example/", meta: "计算机",
+  { title: "我的保研经历", kind: "保研经验", url: "/experiences/example/", meta: "计算机",
     sections: [{ heading: "导师联系", url: "/experiences/example/#contact", text: "联系导师之前，应阅读相关论文。面试时介绍自己的研究兴趣。" }] },
-  { title: "导师联系工具", kind: "推荐资源", url: "/resources/tool/", meta: "邮件",
+  { title: "导师联系工具", kind: "保研资源", url: "/resources/tool/", meta: "邮件",
     sections: [{ heading: "功能", url: "/resources/tool/#features", text: "AutoEmailSender 支持草稿管理。" }] },
 ];
 test("Chinese body matches link to the correct section; title matches rank first", () => {
   assert.equal(searchDocuments(documents, "研究兴趣")[0].target, "/experiences/example/#contact");
-  assert.equal(searchDocuments(documents, "导师")[0].kind, "推荐资源");
+  assert.equal(searchDocuments(documents, "导师")[0].kind, "保研资源");
   assert.ok(searchDocuments(documents, "研究兴趣")[0].excerpt.includes("研究兴趣"));
 });
 test("multiple keywords match across title and body; filters preserve the query", () => {
   assert.equal(searchDocuments(documents, "工具 草稿").length, 1);
-  assert.equal(searchDocuments(documents, "导师", "经验贴").length, 1);
+  assert.equal(searchDocuments(documents, "导师", "保研经验").length, 1);
   assert.equal(searchDocuments(documents, "导师", "常见问题").length, 0);
   assert.equal(searchDocuments(documents, "工具 不存在").length, 0);
 });

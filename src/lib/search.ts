@@ -1,4 +1,4 @@
-export type SearchKind = "经验贴" | "推荐资源" | "常见问题";
+export type SearchKind = "保研经验" | "保研资源" | "常见问题";
 export interface SearchSection { heading: string; url: string; text: string }
 export interface SearchDocument {
   title: string;

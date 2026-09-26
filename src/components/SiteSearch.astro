@@ -8,19 +8,19 @@
     </header>
     <div class="search-field">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5" /></svg>
-      <label class="visually-hidden" for="site-search-input">搜索经验贴、资源和常见问题</label>
+      <label class="visually-hidden" for="site-search-input">搜索保研经验、保研资源和常见问题</label>
       <input id="site-search-input" type="search" placeholder="搜索经验、资源或问题…" autocomplete="off" spellcheck="false" maxlength="100" aria-describedby="search-status" autofocus />
       <button type="button" class="search-clear" data-search-clear hidden>清空</button>
     </div>
     <div class="search-filters" role="group" aria-label="搜索范围">
-      {["全部", "经验贴", "推荐资源", "常见问题"].map((kind) => <button type="button" data-search-kind={kind} aria-pressed={kind === "全部"}>{kind}</button>)}
+      {["全部", "保研经验", "保研资源", "常见问题"].map((kind) => <button type="button" data-search-kind={kind} aria-pressed={kind === "全部"}>{kind}</button>)}
     </div>
     <div class="search-body">
       <p id="search-status" class="search-status" role="status" aria-live="polite"></p>
       <div class="search-start" data-search-start>
         <p class="search-label">常用关键词</p>
         <div class="search-suggestions">
-          {["夏令营", "面试", "导师", "申请材料", "入群"].map((term) => <button type="button" data-search-suggestion={term}>{term}<span aria-hidden="true">↗</span></button>)}
+          {["夏令营", "面试", "导师", "报名材料", "入群"].map((term) => <button type="button" data-search-suggestion={term}>{term}<span aria-hidden="true">↗</span></button>)}
         </div>
         <div class="search-guide"><span aria-hidden="true">⌕</span><p>支持标题与正文检索。<br /><small>多个关键词可用空格分隔，例如「导师 联系」。</small></p></div>
       </div>
@@ -83,7 +83,7 @@
     results.replaceChildren();
     if (error) { status.textContent = "搜索暂时无法加载，请重试。"; return; }
     if (!documents) { status.textContent = "正在加载搜索内容…"; return; }
-    if (!query) { status.textContent = "搜索范围：经验贴、推荐资源与常见问题。"; return; }
+    if (!query) { status.textContent = "搜索范围：保研经验、保研资源与常见问题。"; return; }
     matches = searchDocuments(documents, query, kind);
     status.textContent = `找到 ${matches.length} 条结果${kind === "全部" ? "" : ` · ${kind}`}`;
     empty.hidden = matches.length > 0;

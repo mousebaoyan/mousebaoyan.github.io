@@ -19,7 +19,7 @@ function readForm(body) {
   const label = (node) => node?.children.map((child) => child.value ?? "").join("");
   const form = forms.find(({ fields }) => label(headings[0]) === fields[0].attributes.label);
   if (!form || tree.children[0] !== headings[0]) {
-    throw new Error("无法识别投稿表单，请使用经验贴或推荐资源模板，并保留原有字段标题。");
+    throw new Error("无法识别投稿表单，请使用“分享经验”或“推荐资源”表单，并保留原有字段标题。");
   }
 
   // The last field is tags. Everything between the body/notes heading and this

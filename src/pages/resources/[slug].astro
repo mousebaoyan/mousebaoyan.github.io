@@ -18,12 +18,12 @@ const { tool } = Astro.props;
 const { Content } = await render(tool);
 ---
 
-<BaseLayout title={`${tool.data.name} — 推荐资源`} description={tool.data.description}>
+<BaseLayout title={`${tool.data.name} — 保研资源`} description={tool.data.description}>
   <meta slot="head" name="giscus:backlink" content={`${site.url}/resources/${tool.id}/`} />
   <div class="container">
     <Breadcrumb crumbs={[
       { label: "首页", href: "/" },
-      { label: "推荐资源", href: "/resources" },
+      { label: "保研资源", href: "/resources" },
       { label: tool.data.name },
     ]} />
 

@@ -1,12 +1,12 @@
 <div align="center">
   <img src="public/logo.jpg" alt="四非保研鼠群标志" width="88" height="88" />
   <h1>四非保研鼠群</h1>
-  <p>计算机保研信息 · 申请资源 · 经验分享</p>
+  <p>计算机保研信息 · 保研资源 · 经验分享</p>
   <p>面向四非院校计算机相关专业同学的信息交流与互助网站。</p>
   <p>
     <a href="https://mousebaoyan.github.io/">访问网站</a> ·
-    <a href="https://mousebaoyan.github.io/resources/">推荐资源</a> ·
-    <a href="https://mousebaoyan.github.io/experiences/">经验贴</a> ·
+    <a href="https://mousebaoyan.github.io/resources/">保研资源</a> ·
+    <a href="https://mousebaoyan.github.io/experiences/">保研经验</a> ·
     <a href="https://mousebaoyan.github.io/join/">加入鼠群</a>
   </p>
   <p>
@@ -23,8 +23,8 @@
 | 页面 | 内容 |
 | --- | --- |
 | [首页](https://mousebaoyan.github.io/) | 鼠群介绍、精选资源、近期经验贴与入群入口 |
-| [推荐资源](https://mousebaoyan.github.io/resources/) | 按类别整理保研相关网站、工具与参考资料 |
-| [经验贴](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览申请经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
+| [保研资源](https://mousebaoyan.github.io/resources/) | 按类别整理保研相关网站、工具与参考资料 |
+| [保研经验](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览保研经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
 | [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
 | [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、申请步骤、群号复制与 QQ 入群链接 |
 
@@ -49,7 +49,7 @@
 
 | 投稿类型 | 提交入口 | 建议内容 |
 | --- | --- | --- |
-| 经验贴 | [投稿经验贴](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml) | 申请年份与背景、准备过程、面试经历、录取去向和经验总结 |
+| 经验贴 | [分享经验](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml) | 保研年份与背景、准备过程、面试经历、录取去向和经验总结 |
 | 资源 | [推荐资源](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml) | 资源用途、适用场景、有效链接，以及付费或注册等使用条件 |
 
 **提交表单 → 管理员审核 → 自动构建与发布 → Issue 收到页面链接**
@@ -99,7 +99,7 @@ src/
 ├── components/              # 导航、卡片、目录、分页等组件
 ├── content/
 │   ├── experiences/         # 经验贴 Markdown
-│   └── resources/           # 推荐资源 Markdown
+│   └── resources/           # 保研资源 Markdown
 ├── layouts/                 # 页面基础布局
 ├── lib/                     # 经验贴排序与分页配置
 ├── pages/                   # 首页、列表页、详情页和入群指南
@@ -145,7 +145,7 @@ public/                     # Logo 等静态文件
 </details>
 
 <details>
-<summary><strong>推荐资源字段与示例</strong></summary>
+<summary><strong>保研资源字段与示例</strong></summary>
 
 目录：[`src/content/resources/`](src/content/resources/) · [示例文件](src/content/resources/example-tool.md)
 
@@ -201,4 +201,4 @@ public/                     # Logo 等静态文件
 
 ---
 
-由鼠群志愿者维护。申请经验与资源仅供参考，招生条件、时间安排及录取要求以院校官方通知为准。
+由鼠群志愿者维护。保研经验与资源仅供参考，招生条件、时间安排及录取要求以院校官方通知为准。

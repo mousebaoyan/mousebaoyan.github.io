@@ -18,14 +18,14 @@ export async function GET() {
         const repeatedTitle = `${url}#${encodeURIComponent(headings[0].slug)}`;
         sections.forEach((section) => { if (section.url === repeatedTitle) section.url = url; });
       }
-      return { title: entry.data.title, url, kind: "经验贴",
+      return { title: entry.data.title, url, kind: "保研经验",
         meta: [entry.data.author, entry.data.school, entry.data.target, entry.data.major, ...entry.data.tags].filter(Boolean).join(" · "),
         sections: [{ heading: "", url, text: entry.data.excerpt }, ...sections] };
     }),
     ...resources.map(async (entry): Promise<SearchDocument> => {
       const url = `/resources/${entry.id}/`;
       const { headings } = await render(entry);
-      return { title: entry.data.name, url, kind: "推荐资源", meta: [entry.data.category, ...entry.data.tags].join(" · "),
+      return { title: entry.data.name, url, kind: "保研资源", meta: [entry.data.category, ...entry.data.tags].join(" · "),
         sections: [{ heading: "", url, text: entry.data.description }, ...markdownSections(entry.body ?? "", url, headings)] };
     }),
   ]);
