@@ -48,6 +48,8 @@ jobs:
         run: npm test
       - name: Build with Astro
         run: npm run build
+      - name: Check generated pages and links
+        run: npm run test:site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
