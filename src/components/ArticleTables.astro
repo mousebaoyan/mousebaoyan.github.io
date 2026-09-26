@@ -1,0 +1,107 @@
+<script>
+  document.querySelectorAll<HTMLTableElement>(".experience-prose table").forEach((table, index) => {
+    if (table.closest(".article-table")) return;
+    const headers = Array.from(table.tHead?.rows[0]?.cells ?? []);
+    const rows = Array.from(table.tBodies).flatMap((body) => Array.from(body.rows));
+    const text = (cell: HTMLTableCellElement) => cell.textContent?.trim() ?? "";
+    // Only simple, text-heavy tables benefit from a record layout. Matrices and
+    // tables with merged cells keep their original relationships in grid form.
+    const simple = table.tHead?.rows.length === 1 && !table.tFoot
+      && headers.length >= 2 && headers.length <= 4 && rows.length > 0
+      && headers.every((cell) => text(cell) && cell.colSpan === 1 && cell.rowSpan === 1)
+      && rows.every((row) => row.cells.length === headers.length
+        && Array.from(row.cells).every((cell) => cell.colSpan === 1 && cell.rowSpan === 1));
+    const records = simple && rows.some((row) => Array.from(row.cells).some((cell) => text(cell).length >= 40));
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "article-table";
+    const scroll = document.createElement("div");
+    scroll.className = "article-table__scroll";
+    scroll.id = `article-table-${index + 1}`;
+    scroll.setAttribute("role", "region");
+    scroll.setAttribute("aria-label", `正文表格 ${index + 1}`);
+    table.before(wrapper);
+    wrapper.append(scroll);
+    scroll.append(table);
+
+    const hint = document.createElement("div");
+    hint.className = "article-table__hint";
+    hint.id = `${scroll.id}-hint`;
+    hint.textContent = "左右滑动查看完整表格";
+    hint.hidden = true;
+    wrapper.append(hint);
+
+    if (simple) {
+      headers.forEach((header, column) => {
+        header.scope = "col";
+        const cells = rows.map((row) => row.cells[column]);
+        if (cells.every((cell) => text(cell).length <= 8)) {
+          [header, ...cells].forEach((cell) => cell.classList.add("article-table__compact"));
+        }
+      });
+    }
+
+    if (records) {
+      wrapper.dataset.view = "records";
+      table.classList.add("article-table__records");
+      // Preserve table semantics when the mobile layout changes CSS display.
+      table.setAttribute("role", "table");
+      table.querySelectorAll("thead, tbody").forEach((group) => group.setAttribute("role", "rowgroup"));
+      table.querySelectorAll("tr").forEach((row) => row.setAttribute("role", "row"));
+      headers.forEach((cell) => cell.setAttribute("role", "columnheader"));
+      rows.forEach((row) => Array.from(row.cells).forEach((cell, column) => {
+        cell.setAttribute("role", "cell");
+        if (column === 0) return;
+        const label = document.createElement("span");
+        label.className = "article-table__label";
+        label.setAttribute("aria-hidden", "true");
+        label.textContent = text(headers[column]);
+        cell.prepend(label);
+      }));
+
+      const toolbar = document.createElement("div");
+      toolbar.className = "article-table__toolbar";
+      const count = document.createElement("span");
+      count.textContent = `${rows.length} 条记录`;
+      const controls = document.createElement("div");
+      controls.className = "article-table__controls";
+      controls.setAttribute("role", "group");
+      controls.setAttribute("aria-label", `表格 ${index + 1} 阅读方式`);
+      for (const [view, title] of [["records", "逐项阅读"], ["grid", "表格对照"]]) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = title;
+        button.dataset.tableView = view;
+        button.setAttribute("aria-controls", scroll.id);
+        button.setAttribute("aria-pressed", String(view === "records"));
+        button.addEventListener("click", () => {
+          wrapper.dataset.view = view;
+          controls.querySelectorAll("button").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+          scroll.scrollLeft = 0;
+          updateOverflow();
+        });
+        controls.append(button);
+      }
+      toolbar.append(count, controls);
+      wrapper.prepend(toolbar);
+    }
+
+    function updateOverflow() {
+      const overflowing = scroll.scrollWidth > scroll.clientWidth + 1;
+      hint.hidden = !overflowing;
+      if (overflowing) {
+        scroll.tabIndex = 0;
+        scroll.setAttribute("aria-describedby", hint.id);
+      } else {
+        scroll.removeAttribute("tabindex");
+        scroll.removeAttribute("aria-describedby");
+      }
+    }
+    const observer = new ResizeObserver(updateOverflow);
+    observer.observe(scroll);
+    observer.observe(table);
+    updateOverflow();
+  });
+</script>
