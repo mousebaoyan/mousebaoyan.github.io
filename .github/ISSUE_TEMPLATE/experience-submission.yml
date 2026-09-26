@@ -1,20 +1,23 @@
 name: 投稿经验贴
-description: 分享你的保研经历，帮助更多四非同学
+description: 分享你的保研经历，供四非同学参考
 title: "[经验贴] "
 labels: ["投稿", "经验贴"]
 body:
   - type: markdown
     attributes:
       value: |
-        感谢投稿！填写以下信息，管理员审核后会将你的经验贴添加到网站。
-        匿名投稿请在「作者署名」处填写"匿名"。
-        管理员可先编辑此 Issue 的内容，再添加「审核通过」标签自动发布。请保留表单的字段标题和顺序。
+        经验贴用于分享保研申请经历，审核通过后将在网站发布。
+
+        - 可使用昵称或“匿名”署名，本科院校可以不填写。
+        - 此 Issue 及上传的附件公开可见，“匿名”署名不会隐藏你的 GitHub 账号。提交前请检查正文和截图，移除姓名、学号、联系方式等不希望公开的信息。
+        - 建议注明申请年份，结合实际经历介绍申请背景、准备过程、面试经验与个人总结；引用他人内容时请注明来源。
+        - 提交后如需补充或修改，请编辑原 Issue，无需重复投稿。已发布文章的修改也需审核后同步到网站。
 
   - type: input
     id: title
     attributes:
       label: 标题
-      placeholder: 例：普通二本 CS 逆袭 985 直博经历
+      placeholder: 例：2026 年计算机保研申请与面试经验
     validations:
       required: true
 
@@ -22,7 +25,7 @@ body:
     id: author
     attributes:
       label: 作者署名
-      description: 将显示在文章中，填写"匿名"可隐去真实身份
+      description: 用于网站文章署名，可填写昵称或“匿名”；Issue 仍会显示你的 GitHub 账号
       placeholder: 匿名 / 你的名字或昵称
     validations:
       required: true
@@ -61,7 +64,7 @@ body:
     attributes:
       label: 摘要
       description: 一两句话概括核心内容，显示在列表页
-      placeholder: 例：从三跨考研转保研，分享夏令营投递策略和面试准备经验
+      placeholder: 例：记录计算机保研的夏令营申请、面试准备与院校选择经历
     validations:
       required: true
 
