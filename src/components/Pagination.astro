@@ -1,0 +1,112 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+}
+const { currentPage, totalPages } = Astro.props;
+const pageUrl = (page: number) => page === 1 ? "/experiences/" : `/experiences/page/${page}/`;
+const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1)
+  .filter((page) => totalPages <= 7 || page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1);
+---
+
+{totalPages > 1 && (
+  <nav class="pagination" aria-label="经验贴分页">
+    {currentPage > 1 ? (
+      <a class="pagination__step" href={pageUrl(currentPage - 1)} rel="prev">上一页</a>
+    ) : (
+      <span class="pagination__step" aria-disabled="true">上一页</span>
+    )}
+    <div class="pagination__pages">
+      {visiblePages.map((page, index) => (
+        <>
+          {index > 0 && page - visiblePages[index - 1] > 1 && <span class="pagination__ellipsis" aria-hidden="true">…</span>}
+          {page === currentPage ? (
+            <span class="pagination__number" aria-current="page" aria-label={`第 ${page} 页，当前页`}>{page}</span>
+          ) : (
+            <a class="pagination__number" href={pageUrl(page)} aria-label={`第 ${page} 页`}>{page}</a>
+          )}
+        </>
+      ))}
+    </div>
+    <span class="pagination__status">第 {currentPage} / {totalPages} 页</span>
+    {currentPage < totalPages ? (
+      <a class="pagination__step" href={pageUrl(currentPage + 1)} rel="next">下一页</a>
+    ) : (
+      <span class="pagination__step" aria-disabled="true">下一页</span>
+    )}
+  </nav>
+)}
+
+<style>
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pagination__pages {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pagination__step,
+  .pagination__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    line-height: 1.5;
+    white-space: nowrap;
+    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+  }
+  .pagination__step {
+    border-color: var(--line-soft);
+  }
+  .pagination a:hover {
+    background: var(--bg-grey);
+    border-color: var(--line);
+  }
+  .pagination a:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+  }
+  .pagination [aria-current="page"] {
+    color: #0063c7;
+    background: var(--blue-soft);
+    font-weight: 600;
+  }
+  .pagination [aria-disabled="true"],
+  .pagination__ellipsis {
+    color: var(--ink-3);
+  }
+  .pagination__ellipsis {
+    padding: 0 4px;
+  }
+  .pagination__status {
+    display: none;
+    color: var(--ink-2);
+  }
+  @media (max-width: 600px) {
+    .pagination {
+      gap: 8px;
+    }
+    .pagination__pages {
+      display: none;
+    }
+    .pagination__status {
+      display: inline;
+    }
+    .pagination__step {
+      min-height: 44px;
+    }
+  }
+</style>

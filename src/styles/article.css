@@ -1,0 +1,237 @@
+/* Markdown typography is scoped to experience articles. */
+.experience-prose {
+  color: #353840;
+  font-size: var(--article-font-size, 18px);
+  line-height: 1.95;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+.experience-prose[data-duplicate-title] > h1:first-child {
+  display: none;
+}
+.experience-prose[data-source-note] > h1:first-child + p {
+  color: #6b707a;
+  font-size: 0.8em;
+  line-height: 1.8;
+  padding-left: 16px;
+  border-left: 2px solid #e6e9ee;
+  margin-bottom: 32px;
+}
+.experience-prose :is(h1, h2, h3, h4, h5, h6) {
+  color: #242831;
+  line-height: 1.55;
+  letter-spacing: 0;
+  font-weight: 600;
+  scroll-margin-top: 32px;
+  text-wrap: pretty;
+}
+.experience-prose :is(h1, h2) {
+  font-size: 1.4em;
+  margin: 2.6em 0 1em;
+  padding-bottom: 0.6em;
+  border-bottom: 1px solid #e9ebef;
+}
+.experience-prose h3 {
+  font-size: 1.14em;
+  margin: 2.1em 0 0.9em;
+}
+.experience-prose :is(h4, h5, h6) {
+  font-size: 1em;
+  margin: 1.8em 0 0.7em;
+}
+.experience-prose > :first-child {
+  margin-top: 0;
+}
+.experience-prose p {
+  margin: 0 0 1.3em;
+}
+.experience-prose strong {
+  color: #242831;
+  font-weight: 600;
+}
+.experience-prose a {
+  color: #1769b5;
+  text-decoration: underline;
+  text-decoration-color: #b7d2ed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+.experience-prose a:hover {
+  color: #004f9d;
+  text-decoration-color: currentColor;
+}
+.experience-prose a:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.experience-prose :is(ul, ol) {
+  margin: 1em 0 1.5em;
+  padding-left: 1.65em;
+}
+.experience-prose ul {
+  list-style: disc;
+}
+.experience-prose ol {
+  list-style: decimal;
+}
+.experience-prose ul ul {
+  list-style: circle;
+}
+.experience-prose ul ul ul {
+  list-style: square;
+}
+.experience-prose li {
+  padding-left: 0.25em;
+  margin-block: 0.55em;
+}
+.experience-prose li::marker {
+  color: #747f90;
+}
+.experience-prose li > :is(ul, ol) {
+  margin-block: 0.45em;
+}
+.experience-prose li > p {
+  margin-block: 0.55em;
+}
+.experience-prose ul.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+.experience-prose .task-list-item input {
+  margin-right: 0.6em;
+  accent-color: var(--blue);
+}
+.experience-prose blockquote {
+  margin: 1.8em 0;
+  padding: 18px 24px;
+  border-left: 3px solid #9eb9d4;
+  border-radius: 0 6px 6px 0;
+  background: #f6f8fb;
+  color: #5b6472;
+}
+.experience-prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+.experience-prose img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.8em auto;
+  border: 1px solid #e9ebef;
+  border-radius: 8px;
+}
+.experience-prose :is(video, iframe) {
+  max-width: 100%;
+}
+.experience-prose figure {
+  margin: 1.8em 0;
+}
+.experience-prose figcaption {
+  text-align: center;
+  font-size: 0.8em;
+  color: #767b84;
+  margin-top: 12px;
+}
+.experience-prose hr {
+  border: 0;
+  border-top: 1px solid #e3e6eb;
+  margin: 2.8em 0;
+}
+.experience-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  letter-spacing: 0;
+}
+.experience-prose :not(pre) > code {
+  background: #f0f2f5;
+  border-radius: 4px;
+  padding: 0.18em 0.4em;
+  color: #41546b;
+}
+.experience-prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.6em 0;
+  padding: 20px 22px;
+  border: 1px solid #e6e9ef;
+  border-radius: 8px;
+  line-height: 1.75;
+  tab-size: 2;
+  overflow-wrap: normal;
+}
+.experience-prose pre code {
+  padding: 0;
+  background: none;
+  font-size: 0.8em;
+}
+.experience-prose table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.8em 0;
+  font-size: 0.87em;
+  line-height: 1.7;
+}
+.experience-prose :is(th, td) {
+  padding: 12px 16px;
+  border: 1px solid #e1e5eb;
+  min-width: 110px;
+  text-align: left;
+}
+.experience-prose th {
+  background: #f4f6f9;
+  color: #353d49;
+  font-weight: 600;
+}
+.experience-prose tbody tr:nth-child(even) {
+  background: #fafbfc;
+}
+.experience-prose del {
+  color: #7d818a;
+}
+.experience-prose ::selection {
+  background: #dcecff;
+  color: #1e3e63;
+}
+@media (max-width: 1050px) {
+  .experience-prose :is(h1, h2, h3, h4, h5, h6) {
+    scroll-margin-top: 84px;
+  }
+}
+@media (max-width: 600px) {
+  .experience-prose {
+    line-height: 1.9;
+  }
+  .experience-prose :is(h1, h2) {
+    font-size: 1.3em;
+    margin-top: 2.2em;
+  }
+  .experience-prose h3 {
+    font-size: 1.08em;
+  }
+  .experience-prose blockquote {
+    padding: 16px 18px;
+  }
+  .experience-prose pre {
+    padding: 16px;
+  }
+  .experience-prose :is(th, td) {
+    padding: 10px 12px;
+  }
+}
+@media print {
+  .experience-prose {
+    color: #000;
+    font-size: 11pt;
+    line-height: 1.7;
+  }
+  .experience-prose :is(h1, h2, h3, h4, h5, h6) {
+    break-after: avoid;
+  }
+  .experience-prose :is(pre, blockquote, img) {
+    break-inside: avoid;
+  }
+}

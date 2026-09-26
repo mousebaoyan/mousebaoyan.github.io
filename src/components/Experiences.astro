@@ -2,22 +2,22 @@
 const posts = [
   {
     school: "示例 · 某 985 计算机",
-    title: "双非逆袭：从夏令营被刷到预推免上岸",
-    summary: "背景、时间安排、套磁与面试复盘，附踩坑提醒。",
+    title: "双非院校学生的夏令营与预推免申请记录",
+    summary: "申请背景、时间安排、导师联系与面试经验。",
     tags: ["夏令营", "预推免"],
     url: "#",
   },
   {
-    school: "示例 · 某 211 软院",
-    title: "科研经历不亮眼，我是如何包装项目的",
-    summary: "把课程项目讲成有故事的科研经历的思路。",
+    school: "示例 · 某 211 软件学院",
+    title: "科研经历有限时的项目整理与展示",
+    summary: "课程项目的工作内容、个人贡献与成果展示方法。",
     tags: ["简历", "面试"],
     url: "#",
   },
   {
     school: "示例 · 某中科院所",
-    title: "夏令营连投十校的真实数据与心得",
-    summary: "投递清单、命中率、各校风格对比。",
+    title: "十所院校的夏令营申请记录与分析",
+    summary: "申请清单、入营结果与院校考核方式比较。",
     tags: ["选校", "数据"],
     url: "#",
   },
@@ -28,11 +28,11 @@ const posts = [
   <div class="container">
     <div class="section__head experiences__head">
       <div>
-        <span class="eyebrow">上岸经验贴</span>
-        <h2 class="section__title">看看学长学姐<br class="mobile-br" />怎么走过来的</h2>
+        <span class="eyebrow">经验分享</span>
+        <h2 class="section__title">保研申请经验</h2>
       </div>
       <a class="link-arrow experiences__cta" href="#join">
-        投稿你的经验
+        投稿经验贴
         <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
@@ -79,12 +79,14 @@ const posts = [
     background: var(--bg-grey);
     border-radius: var(--r-lg);
     padding: clamp(22px, 2.6vw, 30px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: background-color 0.2s ease;
   }
   .post:hover {
-    transform: translateY(-5px) scale(1.01);
-    box-shadow: var(--shadow-card-hover);
+    background: #eef2f7;
+  }
+  .post:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
   }
   .post__school {
     font-size: 0.85rem;

@@ -1,0 +1,22 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import ExperienceListing from "../../../components/ExperienceListing.astro";
+import { EXPERIENCE_PAGE_SIZE, getPublishedExperiences } from "../../../lib/experiences";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const experiences = await getPublishedExperiences();
+  // The first page is served at /experiences/ to preserve existing links.
+  return paginate(experiences, { pageSize: EXPERIENCE_PAGE_SIZE })
+    .filter(({ props }) => props.page.currentPage > 1);
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { page } = Astro.props;
+---
+
+<ExperienceListing
+  experiences={page.data}
+  total={page.total}
+  currentPage={page.currentPage}
+  totalPages={page.lastPage}
+/>

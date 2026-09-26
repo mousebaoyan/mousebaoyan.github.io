@@ -2,196 +2,433 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import ArticleOutline from "../../components/ArticleOutline.astro";
+import "../../styles/article.css";
 
 export async function getStaticPaths() {
-  const experiences = await getCollection("experiences");
-  return experiences.map((exp) => ({
-    params: { slug: exp.id },
-    props: { exp },
-  }));
+  const experiences = await getCollection("experiences", ({ data }) => !data.draft);
+  return experiences.map((exp) => ({ params: { slug: exp.id }, props: { exp } }));
 }
 
 const { exp } = Astro.props;
-const { Content } = await render(exp);
+const { Content, headings } = await render(exp);
+const outline = headings.filter(({ depth }) => depth === 2 || depth === 3);
+const normalizeTitle = (text: string) => text.replace(/\s+/g, "").trim();
+const hasDuplicateTitle = headings[0]?.depth === 1
+  && normalizeTitle(headings[0].text) === normalizeTitle(exp.data.title);
+const hasSourceNote = hasDuplicateTitle
+  && /^# [^\n]+\n+(?:作者|原文链接)[：:]/u.test((exp.body ?? "").trim());
+const readingText = (exp.body ?? "")
+  .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+  .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+  .replace(/https?:\/\/\S+/g, "");
+const wordCount = readingText.match(/\p{Script=Han}|[a-zA-Z0-9]+/gu)?.length ?? 0;
+const readingMinutes = Math.max(1, Math.ceil(wordCount / 400));
 const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
 ---
 
 <BaseLayout title={`${exp.data.title} — 经验贴`} description={exp.data.excerpt}>
-  <div class="container">
+  <div class="reading-progress" hidden aria-hidden="true"><span data-reading-bar></span></div>
+  <div class="reading-page">
     <Breadcrumb crumbs={[
       { label: "首页", href: "/" },
       { label: "经验贴", href: "/experiences" },
-      { label: exp.data.title },
+      { label: "正文" },
     ]} />
 
-    <article class="exp-detail">
-      <header class="exp-detail__header">
-        <div class="exp-detail__tags">
-          {exp.data.tags.map((t) => (
-            <span class="tag-pill">{t}</span>
-          ))}
-        </div>
-        <h1 class="exp-detail__title">{exp.data.title}</h1>
-        <p class="exp-detail__excerpt">{exp.data.excerpt}</p>
-
-        <div class="exp-detail__meta">
-          <div class="exp-detail__info">
-            <span class="meta-item">
-              <span class="meta-label">作者</span>
-              <span>{exp.data.author}</span>
-            </span>
-            <span class="meta-sep" aria-hidden="true">·</span>
-            <span class="meta-item">
-              <span class="meta-label">本科</span>
-              <span>{exp.data.school}</span>
-            </span>
-            <span class="meta-sep" aria-hidden="true">→</span>
-            <span class="meta-item">
-              <span class="meta-label">录取</span>
-              <span>{exp.data.target}</span>
-            </span>
+    <div class="reading-layout" data-experience-reader>
+      <article class="experience-article" aria-labelledby="article-title">
+        <header class="article-header" id="article-start">
+          <div class="article-tags">
+            <span class="article-category">保研经验</span>
+            {exp.data.tags.map((tag) => <span class="article-tag">{tag}</span>)}
           </div>
-          <time class="exp-detail__date" datetime={exp.data.date.toISOString()}>{dateStr}</time>
+          <h1 class="article-title" id="article-title">{exp.data.title}</h1>
+          <p class="article-excerpt">{exp.data.excerpt}</p>
+          <div class="article-byline">
+            <span class="author-avatar" aria-hidden="true">{Array.from(exp.data.author)[0]}</span>
+            <div class="author-info">
+              <span class="author-name">{exp.data.author}</span>
+              <div class="article-meta">
+                <time datetime={exp.data.date.toISOString()}>{dateStr}</time>
+                <span aria-hidden="true">·</span><span>约 {wordCount.toLocaleString("zh-CN")} 字</span>
+                <span aria-hidden="true">·</span><span>{readingMinutes} 分钟阅读</span>
+              </div>
+            </div>
+          </div>
+          <dl class="article-background">
+            <div><dt>本科背景</dt><dd>{exp.data.school}</dd></div>
+            <div class="article-target"><dt>录取去向</dt><dd>{exp.data.target}</dd></div>
+            {exp.data.major && <div class="article-major"><dt>研究方向</dt><dd>{exp.data.major}</dd></div>}
+          </dl>
+        </header>
+
+        <div class="experience-prose" data-duplicate-title={hasDuplicateTitle || undefined} data-source-note={hasSourceNote || undefined}>
+          <Content />
         </div>
-      </header>
-
-      <div class="prose">
-        <Content />
-      </div>
-    </article>
-
-    <a class="back-link" href="/experiences">← 返回经验贴列表</a>
+        <footer class="article-footer">
+          <span class="article-end">全文完</span>
+          <a class="article-back" href="/experiences"><span aria-hidden="true">←</span> 浏览更多经验贴</a>
+        </footer>
+      </article>
+      <aside class="reader-sidebar" aria-label="阅读辅助">
+        <ArticleOutline headings={outline} />
+      </aside>
+    </div>
   </div>
 </BaseLayout>
 
+<script>
+  const reader = document.querySelector<HTMLElement>("[data-experience-reader]");
+  const prose = reader?.querySelector<HTMLElement>(".experience-prose");
+  const outline = reader?.querySelector<HTMLDetailsElement>(".article-outline");
+
+  if (reader && prose && outline) {
+    const mobile = window.matchMedia("(max-width: 1050px)");
+    const syncOutline = () => { outline.open = !mobile.matches; };
+    syncOutline();
+    mobile.addEventListener("change", syncOutline);
+    const links = Array.from(outline.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"));
+    const sections = links.flatMap((link) => {
+      const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      if (!heading) return [];
+      heading.tabIndex = -1;
+      return [{ link, heading }];
+    });
+    links.forEach((link) => link.addEventListener("click", () => {
+      if (mobile.matches) outline.open = false;
+    }));
+
+    const sizeButtons = Array.from(reader.querySelectorAll<HTMLButtonElement>("[data-reading-size]"));
+    const setReadingSize = (size: string) => {
+      reader.dataset.readingSize = size;
+      sizeButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.readingSize === size)));
+    };
+    try { setReadingSize(localStorage.getItem("experience-reading-size") === "large" ? "large" : "normal"); }
+    catch { setReadingSize("normal"); }
+    reader.querySelector<HTMLElement>(".reading-settings")?.removeAttribute("hidden");
+    sizeButtons.forEach((button) => button.addEventListener("click", () => {
+      const size = button.dataset.readingSize ?? "normal";
+      setReadingSize(size);
+      try { localStorage.setItem("experience-reading-size", size); } catch { /* Reading works without storage. */ }
+      scheduleUpdate();
+    }));
+
+    const progress = document.querySelector<HTMLElement>(".reading-progress");
+    const bar = document.querySelector<HTMLElement>("[data-reading-bar]");
+    const progressText = reader.querySelector<HTMLElement>("[data-reading-percent]");
+    const tocNav = reader.querySelector<HTMLElement>(".outline-nav");
+    progress?.removeAttribute("hidden");
+    reader.querySelector<HTMLElement>(".reading-status")?.removeAttribute("hidden");
+    let currentLink: HTMLAnchorElement | undefined;
+    let framePending = false;
+
+    function updateReadingPosition() {
+      framePending = false;
+      if (!prose) return;
+      const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h"));
+      const offset = navHeight + (mobile.matches ? 104 : 60);
+      const rect = prose.getBoundingClientRect();
+      const scrollable = Math.max(1, rect.height - window.innerHeight + offset);
+      const fraction = Math.min(1, Math.max(0, (offset - rect.top) / scrollable));
+      if (bar) bar.style.transform = `scaleX(${fraction})`;
+      if (progressText) progressText.textContent = `${Math.round(fraction * 100)}%`;
+      let active: (typeof sections)[number] | undefined = sections[0];
+      for (const section of sections) {
+        if (section.heading.getBoundingClientRect().top <= offset) active = section;
+        else break;
+      }
+      if (fraction === 1) active = sections.at(-1);
+      if (active?.link !== currentLink) {
+        currentLink?.removeAttribute("aria-current");
+        currentLink = active?.link;
+        currentLink?.setAttribute("aria-current", "location");
+        if (currentLink && tocNav && !mobile.matches) {
+          const linkRect = currentLink.getBoundingClientRect();
+          const navRect = tocNav.getBoundingClientRect();
+          if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
+            tocNav.scrollTop += linkRect.top - navRect.top - navRect.height / 2;
+          }
+        }
+      }
+    }
+    function scheduleUpdate() {
+      if (framePending) return;
+      framePending = true;
+      requestAnimationFrame(updateReadingPosition);
+    }
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    // Images can change the length of a Markdown article after the first paint.
+    new ResizeObserver(scheduleUpdate).observe(prose);
+    updateReadingPosition();
+  }
+</script>
+
 <style>
-  .exp-detail {
-    max-width: 740px;
-    padding: clamp(32px, 5vw, 56px) 0;
+  .reading-page {
+    max-width: 1160px;
+    margin-inline: auto;
+    padding: 8px 32px 80px;
   }
-  .exp-detail__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .tag-pill {
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 4px 11px;
-    border-radius: var(--r-pill);
-    background: var(--bg-grey);
-    color: var(--ink-2);
-  }
-  .exp-detail__title {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    letter-spacing: -0.03em;
-    line-height: 1.15;
-    margin-bottom: 14px;
-  }
-  .exp-detail__excerpt {
-    font-size: 1.1rem;
-    color: var(--ink-2);
-    line-height: 1.5;
-    margin-bottom: 20px;
-  }
-  .exp-detail__meta {
-    display: flex;
-    align-items: flex-start;
+  .reading-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 736px) minmax(0, 240px);
     justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    padding: 18px 0;
-    border-top: 1px solid var(--line-soft);
-    border-bottom: 1px solid var(--line-soft);
-    margin-bottom: 36px;
+    gap: 72px;
+    margin-top: 44px;
+    --article-font-size: 18px;
   }
-  .exp-detail__info {
+  .reading-layout[data-reading-size="large"] {
+    --article-font-size: 20px;
+  }
+  .experience-article {
+    min-width: 0;
+  }
+  .article-header {
+    margin-bottom: 36px;
+    scroll-margin-top: 28px;
+  }
+  .article-tags {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
-    font-size: 0.9rem;
+    margin-bottom: 18px;
   }
-  .meta-item {
+  .article-category {
+    color: #1761ae;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .article-tag {
+    color: #62646c;
+    background: #f4f5f7;
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+  .article-title {
+    font-size: clamp(27px, 2.6vw, 36px);
+    line-height: 1.45;
+    letter-spacing: -0.025em;
+    text-wrap: pretty;
+    overflow-wrap: anywhere;
+  }
+  .article-excerpt {
+    margin-top: 20px;
+    color: #696b73;
+    font-size: 16px;
+    line-height: 1.85;
+    letter-spacing: 0;
+  }
+  .article-byline {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 12px;
+    margin-block: 26px;
   }
-  .meta-label {
-    color: var(--ink-3);
-  }
-  .meta-sep {
-    color: var(--ink-3);
-    opacity: 0.5;
-  }
-  .exp-detail__date {
-    font-size: 0.84rem;
-    color: var(--ink-3);
+  .author-avatar {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
     flex-shrink: 0;
+    border-radius: 50%;
+    background: #edf3f9;
+    color: #416286;
+    font-size: 17px;
   }
-  .prose {
-    color: var(--ink);
-    line-height: 1.75;
-    font-size: 1.05rem;
-  }
-  .prose :global(h2) {
-    font-size: 1.4rem;
-    letter-spacing: -0.02em;
-    margin: 2em 0 0.6em;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .prose :global(h3) {
-    font-size: 1.15rem;
-    margin: 1.6em 0 0.5em;
-  }
-  .prose :global(p) {
-    margin: 0 0 1em;
-  }
-  .prose :global(ul),
-  .prose :global(ol) {
-    padding-left: 1.4em;
-    margin-bottom: 1em;
-  }
-  .prose :global(li) {
-    margin-bottom: 0.4em;
-  }
-  .prose :global(strong) {
+  .author-name {
+    font-size: 14px;
     font-weight: 600;
   }
-  .prose :global(blockquote) {
-    border-left: 3px solid var(--blue);
-    margin: 1.5em 0;
-    padding: 12px 20px;
-    background: var(--bg-grey);
-    border-radius: 0 var(--r-md) var(--r-md) 0;
-    color: var(--ink-2);
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #73757d;
   }
-  .prose :global(table) {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-    margin: 1.5em 0;
+  .article-background {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-block: 1px solid var(--line-soft);
+    padding-block: 19px;
   }
-  .prose :global(th),
-  .prose :global(td) {
-    padding: 10px 14px;
-    border: 1px solid var(--line-soft);
-    text-align: left;
+  .article-background > div {
+    flex: 1;
+    min-width: 0;
   }
-  .prose :global(th) {
-    background: var(--bg-grey);
-    font-weight: 600;
+  .article-background dt {
+    color: #74767d;
+    font-size: 12px;
+    margin-bottom: 5px;
   }
-  .back-link {
-    display: inline-block;
-    color: var(--ink-3);
-    font-size: 0.9rem;
-    margin-bottom: 48px;
-    transition: color 0.2s;
+  .article-background dd {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #3e4148;
   }
-  .back-link:hover {
-    color: var(--ink);
+  .article-target {
+    position: relative;
+    padding-left: 24px;
+  }
+  .article-target::before {
+    content: "→";
+    position: absolute;
+    left: -8px;
+    top: 12px;
+    color: #a1a4ab;
+  }
+  .article-background .article-major {
+    flex: 0.65;
+    border-left: 1px solid var(--line-soft);
+    padding-left: 20px;
+  }
+  .reader-sidebar {
+    position: sticky;
+    top: calc(var(--nav-h) + 40px);
+    align-self: start;
+    min-width: 0;
+  }
+  .reading-progress {
+    position: fixed;
+    z-index: 51;
+    top: var(--nav-h);
+    left: 0;
+    right: 0;
+    height: 2px;
+    pointer-events: none;
+  }
+  .reading-progress span {
+    display: block;
+    height: 100%;
+    background: var(--blue);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .article-footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .article-end {
+    display: block;
+    color: #777a83;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+  }
+  .article-back {
+    margin-top: 24px;
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    color: #1761ae;
+    font-size: 14px;
+    padding-block: 8px;
+  }
+  .article-back:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .article-back:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 5px;
+    border-radius: 2px;
+  }
+  @media (max-width: 1050px) {
+    .reading-page {
+      max-width: 800px;
+      padding-inline: 28px;
+    }
+    .reading-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-top: 22px;
+    }
+    .reader-sidebar {
+      order: -1;
+      top: var(--nav-h);
+      z-index: 20;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.97);
+    }
+  }
+  @media (max-width: 600px) {
+    .reading-page {
+      padding: 0 22px 56px;
+    }
+    .reading-layout {
+      --article-font-size: 17px;
+      gap: 26px;
+      margin-top: 16px;
+    }
+    .reading-layout[data-reading-size="large"] {
+      --article-font-size: 19px;
+    }
+    .article-title {
+      font-size: 27px;
+      line-height: 1.5;
+    }
+    .article-excerpt {
+      font-size: 15px;
+      margin-top: 16px;
+    }
+    .article-tags {
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .article-category {
+      font-size: 12px;
+    }
+    .article-byline {
+      margin-block: 22px;
+    }
+    .article-background {
+      flex-wrap: wrap;
+      gap: 16px 12px;
+    }
+    .article-background .article-major {
+      flex-basis: 100%;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      border-left: 0;
+      padding: 12px 0 0;
+      border-top: 1px dashed var(--line-soft);
+    }
+    .article-major dt {
+      margin-bottom: 0;
+    }
+    .article-background dd {
+      font-size: 13px;
+    }
+    .article-meta {
+      column-gap: 6px;
+    }
+    .article-header {
+      margin-bottom: 28px;
+    }
+    .article-footer {
+      margin-top: 44px;
+    }
+  }
+  @media print {
+    .reading-page {
+      max-width: none;
+      padding: 0;
+    }
+    .reading-layout {
+      display: block;
+      margin-top: 24px;
+    }
+    .reader-sidebar, .reading-progress, .article-back {
+      display: none;
+    }
   }
 </style>

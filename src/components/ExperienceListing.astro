@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ExperienceCard from "./ExperienceCard.astro";
+import PageHeader from "./PageHeader.astro";
+import CollectionSection from "./CollectionSection.astro";
+import Pagination from "./Pagination.astro";
+
+interface Props {
+  experiences: CollectionEntry<"experiences">[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+}
+const { experiences, total, currentPage, totalPages } = Astro.props;
+---
+
+<BaseLayout
+  title={currentPage === 1 ? "经验贴 — 四非保研鼠群" : `经验贴 · 第 ${currentPage} 页 — 四非保研鼠群`}
+  description="汇集计算机保研申请经历，涵盖申请背景、院校选择与面试经验。"
+>
+  <div class="container">
+    <PageHeader
+      eyebrow="经验分享"
+      title="保研申请经验"
+      lead="申请背景、院校选择与面试经历，供保研准备参考。"
+      action={{ label: "投稿经验贴", href: "https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" }}
+    />
+
+    <CollectionSection title="全部经验贴" summary={totalPages > 1 ? `共 ${total} 篇 · 第 ${currentPage} / ${totalPages} 页` : `共 ${total} 篇`}>
+      <div class="experience-list">
+        {
+          experiences.map((e) => (
+            <ExperienceCard
+              title={e.data.title}
+              author={e.data.author}
+              date={e.data.date}
+              school={e.data.school}
+              target={e.data.target}
+              excerpt={e.data.excerpt}
+              tags={e.data.tags}
+              slug={e.id}
+            />
+          ))
+        }
+      </div>
+      {total === 0 && <p class="experience-empty">暂无已发布的经验贴。</p>}
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
+    </CollectionSection>
+  </div>
+</BaseLayout>
+
+<style>
+  .experience-empty {
+    padding: 32px 0;
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  .experience-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+  }
+</style>

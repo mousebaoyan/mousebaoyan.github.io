@@ -1,0 +1,42 @@
+---
+interface Props {
+  title: string;
+  summary?: string;
+}
+const { title, summary } = Astro.props;
+---
+
+<section class="collection-section">
+  <header class="collection-section__header">
+    <h2 class="collection-section__title">{title}</h2>
+    {summary && <span class="collection-section__summary">{summary}</span>}
+  </header>
+  <slot />
+</section>
+
+<style>
+  .collection-section {
+    margin-bottom: clamp(40px, 6vw, 64px);
+  }
+  .collection-section__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .collection-section__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .collection-section__summary {
+    color: #757a83;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

@@ -33,14 +33,15 @@ const { name, description, category, link, tags, slug } = Astro.props;
     border: 1px solid var(--line-soft);
     border-radius: var(--r-lg);
     padding: clamp(22px, 2.6vw, 30px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   .tool-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: rgba(0, 113, 227, 0.12);
+    border-color: #bfd3e8;
+    background: #fafcff;
+  }
+  .tool-card:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
   }
   .tool-card__cat {
     font-size: 0.84rem;
@@ -90,9 +91,5 @@ const { name, description, category, link, tags, slug } = Astro.props;
   .tool-card__go svg {
     width: 14px;
     height: 14px;
-    transition: transform 0.2s ease;
-  }
-  .tool-card:hover .tool-card__go svg {
-    transform: translateX(3px);
   }
 </style>

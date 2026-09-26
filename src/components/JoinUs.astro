@@ -3,18 +3,18 @@ import { site } from "../site.config";
 
 const rules = [
   "文明交流，禁止广告与无关链接",
-  "乐于分享，收到的帮助也记得回馈群友",
-  "信息仅供参考，重要节点以官方通知为准",
+  "鼓励分享申请经验与参考资料",
+  "招生要求与时间安排以院校官方通知为准",
 ];
 ---
 
 <section class="join" id="join">
   <div class="container join__inner">
     <div class="join__copy">
-      <span class="join__eyebrow">加入我们</span>
-      <h2 class="join__title">在 QQ 群里一起备战</h2>
+      <span class="join__eyebrow">加入鼠群</span>
+      <h2 class="join__title">保研信息与经验交流</h2>
       <p class="join__lead">
-        搜索群号加入「{site.name}」，可以随时提问交流。
+        在 QQ 中搜索下方群号，申请加入「{site.name}」。
       </p>
 
       <div class="join__card">
@@ -50,7 +50,7 @@ const rules = [
   .join {
     background: var(--bg-dark-gradient);
     color: var(--on-dark);
-    padding-block: clamp(72px, 11vw, 140px);
+    padding-block: clamp(40px, 5vw, 64px);
     position: relative;
     overflow: hidden;
   }
@@ -68,39 +68,41 @@ const rules = [
   }
   .join__eyebrow {
     display: block;
-    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-size: 0.95rem;
     font-weight: 600;
     background: linear-gradient(90deg, #5ea0ef, #a78bfa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .join__title {
     color: #fff;
-    font-size: clamp(2rem, 4.6vw, 3.2rem);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
     font-weight: 700;
     letter-spacing: -0.025em;
-    line-height: 1.05;
+    line-height: 1.2;
   }
   .join__lead {
-    margin: 18px auto 0;
+    margin: 12px auto 0;
     max-width: 46ch;
     color: var(--on-dark-2);
-    font-size: clamp(1.08rem, 2vw, 1.28rem);
+    font-size: 1rem;
     line-height: 1.45;
   }
   .join__card {
-    display: inline-flex;
-    flex-direction: column;
+    display: inline-grid;
+    grid-template-columns: auto auto;
     align-items: center;
-    gap: 4px;
-    margin-top: 32px;
-    padding: 24px 40px;
+    gap: 4px 24px;
+    max-width: 100%;
+    margin-top: 24px;
+    padding: 16px 24px;
+    text-align: left;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
-    border-radius: var(--r-lg);
+    border-radius: var(--r);
     box-shadow:
       0 0 60px rgba(0, 113, 227, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -111,17 +113,20 @@ const rules = [
     color: var(--on-dark-2);
   }
   .join__qqnum {
+    grid-column: 1;
     font-family: var(--font-mono);
-    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-size: clamp(1.75rem, 4vw, 2rem);
     font-weight: 600;
     letter-spacing: 0.04em;
     color: #fff;
     line-height: 1.1;
   }
   .join__copybtn {
+    grid-column: 2;
+    grid-row: 1 / 3;
     font: inherit;
     font-size: 0.9rem;
-    margin-top: 14px;
+    min-height: 44px;
     padding: 9px 22px;
     border-radius: var(--r-pill);
     border: 0;
@@ -140,15 +145,15 @@ const rules = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    margin: 36px auto 0;
+    gap: 8px;
+    margin: 24px auto 0;
   }
   .join__rules li {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     color: var(--on-dark-2);
-    font-size: 0.98rem;
+    font-size: 0.875rem;
     line-height: 1.4;
   }
   .join__check {
@@ -156,6 +161,23 @@ const rules = [
     width: 18px;
     height: 18px;
     color: #5ea0ef;
+  }
+  @media (max-width: 540px) {
+    .join__card {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      padding: 16px 24px;
+      text-align: center;
+    }
+    .join__copybtn {
+      grid-column: 1;
+      grid-row: auto;
+      margin-top: 8px;
+    }
+    .join__rules li {
+      align-items: flex-start;
+      text-align: left;
+    }
   }
 </style>
 

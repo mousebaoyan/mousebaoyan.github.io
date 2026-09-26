@@ -4,7 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 
 export async function getStaticPaths() {
-  const tools = await getCollection("tools");
+  const tools = await getCollection("tools", ({ data }) => !data.draft);
   return tools.map((tool) => ({
     params: { slug: tool.id },
     props: { tool },
@@ -53,6 +53,8 @@ const { Content } = await render(tool);
 <style>
   .tool-detail {
     max-width: 740px;
+    min-width: 0;
+    overflow-wrap: anywhere;
     padding: clamp(32px, 5vw, 56px) 0;
   }
   .tool-detail__cat {
@@ -105,12 +107,11 @@ const { Content } = await render(tool);
     font-weight: 500;
     padding: 9px 20px;
     border-radius: var(--r-pill);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease;
     white-space: nowrap;
   }
   .tool-detail__cta:hover {
-    box-shadow: 0 0 16px rgba(0, 113, 227, 0.25);
-    transform: scale(1.03);
+    opacity: 0.9;
   }
   .prose {
     color: var(--ink);
@@ -137,6 +138,38 @@ const { Content } = await render(tool);
   .prose :global(li) {
     margin-bottom: 0.4em;
   }
+  .prose :global(ul) {
+    list-style: disc;
+  }
+  .prose :global(ul ul) {
+    list-style: circle;
+  }
+  .prose :global(ul.contains-task-list) {
+    list-style: none;
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+  }
+  .prose :global(:not(pre) > code) {
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+    background: var(--bg-grey);
+  }
+  .prose :global(pre) {
+    max-width: 100%;
+    overflow-x: auto;
+    margin-block: 1.2em;
+    padding: 18px;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    overflow-wrap: normal;
+  }
+  .prose :global(img) {
+    height: auto;
+    margin-block: 1.2em;
+    border-radius: 8px;
+  }
   .prose :global(strong) {
     font-weight: 600;
     color: var(--ink);
@@ -156,7 +189,10 @@ const { Content } = await render(tool);
     margin: 1.2em 0;
   }
   .prose :global(table) {
-    width: 100%;
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
     border-collapse: collapse;
     font-size: 0.97rem;
     margin-bottom: 1.2em;

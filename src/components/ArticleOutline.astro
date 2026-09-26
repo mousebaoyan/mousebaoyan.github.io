@@ -1,0 +1,214 @@
+---
+import type { MarkdownHeading } from "astro";
+interface Props { headings: MarkdownHeading[]; }
+const { headings } = Astro.props;
+const sectionCount = headings.filter(({ depth }) => depth === 2).length;
+---
+
+<details class="article-outline" open>
+  <summary>
+    <span class="outline-label">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke-linecap="round" /></svg>
+      {headings.length ? "本文目录" : "阅读设置"}
+    </span>
+    <span class="outline-count">{sectionCount > 0 && `${sectionCount} 个章节`}</span>
+    <svg class="outline-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </summary>
+  <div class="outline-body">
+    {headings.length > 0 && (
+      <nav class="outline-nav" aria-label="文章章节">
+        <ol>
+          {headings.map((heading) => (
+            <li class:list={{ "outline-subsection": heading.depth === 3 }}>
+              <a href={`#${heading.slug}`} data-heading-link title={heading.text}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <div class="reading-settings" hidden>
+      <span id="reading-size-label">阅读字号</span>
+      <div class="reading-size-options" role="group" aria-labelledby="reading-size-label">
+        <button type="button" data-reading-size="normal" aria-pressed="true">标准</button>
+        <button type="button" data-reading-size="large" aria-pressed="false">大字</button>
+      </div>
+    </div>
+    <div class="reading-status" hidden>
+      <span>已读 <span data-reading-percent>0%</span></span>
+      <a href="#article-start">返回开头 <span aria-hidden="true">↑</span></a>
+    </div>
+  </div>
+</details>
+
+<style>
+  .article-outline {
+    font-size: 13px;
+    color: #73757d;
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 18px;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .outline-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #383b43;
+    font-weight: 600;
+  }
+  .outline-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: #6d727c;
+  }
+  .outline-chevron {
+    flex-shrink: 0;
+  }
+  details[open] .outline-chevron {
+    transform: rotate(180deg);
+  }
+  .outline-nav {
+    max-height: min(60dvh, calc(100dvh - 330px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 1px solid #e5e7eb;
+  }
+  li {
+    margin: 2px 0;
+  }
+  a[data-heading-link] {
+    display: block;
+    border-left: 2px solid transparent;
+    margin-left: -1px;
+    padding: 7px 10px 7px 15px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+    transition: color 0.15s, background 0.15s;
+  }
+  .outline-subsection a {
+    padding-left: 27px;
+    font-size: 13px;
+    color: #6d727c;
+  }
+  a[data-heading-link]:hover {
+    background: #f7f8fa;
+    color: #313844;
+  }
+  a[data-heading-link][aria-current="location"] {
+    border-left-color: #2877cb;
+    color: #1761ae;
+    background: #f0f6fc;
+    font-weight: 500;
+  }
+  .reading-settings {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-soft);
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .reading-settings:not([hidden]), .reading-status:not([hidden]) {
+    display: flex;
+  }
+  .reading-size-options {
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    background: #f3f4f6;
+    border-radius: 6px;
+  }
+  button {
+    border: 0;
+    padding: 5px 10px;
+    font: inherit;
+    font-size: 12px;
+    color: #72757d;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    min-height: 30px;
+  }
+  button[aria-pressed="true"] {
+    background: #fff;
+    color: #343b46;
+    box-shadow: 0 1px 3px #0000000d;
+  }
+  .reading-status {
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    color: #6d727c;
+    font-size: 12px;
+  }
+  [data-reading-percent] {
+    font-variant-numeric: tabular-nums;
+  }
+  .reading-status a:hover {
+    color: #1761ae;
+  }
+  :is(a, button, summary):focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -2px;
+    border-radius: 3px;
+  }
+  @media (min-width: 1051px) {
+    .outline-nav {
+      scrollbar-width: none;
+    }
+    .outline-nav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  @media (max-width: 1050px) {
+    .article-outline {
+      border-block: 1px solid var(--line-soft);
+    }
+    summary {
+      padding: 14px 0;
+      min-height: 50px;
+    }
+    .outline-count {
+      font-size: 12px;
+    }
+    .outline-body {
+      max-height: min(65dvh, 520px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-bottom: 18px;
+    }
+    .outline-nav {
+      max-height: none;
+      overflow: visible;
+    }
+    a[data-heading-link] {
+      padding-block: 10px;
+    }
+    .outline-subsection a {
+      font-size: 13px;
+    }
+    .reading-settings {
+      margin-top: 16px;
+      padding-top: 14px;
+    }
+    button {
+      min-height: 36px;
+      padding-inline: 16px;
+    }
+    .reading-status {
+      margin-top: 14px;
+    }
+  }
+</style>

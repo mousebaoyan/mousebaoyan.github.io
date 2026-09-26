@@ -1,16 +1,308 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import JoinUs from "../components/JoinUs.astro";
 import PageHeader from "../components/PageHeader.astro";
+import { site } from "../site.config";
+
+const steps = [
+  { title: "搜索 QQ 群", text: `在 QQ 中搜索群号 ${site.qqGroup}，确认群名为“${site.name}”。` },
+  { title: "填写申请信息", text: "申请加入时，请提供年级和本科院校。" },
+  { title: "提交入群申请", text: "提交后留意 QQ 中的申请结果，通过后即可参与群内交流。" },
+];
 ---
 
-<BaseLayout title="加入我们 — 四非保研鼠群" description="加入四非保研鼠群 QQ 交流群，与同学一起备战。">
+<BaseLayout title="加入鼠群 — 四非保研鼠群" description="四非保研鼠群的入群条件、QQ群号、申请步骤与交流约定。">
   <div class="container">
     <PageHeader
-      eyebrow="加入我们"
-      title="和四非的同学一起备战"
-      lead="在群里交流情报、互相鼓励、分享经验。扫码或搜索群号加入。"
+      eyebrow="加入鼠群"
+      title="鼠群加入指南"
+      lead="面向四非院校计算机相关专业同学的 QQ 交流群。"
     />
+
+    <div class="join-guide">
+      <div class="join-guide__content">
+        <section class="join-guide__section" aria-labelledby="eligibility-title">
+          <h2 id="eligibility-title">入群条件</h2>
+          <p>面向四非院校计算机相关专业的同学。不限制年级，已经保研的同学也可以加入交流。</p>
+          <div class="join-guide__note">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v2"/></svg>
+            <span>申请时需提供：<strong>年级、本科院校</strong></span>
+          </div>
+        </section>
+
+        <section class="join-guide__section" aria-labelledby="steps-title">
+          <h2 id="steps-title">申请步骤</h2>
+          <ol class="join-guide__steps">
+            {steps.map((step, index) => (
+              <li>
+                <span class="join-guide__step-number" aria-hidden="true">{index + 1}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section class="join-guide__section" aria-labelledby="rules-title">
+          <h2 id="rules-title">交流约定</h2>
+          <p>友好交流，尊重其他群友，禁止广告与无关链接。欢迎分享申请经验与参考资料，招生要求和时间安排以院校官方通知为准。</p>
+          <a class="join-guide__faq" href="/faq">查看关于鼠群的常见问题 <span aria-hidden="true">→</span></a>
+        </section>
+      </div>
+
+      <aside class="join-guide__card" aria-label="QQ 入群方式">
+        <div class="join-guide__identity">
+          <img src="/logo.jpg" alt="" width="44" height="44" />
+          <div>
+            <h2>{site.name}</h2>
+            <p>计算机保研信息与经验交流</p>
+          </div>
+        </div>
+        <div class="join-guide__number">
+          <span>QQ 群号</span>
+          <strong id="join-group-number">{site.qqGroup}</strong>
+        </div>
+        <div class="join-guide__actions">
+          <button type="button" data-copy-group={site.qqGroup}>复制群号</button>
+          <a href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer" aria-label="通过 QQ 链接加入（新窗口打开）">通过 QQ 链接加入 <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="join-guide__copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        <p class="join-guide__help">若链接无法打开，可在 QQ 中搜索上方群号。</p>
+        <div class="join-guide__service">
+          <strong>免费加入与交流</strong>
+          <p>鼠群本身不提供付费辅导，群友个人提供的付费服务不属于鼠群服务。</p>
+        </div>
+      </aside>
+    </div>
   </div>
-  <JoinUs />
 </BaseLayout>
+
+<style>
+  .join-guide {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+    gap: clamp(40px, 6vw, 88px);
+    margin-top: 12px;
+    margin-bottom: clamp(48px, 6vw, 80px);
+    padding-top: 32px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .join-guide__section + .join-guide__section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .join-guide__section h2 {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .join-guide__section p {
+    color: #5f6773;
+    font-size: 15px;
+    line-height: 1.85;
+  }
+  .join-guide__note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #f2f6fc;
+    color: #416184;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .join-guide__note svg {
+    flex: none;
+  }
+  .join-guide__note strong {
+    font-weight: 600;
+  }
+  .join-guide__steps {
+    display: grid;
+    gap: 20px;
+    padding: 4px 0 0;
+    list-style: none;
+  }
+  .join-guide__steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .join-guide__step-number {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--line-soft);
+    border-radius: 50%;
+    color: #677386;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .join-guide__steps h3 {
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 3px;
+  }
+  .join-guide__faq {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    color: #0063c7;
+    font-size: 14px;
+  }
+  .join-guide__faq:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .join-guide__card {
+    padding: 28px;
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    background: var(--bg-alt);
+  }
+  .join-guide__identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .join-guide__identity img {
+    flex: none;
+    border-radius: 12px;
+  }
+  .join-guide__identity h2 {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .join-guide__identity p {
+    margin-top: 3px;
+    color: var(--ink-2);
+    font-size: 12px;
+  }
+  .join-guide__number {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 28px 0 22px;
+  }
+  .join-guide__number span {
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+  .join-guide__number strong {
+    font-family: var(--font-mono);
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    user-select: all;
+  }
+  .join-guide__actions {
+    display: grid;
+    gap: 10px;
+  }
+  .join-guide__actions button,
+  .join-guide__actions a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: #424b58;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+  }
+  .join-guide__actions button {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+  }
+  .join-guide__actions button:hover {
+    border-color: #38383c;
+    background: #38383c;
+  }
+  .join-guide__actions a:hover {
+    background: var(--bg-grey);
+    border-color: #a9afb8;
+  }
+  .join-guide a:focus-visible,
+  .join-guide button:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
+  }
+  .join-guide__copy-status {
+    min-height: 22px;
+    margin-top: 8px;
+    color: #416184;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .join-guide__help {
+    color: var(--ink-2);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .join-guide__service {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .join-guide__service strong {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .join-guide__service p {
+    margin-top: 6px;
+    color: var(--ink-2);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  @media (max-width: 800px) {
+    .join-guide {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+      padding-top: 24px;
+      margin-top: 4px;
+    }
+    .join-guide__card {
+      grid-row: 1;
+      padding: 24px;
+    }
+    .join-guide__number {
+      margin-block: 20px;
+    }
+  }
+</style>
+
+<script>
+  const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-group]");
+  const copyStatus = document.querySelector<HTMLElement>(".join-guide__copy-status");
+  if (copyButton && copyStatus) {
+    copyButton.addEventListener("click", async () => {
+      copyButton.disabled = true;
+      try {
+        await navigator.clipboard.writeText(copyButton.dataset.copyGroup ?? "");
+        copyStatus.textContent = "群号已复制，可在 QQ 中粘贴搜索。";
+      } catch {
+        copyStatus.textContent = "复制失败，请选中上方群号手动复制。";
+      } finally {
+        copyButton.disabled = false;
+      }
+    });
+  }
+</script>

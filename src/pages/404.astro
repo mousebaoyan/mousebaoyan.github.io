@@ -5,8 +5,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <BaseLayout title="404 — 页面不存在" description="页面不存在">
   <div class="container not-found">
     <p class="not-found__code">404</p>
-    <h1 class="not-found__title">找不到这个页面</h1>
-    <p class="not-found__msg">你要找的页面不存在，可能已被移动或删除。</p>
+    <h1 class="not-found__title">页面不存在</h1>
+    <p class="not-found__msg">请求的页面可能已移动或删除，请检查地址或返回首页。</p>
     <a class="not-found__btn" href="/">返回首页</a>
   </div>
 </BaseLayout>
@@ -49,10 +49,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     font-weight: 500;
     padding: 10px 24px;
     border-radius: var(--r-pill);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease;
   }
   .not-found__btn:hover {
-    box-shadow: 0 0 16px rgba(0, 113, 227, 0.25);
-    transform: scale(1.03);
+    opacity: 0.9;
   }
 </style>

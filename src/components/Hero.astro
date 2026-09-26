@@ -6,11 +6,11 @@ import { site } from "../site.config";
   <div class="container hero__inner">
     <div class="hero__copy">
       <p class="hero__eyebrow">{site.name}</p>
-      <h1 class="hero__title">四非也能上岸</h1>
+      <h1 class="hero__title">计算机保研交流</h1>
       <p class="hero__sub">
-        给非 985/211/双一流 的计算机同学，一个交流保研信息和经验的地方
+        面向四非院校学生，分享计算机保研信息、申请资源与经验。
       </p>
-      <p class="hero__trust">已经有 1,000+ 名四非同学在群里</p>
+      <p class="hero__trust">1,000+ 名鼠群成员参与交流</p>
       <a class="hero__cta" href="#join">加入鼠群</a>
     </div>
 
@@ -97,11 +97,10 @@ import { site } from "../site.config";
     font-weight: 500;
     padding: 11px 28px;
     border-radius: var(--r-pill);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease;
   }
   .hero__cta:hover {
-    box-shadow: 0 0 20px rgba(0, 113, 227, 0.25);
-    transform: scale(1.03);
+    opacity: 0.9;
   }
   .hero__trust::before {
     content: "";

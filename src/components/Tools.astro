@@ -1,11 +1,11 @@
 ---
 const tools = [
-  { name: "推免服务系统", cat: "官方", desc: "教育部推免服务系统，九推阶段填报志愿的官方入口。", url: "#" },
-  { name: "夏令营信息汇总", cat: "情报", desc: "各校计算机夏令营 / 预推免开营时间与报名入口汇总。", url: "#" },
+  { name: "推免服务系统", cat: "官方", desc: "教育部推免服务系统，用于填报志愿及确认复试、待录取通知。", url: "#" },
+  { name: "夏令营信息汇总", cat: "情报", desc: "各校计算机夏令营与预推免时间安排、报名入口汇总。", url: "#" },
   { name: "简历 / PS 模板", cat: "材料", desc: "适合保研申请的简历与个人陈述模板，附填写要点。", url: "#" },
-  { name: "套磁邮件指南", cat: "技巧", desc: "如何写一封导师愿意回复的套磁邮件，含示例。", url: "#" },
+  { name: "导师联系邮件指南", cat: "技巧", desc: "导师联系邮件的写作要点与示例。", url: "#" },
   { name: "机试 / 面试题库", cat: "备考", desc: "常见机试与综合面试考点整理，配套练习资源。", url: "#" },
-  { name: "院校梯度选择", cat: "选校", desc: "结合背景做冲稳保梯度规划的思路与工具。", url: "#" },
+  { name: "院校梯度选择", cat: "选校", desc: "结合申请背景制定院校选择方案的参考方法与工具。", url: "#" },
 ];
 ---
 
@@ -13,8 +13,8 @@ const tools = [
   <div class="container">
     <div class="section__head">
       <span class="eyebrow">推荐工具</span>
-      <h2 class="section__title">备战时趁手的资源</h2>
-      <p class="section__lead">群里整理的一些实用工具和资料，会慢慢补充。</p>
+      <h2 class="section__title">保研申请资源</h2>
+      <p class="section__lead">鼠群整理的申请工具与参考资料。</p>
     </div>
 
     <div class="tools">
@@ -48,14 +48,15 @@ const tools = [
     border: 1px solid var(--line-soft);
     border-radius: var(--r-lg);
     padding: clamp(22px, 2.6vw, 30px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   .tool:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: rgba(0, 113, 227, 0.12);
+    border-color: #bfd3e8;
+    background: #fafcff;
+  }
+  .tool:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
   }
   .tool__cat {
     font-size: 0.84rem;
@@ -93,10 +94,6 @@ const tools = [
   .tool__go svg {
     width: 15px;
     height: 15px;
-    transition: transform 0.2s ease;
-  }
-  .tool:hover .tool__go svg {
-    transform: translateX(3px);
   }
 
   @media (max-width: 860px) {

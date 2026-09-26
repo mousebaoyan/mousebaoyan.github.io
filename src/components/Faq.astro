@@ -1,107 +1,307 @@
 ---
-const faqs = [
+import { site } from "../site.config";
+
+interface Question {
+  question: string;
+  answer: string;
+  link?: { label: string; href: string };
+}
+interface Group {
+  id: string;
+  title: string;
+  questions: Question[];
+}
+const groups: Group[] = [
   {
-    q: "四非真的能保研到好学校吗？",
-    a: "可以。每年都有四非同学通过夏令营 / 预推免上岸 985、211 及科研院所。关键在于尽早准备、信息充分、扬长避短。",
+    id: "about-group",
+    title: "了解鼠群",
+    questions: [
+      {
+        question: "鼠群主要交流什么？",
+        answer: "四非保研鼠群围绕计算机保研开展信息交流与经验分享，内容包括夏令营与预推免、院校选择、申请材料、导师联系和面试准备。网站整理推荐资源与经验贴，QQ群用于日常交流。",
+      },
+      {
+        question: "加入鼠群收费吗？是否提供付费辅导？",
+        answer: "加入鼠群和日常交流免费，鼠群本身不提供付费辅导。个别群友可能以个人身份提供付费服务，这属于其个人服务，并非鼠群提供的服务。",
+      },
+      {
+        question: "在哪里查看群友分享的资料和经验？",
+        answer: "网站的“推荐资源”页面汇集申请相关工具、网站与参考资料，“经验贴”页面收录群友的申请经历。可以先按自己的准备阶段浏览，再结合具体问题在群内交流。",
+        link: { label: "浏览推荐资源", href: "/resources" },
+      },
+    ],
   },
   {
-    q: "没有科研经历是不是没机会？",
-    a: "科研是加分项而非硬门槛。高质量的课程项目、竞赛、实习同样能体现能力，重要的是讲清楚你做了什么、收获了什么。",
+    id: "joining-group",
+    title: "申请加入",
+    questions: [
+      {
+        question: "哪些同学可以加入？有年级限制吗？",
+        answer: "面向四非院校计算机相关专业的同学。不限制年级，已经保研的同学也可以加入交流。",
+      },
+      {
+        question: "如何加入鼠群？",
+        answer: `在 QQ 中搜索群号 ${site.qqGroup}，找到“${site.name}”后申请加入，并在申请信息中提供年级和本科院校。也可以通过下方的加入指南查看群号并复制。`,
+        link: { label: "查看加入指南", href: "/join" },
+      },
+    ],
   },
   {
-    q: "英语 / 六级有要求吗？",
-    a: "多数院校把六级或等价成绩作为参考，部分热门项目要求较高。建议尽早把英语成绩刷到有竞争力的水平。",
-  },
-  {
-    q: "什么时候开始准备最合适？",
-    a: "越早越好。大二到大三上稳住成绩与排名，大三下进入信息搜集与套磁，暑期主攻夏令营。",
-  },
-  {
-    q: "加入鼠群需要付费吗？",
-    a: "不需要。这是一个非营利的信息互助社群，欢迎一起分享、共建。",
+    id: "participation",
+    title: "交流与分享",
+    questions: [
+      {
+        question: "群内交流需要遵守哪些规则？",
+        answer: "请保持友好交流，尊重其他群友。讨论中可以有不同意见，但应围绕问题本身，避免人身攻击。群内禁止广告与无关链接，欢迎分享申请经验和参考资料。",
+      },
+      {
+        question: "在群里提问时，怎样描述问题更清楚？",
+        answer: "建议说明目标院校或项目、所处申请阶段、已经查到的信息，以及具体不确定的地方。涉及招生通知时附上原文链接；分享截图或材料前，请遮盖姓名、学号、联系方式等个人信息。",
+      },
+      {
+        question: "如何把自己的经验或实用资源分享到网站？",
+        answer: "在“经验贴”页面点击“投稿经验贴”，或在“推荐资源”页面点击“推荐资源”，通过 GitHub 表单提交。管理员审核后会发布到网站；经验贴可以使用昵称署名。",
+        link: { label: "浏览经验贴与投稿入口", href: "/experiences" },
+      },
+      {
+        question: "群内信息和经验贴可以直接作为申请依据吗？",
+        answer: "群友分享反映各自的申请经历，适合作为准备和比较时的参考。招生条件、材料要求、报名时间与录取安排，请以目标院校当年的官方通知为准。",
+      },
+    ],
   },
 ];
 ---
 
-<section class="section section--alt" id="faq">
-  <div class="container faq">
-    <div class="section__head section__head--center">
-      <span class="eyebrow">常见问题</span>
-      <h2 class="section__title">关于四非保研，<br class="mobile-br" />你可能想问</h2>
+<div class="faq" id="faq">
+  <aside class="faq__sidebar">
+    <nav class="faq__nav" aria-label="常见问题分类">
+      <p class="faq__nav-title">问题分类</p>
+      {groups.map((group, index) => (
+        <a href={`#${group.id}`}>
+          <span class="faq__nav-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          {group.title}
+        </a>
+      ))}
+    </nav>
+    <div class="faq__contact">
+      <span class="faq__contact-label">四非保研鼠群 · QQ 群</span>
+      <strong>{site.qqGroup}</strong>
+      <a href="/join">查看加入方式 <span aria-hidden="true">→</span></a>
     </div>
+  </aside>
 
-    <div class="faq__list">
-      {
-        faqs.map((f, i) => (
-          <details class={`faq__item reveal reveal--delay-${i + 1}`} open={i === 0}>
-            <summary>
-              <span class="faq__q">{f.q}</span>
-              <span class="faq__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              </span>
-            </summary>
-            <p class="faq__a">{f.a}</p>
-          </details>
-        ))
-      }
-    </div>
+  <div class="faq__content">
+    {groups.map((group, groupIndex) => (
+      <section class="faq__group" id={group.id} aria-labelledby={`${group.id}-title`}>
+        <header class="faq__group-header">
+          <h2 id={`${group.id}-title`}>{group.title}</h2>
+          <span>{String(groupIndex + 1).padStart(2, "0")}</span>
+        </header>
+        <div class="faq__list">
+          {group.questions.map((item, index) => (
+            <details class="faq__item" open={groupIndex === 0 && index === 0}>
+              <summary>
+                <span>{item.question}</span>
+                <svg class="faq__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                  <path d="M5 12h14" />
+                  <path class="faq__icon-vertical" d="M12 5v14" />
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                <p>{item.answer}</p>
+                {item.link && <a href={item.link.href}>{item.link.label} <span aria-hidden="true">→</span></a>}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    ))}
   </div>
-</section>
+</div>
 
 <style>
   .faq {
-    max-width: 800px;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(32px, 5vw, 72px);
+    margin-top: 12px;
+    margin-bottom: clamp(48px, 6vw, 80px);
+    padding-top: 32px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .faq__sidebar {
+    position: sticky;
+    top: calc(var(--nav-h) + 28px);
+  }
+  .faq__nav-title {
+    margin-bottom: 12px;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+  .faq__nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    color: #505967;
+    font-size: 14px;
+    transition: color 0.18s ease, background-color 0.18s ease;
+  }
+  .faq__nav a:hover {
+    background: var(--blue-soft);
+    color: #0063c7;
+  }
+  .faq__nav-index {
+    color: var(--ink-3);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .faq__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 28px;
+    padding: 20px;
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: var(--bg-alt);
+  }
+  .faq__contact-label {
+    color: var(--ink-2);
+    font-size: 12px;
+  }
+  .faq__contact strong {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .faq__contact a,
+  .faq__answer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: #0063c7;
+    font-size: 14px;
+  }
+  .faq__contact a:hover,
+  .faq__answer a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .faq__group {
+    scroll-margin-top: 20px;
+  }
+  .faq__group + .faq__group {
+    margin-top: 32px;
+  }
+  .faq__group-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .faq__group-header h2 {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  .faq__group-header > span {
+    color: var(--ink-3);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
   }
   .faq__list {
-    border-top: 1px solid var(--line);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    overflow: clip;
   }
-  .faq__item {
-    border-bottom: 1px solid var(--line);
+  .faq__item + .faq__item {
+    border-top: 1px solid var(--line-soft);
   }
   .faq__item summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 24px 4px;
+    gap: 20px;
+    padding: 20px 24px;
     cursor: pointer;
     list-style: none;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.6;
+    transition: background-color 0.18s ease;
   }
   .faq__item summary::-webkit-details-marker {
     display: none;
   }
-  .faq__q {
-    font-size: clamp(1.1rem, 2vw, 1.32rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--ink);
+  .faq__item summary:hover {
+    background: var(--bg-alt);
+  }
+  .faq__item[open] {
+    background: #fafbfd;
   }
   .faq__icon {
     flex: none;
+    color: #6e7785;
+  }
+  .faq__item[open] .faq__icon {
     color: var(--blue);
   }
-  .faq__icon svg {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.25s ease;
-  }
-  .faq__item[open] .faq__icon svg {
-    transform: rotate(45deg);
-  }
-  .faq__a {
-    padding: 0 4px 26px;
-    color: var(--ink-2);
-    font-size: 1.08rem;
-    line-height: 1.55;
-    max-width: 64ch;
-  }
-
-  .mobile-br {
+  .faq__item[open] .faq__icon-vertical {
     display: none;
   }
-  @media (max-width: 520px) {
-    .mobile-br {
-      display: inline;
+  .faq__answer {
+    padding: 0 60px 22px 24px;
+    color: #5f6773;
+    font-size: 15px;
+    line-height: 1.85;
+    overflow-wrap: anywhere;
+  }
+  .faq a:focus-visible,
+  .faq summary:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -3px;
+    border-radius: 8px;
+  }
+  @media (max-width: 760px) {
+    .faq {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+      padding-top: 20px;
+      margin-top: 4px;
+    }
+    .faq__sidebar {
+      position: static;
+    }
+    .faq__nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .faq__nav-title,
+    .faq__nav-index,
+    .faq__contact {
+      display: none;
+    }
+    .faq__nav a {
+      padding: 10px 12px;
+      background: var(--bg-grey);
+      font-size: 13px;
+    }
+    .faq__item summary {
+      padding: 17px 18px;
+      gap: 16px;
+      font-size: 15px;
+    }
+    .faq__answer {
+      padding: 0 18px 20px;
+      font-size: 14px;
     }
   }
 </style>

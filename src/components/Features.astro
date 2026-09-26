@@ -4,22 +4,22 @@ const features = [
   {
     key: "info",
     title: "保研信息",
-    desc: "夏令营 / 预推免开营、是否卡四非、报名截止时间，群里都会同步",
+    desc: "汇总夏令营与预推免通知、申请条件及报名截止时间。",
   },
   {
     key: "tools",
     title: "推荐资源",
-    desc: "夏令营网站、实用工具、简历模板……群友整理的资源，少踩坑",
+    desc: "整理报名网站、实用工具、简历模板与参考资料。",
   },
   {
     key: "experience",
-    title: "上岸经验",
-    desc: "四非学长学姐的复盘，背景、套磁、面试这些细节，比鸡汤实在",
+    title: "申请经验",
+    desc: "分享申请背景、导师联系、面试准备与录取经历。",
   },
   {
     key: "community",
-    title: "一起交流",
-    desc: "一群同样出身普通院校的同学，互相答疑、交换信息，少走点弯路",
+    title: "鼠群交流",
+    desc: "交流院校选择、申请流程与备考问题。",
   },
 ];
 ---
@@ -27,12 +27,12 @@ const features = [
 <section class="section section--alt section--full" id="about">
   <div class="container">
     <div class="section__head section__head--center">
-      <span class="eyebrow">这里有什么</span>
+      <span class="eyebrow">鼠群内容</span>
       <h2 class="section__title">
-        四非保研难，<br class="mobile-br" />但不是没办法
+        信息共享，<br class="mobile-br" />经验互助
       </h2>
       <p class="section__lead">
-        出身不占优势的时候，信息和经验往往是能补上的那块
+        汇集招生信息、申请资源与保研经验，支持申请准备与交流。
       </p>
     </div>
 
@@ -97,15 +97,6 @@ const features = [
     padding: clamp(26px, 3vw, 40px);
     min-height: 220px;
     box-shadow: var(--shadow-card);
-    transition:
-      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.3s ease;
-  }
-  .bento__card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: rgba(0, 113, 227, 0.15);
   }
   .bento__icon {
     display: inline-grid;

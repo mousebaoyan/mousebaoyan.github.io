@@ -66,7 +66,7 @@
   --maxw: 1280px;
   --maxw-wide: 1400px;
   --gutter: clamp(20px, 5vw, 40px);
-  --nav-h: 52px;
+  --nav-h: 64px;
 
   /* —— z 轴 —— */
   --z-nav: 50;
@@ -294,10 +294,14 @@ ul {
 
 /* —— 入场动画 —— */
 .reveal {
-  opacity: 0;
-  transform: translateY(24px);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal[data-reveal-pending]:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(24px);
 }
 .reveal.is-visible {
   opacity: 1;
@@ -327,7 +331,8 @@ ul {
     transition: none !important;
     animation: none !important;
   }
-  .reveal {
+  .reveal,
+  .reveal[data-reveal-pending]:not(.is-visible) {
     opacity: 1;
     transform: none;
   }

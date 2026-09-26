@@ -1,76 +1,13 @@
 ---
-import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ExperienceCard from "../../components/ExperienceCard.astro";
-import PageHeader from "../../components/PageHeader.astro";
+import ExperienceListing from "../../components/ExperienceListing.astro";
+import { EXPERIENCE_PAGE_SIZE, getPublishedExperiences } from "../../lib/experiences";
 
-const experiences = await getCollection("experiences");
-const sorted = experiences.filter((e) => !e.data.draft).sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
+const experiences = await getPublishedExperiences();
 ---
 
-<BaseLayout
-  title="经验贴 — 四非保研鼠群"
-  description="学长学姐的保研上岸经验分享。"
->
-  <div class="container">
-    <PageHeader
-      eyebrow="上岸经验贴"
-      title="看看学长学姐怎么走过来的"
-      lead="真实的背景、选校逻辑、面试复盘，帮你少走弯路"
-    />
-
-    <div class="page-actions">
-      <a class="submit-btn" href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" target="_blank" rel="noopener">我要投稿</a>
-    </div>
-
-    <div class="exp-grid">
-      {
-        sorted.map((e) => (
-          <ExperienceCard
-            title={e.data.title}
-            author={e.data.author}
-            school={e.data.school}
-            target={e.data.target}
-            excerpt={e.data.excerpt}
-            tags={e.data.tags}
-            slug={e.id}
-          />
-        ))
-      }
-    </div>
-  </div>
-</BaseLayout>
-
-<style>
-  .page-actions {
-    margin-bottom: clamp(24px, 4vw, 36px);
-  }
-      .submit-btn {
-    display: inline-block;
-    padding: 9px 22px;
-    border-radius: var(--r-pill);
-    border: 1.5px solid var(--line);
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--ink-2);
-    transition: border-color 0.2s, color 0.2s, background 0.2s;
-  }
-  .submit-btn:hover {
-    border-color: var(--blue);
-    color: var(--blue);
-    background: rgba(0, 113, 227, 0.04);
-  }
-  .exp-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(14px, 1.6vw, 20px);
-    padding-bottom: clamp(48px, 8vw, 96px);
-  }
-  @media (max-width: 860px) {
-    .exp-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+<ExperienceListing
+  experiences={experiences.slice(0, EXPERIENCE_PAGE_SIZE)}
+  total={experiences.length}
+  currentPage={1}
+  totalPages={Math.max(1, Math.ceil(experiences.length / EXPERIENCE_PAGE_SIZE))}
+/>

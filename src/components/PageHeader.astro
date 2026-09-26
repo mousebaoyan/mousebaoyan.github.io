@@ -3,14 +3,21 @@ interface Props {
   eyebrow?: string;
   title: string;
   lead?: string;
+  action?: { label: string; href: string };
 }
-const { eyebrow, title, lead } = Astro.props;
+const { eyebrow, title, lead, action } = Astro.props;
 ---
 
-<div class="page-header">
+<div class:list={["page-header", { "page-header--with-action": action }]}>
   {eyebrow && <span class="eyebrow">{eyebrow}</span>}
   <h1 class="page-header__title">{title}</h1>
   {lead && <p class="page-header__lead">{lead}</p>}
+  {action && (
+    <a class="page-header__action" href={action.href} target="_blank" rel="noopener noreferrer" aria-label={`${action.label}（新窗口打开）`}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      {action.label}
+    </a>
+  )}
 </div>
 
 <style>
@@ -29,5 +36,62 @@ const { eyebrow, title, lead } = Astro.props;
     font-size: 1.1rem;
     color: var(--ink-2);
     line-height: 1.5;
+  }
+  .page-header--with-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "eyebrow ." "title action" "lead .";
+    column-gap: 32px;
+    max-width: none;
+    padding-bottom: clamp(32px, 5vw, 48px);
+  }
+  .page-header--with-action .eyebrow {
+    grid-area: eyebrow;
+  }
+  .page-header--with-action .page-header__title {
+    grid-area: title;
+  }
+  .page-header--with-action .page-header__lead {
+    grid-area: lead;
+    max-width: 640px;
+  }
+  .page-header__action {
+    grid-area: action;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 12px;
+    padding: 10px 16px;
+    border: 1px solid #d5d9e0;
+    border-radius: 10px;
+    background: var(--bg);
+    color: #424b58;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    white-space: nowrap;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .page-header__action:hover {
+    border-color: #8eb6df;
+    background: #f4f8fc;
+    color: #1761ae;
+  }
+  .page-header__action:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
+  }
+  @media (max-width: 640px) {
+    .page-header--with-action {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "eyebrow" "title" "lead" "action";
+    }
+    .page-header__action {
+      justify-self: start;
+      margin-top: 24px;
+    }
   }
 </style>

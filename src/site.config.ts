@@ -2,9 +2,9 @@
 export const site = {
   name: "四非保研鼠群",
   shortName: "保研鼠群",
-  tagline: "计算机保研信息与经验交流社群",
+  tagline: "计算机保研信息与经验交流",
   description:
-    "汇集计算机保研夏令营情报、保研时间线与上岸经验，和四非的同学一起打破信息差",
+    "汇集计算机保研招生信息、申请资源与经验分享，为四非院校学生提供信息交流与申请参考。",
   qqGroup: "752140536",
   qqJoinUrl: "https://qm.qq.com/q/20geYjRZlq",
 };
@@ -14,5 +14,5 @@ export const navLinks = [
   { href: "/", label: "首页" },
   { href: "/resources", label: "推荐资源" },
   { href: "/experiences", label: "经验贴" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/faq", label: "常见问题" },
 ];
