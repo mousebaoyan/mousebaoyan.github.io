@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        经验贴用于分享保研经历，审核通过后将在网站发布。
+        欢迎分享保研经历，投稿经管理员审核后将在网站发布。
 
         - 可使用昵称或“匿名”署名，本科院校可以不填写。
         - 此 Issue 及上传的附件公开可见，“匿名”署名不会隐藏你的 GitHub 账号。提交前请检查正文和截图，移除姓名、学号、联系方式等不希望公开的信息。
@@ -34,7 +34,7 @@ body:
     id: school
     attributes:
       label: 本科院校（选填）
-      description: 不想透露可以留空或填写"匿名"
+      description: 如不便公开，可留空或填写“匿名”
       placeholder: 例：某二本院校
 
   - type: input
@@ -63,7 +63,7 @@ body:
     id: excerpt
     attributes:
       label: 摘要
-      description: 一两句话概括核心内容，显示在列表页
+      description: 用一两句话概括文章内容，便于读者在列表页了解文章主题
       placeholder: 例：记录计算机保研的夏令营申请、面试准备与院校选择经历
     validations:
       required: true
@@ -72,15 +72,15 @@ body:
     id: body
     attributes:
       label: 正文内容
-      description: 支持 Markdown，图片可直接上传到 Issue（上传生成的普通 img 标签会自动转换）或使用完整的 HTTPS 链接。不支持其他 HTML。建议包含背景介绍、经历过程、关键心得、给后来者的建议。
+      description: 支持 Markdown，不支持自定义 HTML 排版。图片可直接上传到 Issue，或用 Markdown 插入完整的 HTTPS 图片链接。建议介绍个人背景、保研经历、经验总结和给学弟学妹的建议。
       placeholder: |
         ## 我的背景
 
-        ## 经历过程
+        ## 保研经历
 
-        ## 关键心得
+        ## 经验总结
 
-        ## 给后来者的建议
+        ## 给学弟学妹的建议
     validations:
       required: true
 

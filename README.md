@@ -26,7 +26,7 @@
 | [保研资源](https://mousebaoyan.github.io/resources/) | 按类别整理保研相关网站、工具与参考资料 |
 | [保研经验](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览保研经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
 | [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
-| [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、申请步骤、群号复制与 QQ 入群链接 |
+| [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、入群步骤、群号复制与 QQ 入群链接 |
 
 网站适配桌面和手机，使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
@@ -40,8 +40,8 @@
 
 - **入群范围**：面向四非院校的计算机相关专业同学，不限制年级，已保研的同学也可以加入。
 - **申请信息**：请提供年级和本科院校。
-- **交流约定**：友好交流、尊重他人，禁止广告与无关链接。
-- **费用说明**：入群和日常交流免费。鼠群本身不提供付费辅导，群友个人提供的付费服务不属于鼠群服务。
+- **交流规则**：友好交流、尊重他人，禁止广告与无关链接。
+- **费用说明**：入群和日常交流免费。鼠群不提供付费辅导。群友以个人名义提供的付费服务与鼠群无关。
 
 ## 投稿与资源推荐
 
@@ -52,7 +52,7 @@
 | 经验贴 | [分享经验](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml) | 保研年份与背景、准备过程、面试经历、录取去向和经验总结 |
 | 资源 | [推荐资源](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml) | 资源用途、适用场景、有效链接，以及付费或注册等使用条件 |
 
-**提交表单 → 管理员审核 → 自动构建与发布 → Issue 收到页面链接**
+**提交表单 → 管理员审核 → 发布到网站 → 在 Issue 评论中查看文章或资源链接**
 
 经验贴和资源推荐均支持审核后自动发布。提交后如需补充或修改，请编辑原 Issue；已发布内容也需重新审核后同步到网站。经验贴正文支持 Markdown，可直接向 Issue 上传图片。
 
@@ -195,7 +195,7 @@ public/                     # Logo 等静态文件
 | [审核发布](.github/workflows/publish-submission.yml) | Issue 新增 `审核通过` 标签 | 校验权限与投稿内容、生成 Markdown、构建检查、提交内容、调用部署并反馈结果 |
 | [网站部署](.github/workflows/deploy.yml) | 推送到 `main`、手动触发或审核流程调用 | 安装依赖、运行测试、构建网站并部署到 GitHub Pages |
 
-发布流程使用 GitHub 提供的 `GITHUB_TOKEN`，无需额外配置个人访问令牌。部署成功后，正常完成的投稿 Issue 会收到页面链接并自动关闭；失败时保留 Issue 并反馈原因。
+发布流程使用 GitHub 提供的 `GITHUB_TOKEN`，无需额外配置个人访问令牌。部署成功后，系统会在投稿 Issue 下回复页面链接并自动关闭 Issue；失败时保留 Issue 并说明原因。
 
 首次配置、发布后修改、下架及失败重试，请参阅 **[投稿审核与自动发布指南](docs/submission-review.md)**。
 

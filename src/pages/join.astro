@@ -10,11 +10,11 @@ const steps = [
 ];
 ---
 
-<BaseLayout title="加入鼠群 — 四非保研鼠群" description="四非保研鼠群的入群条件、QQ群号、申请步骤与交流约定。">
+<BaseLayout title="加入鼠群 — 四非保研鼠群" description="四非保研鼠群的入群条件、QQ 群号、入群步骤与交流规则。">
   <div class="container">
     <PageHeader
       eyebrow="加入鼠群"
-      title="鼠群加入指南"
+      title="入群指南"
       lead="面向四非院校计算机相关专业同学的 QQ 交流群。"
     />
 
@@ -30,7 +30,7 @@ const steps = [
         </section>
 
         <section class="join-guide__section" aria-labelledby="steps-title">
-          <h2 id="steps-title">申请步骤</h2>
+          <h2 id="steps-title">入群步骤</h2>
           <ol class="join-guide__steps">
             {steps.map((step, index) => (
               <li>
@@ -45,9 +45,9 @@ const steps = [
         </section>
 
         <section class="join-guide__section" aria-labelledby="rules-title">
-          <h2 id="rules-title">交流约定</h2>
+          <h2 id="rules-title">交流规则</h2>
           <p>友好交流，尊重其他群友，禁止广告与无关链接。欢迎分享保研经验与参考资料，招生要求和时间安排以院校官方通知为准。</p>
-          <a class="join-guide__faq" href="/faq">查看关于鼠群的常见问题 <span aria-hidden="true">→</span></a>
+          <a class="join-guide__faq" href="/faq">查看入群常见问题 <span aria-hidden="true">→</span></a>
         </section>
       </div>
 
@@ -65,13 +65,13 @@ const steps = [
         </div>
         <div class="join-guide__actions">
           <button type="button" data-copy-group={site.qqGroup}>复制群号</button>
-          <a href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer" aria-label="通过 QQ 链接加入（新窗口打开）">通过 QQ 链接加入 <span aria-hidden="true">↗</span></a>
+          <a href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer" aria-label="打开 QQ 加群（新窗口打开）">打开 QQ 加群 <span aria-hidden="true">↗</span></a>
         </div>
         <p class="join-guide__copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
         <p class="join-guide__help">若链接无法打开，可在 QQ 中搜索上方群号。</p>
         <div class="join-guide__service">
-          <strong>免费加入与交流</strong>
-          <p>鼠群本身不提供付费辅导，群友个人提供的付费服务不属于鼠群服务。</p>
+          <strong>入群与交流免费</strong>
+          <p>鼠群不提供付费辅导。群友以个人名义提供的付费服务与鼠群无关。</p>
         </div>
       </aside>
     </div>

@@ -57,7 +57,7 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
               <div class="article-meta">
                 <time datetime={exp.data.date.toISOString()}>{dateStr}</time>
                 <span aria-hidden="true">·</span><span>约 {wordCount.toLocaleString("zh-CN")} 字</span>
-                <span aria-hidden="true">·</span><span>{readingMinutes} 分钟阅读</span>
+                <span aria-hidden="true">·</span><span>预计阅读 {readingMinutes} 分钟</span>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 <dialog class="site-search" id="site-search" aria-labelledby="search-title">
   <div class="search-shell">
     <header class="search-head">
-      <div><span class="search-eyebrow">站内全文检索</span><h2 id="search-title">搜索</h2></div>
+      <div><span class="search-eyebrow">站内搜索</span><h2 id="search-title">搜索</h2></div>
       <button class="search-close" type="button" aria-label="关闭搜索" data-search-close>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
       </button>
@@ -22,10 +22,10 @@
         <div class="search-suggestions">
           {["夏令营", "面试", "导师", "报名材料", "入群"].map((term) => <button type="button" data-search-suggestion={term}>{term}<span aria-hidden="true">↗</span></button>)}
         </div>
-        <div class="search-guide"><span aria-hidden="true">⌕</span><p>支持标题与正文检索。<br /><small>多个关键词可用空格分隔，例如「导师 联系」。</small></p></div>
+        <div class="search-guide"><span aria-hidden="true">⌕</span><p>可搜索标题和正文。<br /><small>多个关键词可用空格分隔，例如「导师 联系」。</small></p></div>
       </div>
       <ol class="search-results" data-search-results aria-label="搜索结果"></ol>
-      <div class="search-empty" data-search-empty hidden><strong>没有找到相关内容</strong><p>可缩短关键词，或切换到“全部”。</p></div>
+      <div class="search-empty" data-search-empty hidden><strong>没有找到相关内容</strong><p>可尝试更短的关键词，或切换到“全部”。</p></div>
       <button class="search-more" type="button" data-search-more hidden>显示更多结果</button>
       <button class="search-more" type="button" data-search-retry hidden>重新加载</button>
     </div>
@@ -81,7 +81,7 @@
     more.hidden = true;
     retry.hidden = !error;
     results.replaceChildren();
-    if (error) { status.textContent = "搜索暂时无法加载，请重试。"; return; }
+    if (error) { status.textContent = "搜索内容加载失败，请重试。"; return; }
     if (!documents) { status.textContent = "正在加载搜索内容…"; return; }
     if (!query) { status.textContent = "搜索范围：保研经验、保研资源与常见问题。"; return; }
     matches = searchDocuments(documents, query, kind);

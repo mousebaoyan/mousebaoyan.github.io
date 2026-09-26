@@ -5,7 +5,7 @@ export const site = {
   shortName: "保研鼠群",
   tagline: "计算机保研信息与经验交流",
   description:
-    "汇集计算机保研招生信息、实用资源与保研经验，为四非院校学生提供交流与互助。",
+    "整理计算机保研招生信息、实用资源和经验贴，供四非院校学生查阅与交流。",
   qqGroup: "752140536",
   qqJoinUrl: "https://qm.qq.com/q/20geYjRZlq",
 };

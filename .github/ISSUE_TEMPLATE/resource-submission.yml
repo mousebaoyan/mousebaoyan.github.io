@@ -26,7 +26,7 @@ body:
     id: description
     attributes:
       label: 一句话描述
-      description: 说明这个资源的用途和价值，显示在资源卡片上
+      description: 简要说明资源能提供哪些信息或帮助，显示在资源卡片上
       placeholder: 例：汇聚全国高校保研信息的综合论坛，可查各校往年名额和招生要求
     validations:
       required: true
@@ -60,7 +60,7 @@ body:
     id: notes
     attributes:
       label: 推荐理由（选填）
-      description: 为什么推荐这个资源？有什么使用技巧？支持 Markdown，图片可直接上传到 Issue（上传生成的普通 img 标签会自动转换）或使用完整的 HTTPS 链接。不支持其他 HTML。
+      description: 请说明推荐原因、使用方法或注意事项。支持 Markdown，不支持自定义 HTML 排版。图片可直接上传到 Issue，或用 Markdown 插入完整的 HTTPS 图片链接。
       placeholder: 详细说明使用场景或注意事项
 
   - type: input

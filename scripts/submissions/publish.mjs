@@ -118,11 +118,11 @@ export async function report({ github, context, core }, { published, deployed, p
     const url = new URL(route, `${pageUrl.replace(/\/$/, "")}/`).href;
     message = `✅ 投稿已审核通过并发布：[查看网站内容](${url})。\n\n` +
       (changed ? "审核后 Issue 又有修改，网站保留的是本次审核时的版本，新的修改需要重新审核。\n\n" : "") +
-      "后续修改：重新打开此 Issue，编辑并保存内容，然后移除再添加「审核通过」标签。更新会沿用原文章地址。";
+      "后续如需修改，请重新打开此 Issue，编辑并保存内容，再联系管理员重新审核。更新后文章或资源的地址不变。";
   } else {
     message = published
       ? "⚠️ 投稿已写入仓库，但网站部署失败。修复部署问题后，可以重新运行此次工作流。"
-      : "❌ 本次投稿未能发布。请检查字段和构建日志，修改后移除再添加「审核通过」标签。";
+      : "❌ 本次投稿未能发布。请根据下方错误提示检查投稿内容，修改后联系管理员重新审核。如不确定原因，可请管理员查看发布日志。";
     if (error) message += `\n\n错误信息：\n\n\`\`\`text\n${error.replaceAll("```", "'''")}\n\`\`\``;
   }
   const body = `${COMMENT_MARKER}\n${message}\n\n[查看发布日志](${runUrl})`;
