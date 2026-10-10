@@ -1,0 +1,526 @@
+---
+import { slideImage, slidesFor, type Deck, type Talk } from "../lib/talks";
+
+interface Props {
+  talk: Talk;
+  deck: Deck;
+}
+const { talk, deck } = Astro.props;
+const slides = slidesFor(talk, deck);
+const pages = Array.from({ length: slides.pages }, (_, index) => index + 1);
+const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
+---
+
+<div class="deck" data-deck={deck.id} data-pages={slides.pages} style={`--slide-ratio: ${slides.aspectRatio}`}>
+  {deck.chapters.length > 0 && (
+    <nav class="deck__chapters" aria-label={`${deck.title} 章节`}>
+      {deck.chapters.map((chapter) => (
+        <a href={`#${deck.id}-${chapter.page}`} data-deck-goto={chapter.page}>
+          <span>{chapter.title}</span>
+          <span class="deck__chapter-page">P{chapter.page}</span>
+        </a>
+      ))}
+    </nav>
+  )}
+
+  <div class="deck__stage" tabindex="0" role="region" aria-roledescription="幻灯片" aria-label={`${deck.title}，可用左右方向键翻页`}>
+    <ol class="deck__slides">
+      {pages.map((page) => (
+        <li class="deck__slide" id={`${deck.id}-${page}`} data-page={page} aria-label={`第 ${page} 页，共 ${slides.pages} 页`}>
+          <img
+            src={slideImage(talk, deck, page)}
+            alt={`第 ${page} 页：${firstLine(page)}`}
+            loading={page === 1 ? "eager" : "lazy"}
+            decoding="async"
+            width="1600"
+            height="900"
+          />
+          {slides.text[page - 1] && <p class="visually-hidden">{slides.text[page - 1]}</p>}
+        </li>
+      ))}
+    </ol>
+    <button class="deck__arrow deck__arrow--prev" type="button" data-deck-prev tabindex="-1" aria-hidden="true" hidden>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
+    </button>
+    <button class="deck__arrow deck__arrow--next" type="button" data-deck-next tabindex="-1" aria-hidden="true" hidden>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+    </button>
+    <div class="deck__progress" aria-hidden="true"><span data-deck-progress></span></div>
+  </div>
+
+  <div class="deck__bar" hidden>
+    <div class="deck__pager">
+      <button class="deck__step" type="button" data-deck-prev aria-label="上一页">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
+      </button>
+      <p class="deck__counter" aria-live="polite"><strong data-deck-current>1</strong> / {slides.pages}</p>
+      <button class="deck__step" type="button" data-deck-next aria-label="下一页">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+      </button>
+    </div>
+    <div class="deck__tools">
+      <button class="deck__tool" type="button" data-deck-thumbs aria-expanded="false" aria-controls={`${deck.id}-thumbs`}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="4.5" width="7" height="6" rx="1.2" /><rect x="13.5" y="4.5" width="7" height="6" rx="1.2" /><rect x="3.5" y="13.5" width="7" height="6" rx="1.2" /><rect x="13.5" y="13.5" width="7" height="6" rx="1.2" /></svg>
+        <span>全部页面</span>
+      </button>
+      <button class="deck__tool" type="button" data-deck-fullscreen hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+        <span data-deck-fullscreen-label>全屏</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="deck__thumbs" id={`${deck.id}-thumbs`} hidden>
+    {pages.map((page) => (
+      <button type="button" class="deck__thumb" data-deck-goto={page} aria-label={`跳到第 ${page} 页`}>
+        <img src={slideImage(talk, deck, page, true)} alt="" loading="lazy" decoding="async" width="320" height="180" />
+        <span>{page}</span>
+      </button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .deck {
+    --deck-bg: #f5f5f7;
+    min-width: 0;
+  }
+  .deck__chapters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .deck__chapters::-webkit-scrollbar {
+    display: none;
+  }
+  .deck__chapters a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    min-height: 36px;
+    padding: 6px 12px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-sm);
+    color: #4c5563;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+  }
+  .deck__chapters a:hover {
+    border-color: var(--blue-line);
+    color: var(--blue-ink);
+  }
+  .deck__chapters a[aria-current="true"] {
+    border-color: transparent;
+    background: var(--blue-soft);
+    color: var(--blue-ink);
+  }
+  .deck__chapter-page {
+    color: var(--ink-3);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+  .deck__chapters a[aria-current="true"] .deck__chapter-page {
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  .deck__stage {
+    position: relative;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r);
+    background: var(--deck-bg);
+    overflow: hidden;
+  }
+  .deck__stage:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+  }
+  .deck__slides {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+  }
+  .deck__slide img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--slide-ratio);
+    background: #fff;
+    object-fit: contain;
+  }
+
+  /* 启用脚本后：一次只显示一页 */
+  .deck[data-ready] .deck__slides {
+    display: block;
+    touch-action: pan-y;
+    user-select: none;
+  }
+  .deck[data-ready] .deck__slide:not([data-active]) {
+    display: none;
+  }
+  .deck__arrow {
+    position: absolute;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(29, 29, 31, 0.08);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.18s ease, background-color 0.18s ease;
+  }
+  .deck__arrow--prev {
+    left: 14px;
+  }
+  .deck__arrow--next {
+    right: 14px;
+  }
+  .deck__stage:hover .deck__arrow:not(:disabled),
+  .deck__stage:focus-within .deck__arrow:not(:disabled) {
+    opacity: 1;
+  }
+  .deck__arrow:hover {
+    background: #fff;
+  }
+  .deck__arrow:disabled {
+    cursor: default;
+  }
+  .deck__progress {
+    position: absolute;
+    inset: auto 0 0;
+    height: 3px;
+    background: rgba(29, 29, 31, 0.06);
+  }
+  .deck:not([data-ready]) .deck__progress {
+    display: none;
+  }
+  .deck__progress span {
+    display: block;
+    height: 100%;
+    background: var(--blue);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+
+  .deck__bar:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .deck__pager {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .deck__step {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-sm);
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+  }
+  .deck__step:hover:not(:disabled) {
+    background: var(--bg-grey);
+  }
+  .deck__step:disabled {
+    color: #c7c7cc;
+    cursor: default;
+  }
+  .deck__counter {
+    min-width: 64px;
+    text-align: center;
+    color: var(--ink-2);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .deck__counter strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .deck__tools {
+    display: flex;
+    gap: 6px;
+  }
+  .deck__tool:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 6px 12px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-sm);
+    background: var(--bg);
+    color: #4c5563;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .deck__tool:hover {
+    background: var(--bg-grey);
+    color: var(--ink);
+  }
+  .deck__tool[aria-expanded="true"] {
+    border-color: transparent;
+    background: var(--blue-soft);
+    color: var(--blue-ink);
+  }
+
+  .deck__thumbs:not([hidden]) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r);
+    background: var(--bg-alt);
+  }
+  .deck__thumb {
+    display: grid;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink-2);
+    font: inherit;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    cursor: pointer;
+  }
+  .deck__thumb img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--slide-ratio);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .deck__thumb:hover img {
+    border-color: var(--blue-line);
+  }
+  .deck__thumb[aria-current="true"] {
+    color: var(--blue-ink);
+    font-weight: 600;
+  }
+  .deck__thumb[aria-current="true"] img {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+  }
+
+  /* 全屏：黑底居中，工具栏贴底 */
+  .deck:fullscreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 24px;
+    background: #000;
+  }
+  .deck:fullscreen .deck__chapters,
+  .deck:fullscreen .deck__thumbs {
+    display: none;
+  }
+  .deck:fullscreen .deck__stage {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 0;
+    background: #000;
+  }
+  .deck:fullscreen .deck__slides,
+  .deck:fullscreen .deck__slide {
+    width: 100%;
+    height: 100%;
+  }
+  .deck:fullscreen .deck__slide img {
+    width: 100%;
+    height: 100%;
+    background: #000;
+  }
+  .deck:fullscreen .deck__progress {
+    display: none;
+  }
+  .deck:fullscreen .deck__counter,
+  .deck:fullscreen .deck__counter strong {
+    color: var(--on-dark);
+  }
+  .deck:fullscreen .deck__step,
+  .deck:fullscreen .deck__tool {
+    border-color: rgba(255, 255, 255, 0.16);
+    background: transparent;
+    color: var(--on-dark);
+  }
+  .deck:fullscreen .deck__step:disabled {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* 触屏上箭头会遮住课件内容，改用滑动和下方工具栏翻页 */
+  @media (hover: none) {
+    .deck__arrow {
+      display: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .deck__arrow--prev {
+      left: 8px;
+    }
+    .deck__arrow--next {
+      right: 8px;
+    }
+    .deck__stage {
+      border-radius: 12px;
+    }
+    .deck__thumbs:not([hidden]) {
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 10px;
+      padding: 10px;
+    }
+    .deck__tool span {
+      display: none;
+    }
+    .deck__tool:not([hidden]) {
+      width: 40px;
+      justify-content: center;
+      padding: 0;
+    }
+  }
+</style>
+
+<script>
+  for (const deck of document.querySelectorAll<HTMLElement>("[data-deck]")) {
+    const id = deck.dataset.deck!;
+    const total = Number(deck.dataset.pages);
+    const stage = deck.querySelector<HTMLElement>(".deck__stage")!;
+    const slides = [...deck.querySelectorAll<HTMLElement>(".deck__slide")];
+    const prevs = [...deck.querySelectorAll<HTMLButtonElement>("[data-deck-prev]")];
+    const nexts = [...deck.querySelectorAll<HTMLButtonElement>("[data-deck-next]")];
+    const current = deck.querySelector<HTMLElement>("[data-deck-current]")!;
+    const progress = deck.querySelector<HTMLElement>("[data-deck-progress]")!;
+    const thumbsToggle = deck.querySelector<HTMLButtonElement>("[data-deck-thumbs]")!;
+    const thumbs = deck.querySelector<HTMLElement>(".deck__thumbs")!;
+    const thumbButtons = [...thumbs.querySelectorAll<HTMLButtonElement>("[data-deck-goto]")];
+    const chapters = [...deck.querySelectorAll<HTMLAnchorElement>(".deck__chapters [data-deck-goto]")];
+    const fullscreen = deck.querySelector<HTMLButtonElement>("[data-deck-fullscreen]")!;
+    const fullscreenLabel = deck.querySelector<HTMLElement>("[data-deck-fullscreen-label]")!;
+    let page = 0;
+
+    // 预先加载相邻页面，翻页时不必等待图片
+    const warm = (target: number) => {
+      const image = slides[target - 1]?.querySelector("img");
+      if (image) image.loading = "eager";
+    };
+
+    function show(target: number, { updateHash = true } = {}) {
+      target = Math.min(total, Math.max(1, target));
+      if (target === page) return;
+      slides[page - 1]?.removeAttribute("data-active");
+      page = target;
+      slides[page - 1].setAttribute("data-active", "");
+      warm(page);
+      warm(page + 1);
+      warm(page - 1);
+      current.textContent = String(page);
+      progress.style.transform = `scaleX(${page / total})`;
+      prevs.forEach((button) => { button.disabled = page === 1; });
+      nexts.forEach((button) => { button.disabled = page === total; });
+      thumbButtons.forEach((button) => {
+        const active = Number(button.dataset.deckGoto) === page;
+        if (active) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+      });
+      const chapter = chapters.filter((link) => Number(link.dataset.deckGoto) <= page).at(-1);
+      chapters.forEach((link) => link.toggleAttribute("aria-current", false));
+      if (chapter) {
+        chapter.setAttribute("aria-current", "true");
+        const bar = chapter.parentElement!;
+        const offset = chapter.offsetLeft - bar.offsetLeft;
+        if (offset < bar.scrollLeft || offset + chapter.offsetWidth > bar.scrollLeft + bar.clientWidth) {
+          bar.scrollTo({ left: offset - 16, behavior: "smooth" });
+        }
+      }
+      if (updateHash) history.replaceState(null, "", page === 1 ? location.pathname + location.search : `#${id}-${page}`);
+    }
+
+    deck.setAttribute("data-ready", "");
+    deck.querySelector<HTMLElement>(".deck__bar")!.hidden = false;
+    prevs.forEach((button) => { button.hidden = false; button.addEventListener("click", () => show(page - 1)); });
+    nexts.forEach((button) => { button.hidden = false; button.addEventListener("click", () => show(page + 1)); });
+
+    deck.querySelectorAll<HTMLElement>("[data-deck-goto]").forEach((control) => control.addEventListener("click", (event) => {
+      event.preventDefault();
+      show(Number(control.dataset.deckGoto));
+      if (control.classList.contains("deck__thumb")) stage.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      stage.focus({ preventScroll: true });
+    }));
+
+    deck.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      const keys: Record<string, () => number> = {
+        ArrowLeft: () => page - 1, ArrowUp: () => page - 1, PageUp: () => page - 1,
+        ArrowRight: () => page + 1, ArrowDown: () => page + 1, PageDown: () => page + 1, " ": () => page + 1,
+        Home: () => 1, End: () => total,
+      };
+      // 上下键与空格只在幻灯片区域内翻页，避免影响页面滚动
+      if (!keys[event.key] || (["ArrowUp", "ArrowDown", " "].includes(event.key) && !stage.contains(event.target as Node) && !document.fullscreenElement)) return;
+      if (event.target instanceof HTMLButtonElement && event.key === " ") return;
+      event.preventDefault();
+      show(keys[event.key]());
+    });
+
+    let startX = 0;
+    let startY = 0;
+    stage.addEventListener("pointerdown", (event) => { startX = event.clientX; startY = event.clientY; });
+    stage.addEventListener("pointerup", (event) => {
+      const dx = event.clientX - startX;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) show(page + (dx < 0 ? 1 : -1));
+    });
+
+    thumbsToggle.addEventListener("click", () => {
+      const open = thumbs.hidden;
+      thumbs.hidden = !open;
+      thumbsToggle.setAttribute("aria-expanded", String(open));
+    });
+
+    if (document.fullscreenEnabled) {
+      fullscreen.hidden = false;
+      fullscreen.addEventListener("click", () => {
+        if (document.fullscreenElement === deck) void document.exitFullscreen();
+        else void deck.requestFullscreen().then(() => stage.focus({ preventScroll: true }));
+      });
+      document.addEventListener("fullscreenchange", () => {
+        fullscreenLabel.textContent = document.fullscreenElement === deck ? "退出全屏" : "全屏";
+      });
+    }
+
+    const fromHash = () => {
+      const match = location.hash.match(new RegExp(`^#${id}-(\\d+)$`));
+      if (!match) return false;
+      show(Number(match[1]), { updateHash: false });
+      requestAnimationFrame(() => deck.scrollIntoView({ block: "start" }));
+      return true;
+    };
+    if (!fromHash()) show(1, { updateHash: false });
+    window.addEventListener("hashchange", fromHash);
+  }
+</script>

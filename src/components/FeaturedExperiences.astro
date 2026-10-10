@@ -11,16 +11,16 @@ const featured = experiences
 ---
 
 {featured.length > 0 && (
-  <section class="section featured-exp">
+  <section class="section">
     <div class="container">
-      <div class="featured-exp__head">
+      <div class="section-head">
         <div>
-          <span class="eyebrow">经验分享</span>
-          <h2 class="section__title">保研经验</h2>
+          <h2 class="section-head__title">保研经验</h2>
+          <p class="section-head__lead">群友分享的准备过程、院校选择与面试经历。</p>
         </div>
         <a class="link-arrow" href="/experiences">
-          查看全部
-          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          全部 {experiences.filter((e) => !e.data.draft).length} 篇
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
       <div class="experience-list">
@@ -42,22 +42,9 @@ const featured = experiences
 )}
 
 <style>
-  .featured-exp {
-    border-top: 1px solid var(--line-soft);
-  }
-  .featured-exp__head {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: clamp(28px, 4vw, 40px);
-  }
   .experience-list {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-  @media (max-width: 860px) {
-    .featured-exp__head { flex-direction: column; align-items: flex-start; }
+    gap: clamp(14px, 1.6vw, 20px);
   }
 </style>

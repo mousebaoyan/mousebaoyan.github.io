@@ -18,7 +18,6 @@ const categories = [...new Set(sorted.map((t) => t.data.category))];
 >
   <div class="container">
     <PageHeader
-      eyebrow="资料与工具"
       title="保研资源"
       lead="查找招生信息、准备报名材料、安排报名时间所需的网站、工具和资料。"
       action={{ label: "推荐资源", href: "https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml" }}
@@ -35,7 +34,6 @@ const categories = [...new Set(sorted.map((t) => t.data.category))];
                   name={t.data.name}
                   description={t.data.description}
                   category={t.data.category}
-                  link={t.data.link}
                   tags={t.data.tags}
                   slug={t.id}
                 />

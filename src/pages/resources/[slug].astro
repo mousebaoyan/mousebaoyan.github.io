@@ -35,11 +35,11 @@ const { Content } = await render(tool);
         <div class="tool-detail__meta">
           <div class="tool-detail__tags">
             {tool.data.tags.map((t) => (
-              <span class="tag-pill">{t}</span>
+              <span class="chip">{t}</span>
             ))}
           </div>
-          <a class="tool-detail__cta" href={tool.data.link} target="_blank" rel="noopener noreferrer">
-          打开资源
+          <a class="btn btn--primary" href={tool.data.link} target="_blank" rel="noopener noreferrer">
+            打开资源
             <svg viewBox="0 0 24 24" width="16" height="16"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
         </div>
@@ -64,9 +64,9 @@ const { Content } = await render(tool);
     padding: clamp(32px, 5vw, 56px) 0;
   }
   .tool-detail__cat {
-    font-size: 0.84rem;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--blue);
+    color: var(--blue-ink);
   }
   .tool-detail__title {
     font-size: clamp(1.8rem, 4vw, 2.8rem);
@@ -93,31 +93,7 @@ const { Content } = await render(tool);
   .tool-detail__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-  }
-  .tag-pill {
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 4px 11px;
-    border-radius: var(--r-pill);
-    background: var(--bg-grey);
-    color: var(--ink-2);
-  }
-  .tool-detail__cta {
-    display: inline-flex;
-    align-items: center;
     gap: 6px;
-    background: var(--gradient-accent);
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 9px 20px;
-    border-radius: var(--r-pill);
-    transition: opacity 0.2s ease;
-    white-space: nowrap;
-  }
-  .tool-detail__cta:hover {
-    opacity: 0.9;
   }
   .prose {
     color: var(--ink);

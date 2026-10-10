@@ -8,6 +8,7 @@ import { parse } from "yaml";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const dist = join(root, "dist");
 const isFile = (path) => existsSync(path) && statSync(path).isFile();
+const frontmatter = (path) => parse(readFileSync(path, "utf8").split(/^---\s*$/m)[1]);
 function filesIn(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
@@ -23,10 +24,16 @@ test("search index contains published content only, with real section targets", 
   assert.equal(urls.size, documents.length, "Do not duplicate pages in search results");
   for (const collection of ["experiences", "resources"]) {
     for (const path of filesIn(join(root, "src/content", collection)).filter((path) => path.endsWith(".md"))) {
-      const metadata = parse(readFileSync(path, "utf8").split(/^---\s*$/m)[1]);
+      const metadata = frontmatter(path);
       const slug = relative(join(root, "src/content", collection), path).replace(/\.md$/, "");
       assert.equal(urls.has(`/${collection}/${slug}/`), !metadata.draft);
     }
+  }
+  // Talks only get a page (and search entry) once their recording is available.
+  for (const path of filesIn(join(root, "src/content/talks")).filter((path) => path.endsWith(".md"))) {
+    const metadata = frontmatter(path);
+    const slug = relative(join(root, "src/content/talks"), path).replace(/\.md$/, "");
+    assert.equal(urls.has(`/talks/${slug}/`), Boolean(metadata.bvid) && !metadata.draft);
   }
   assert.ok(documents.some((document) => document.kind === "常见问题"));
   for (const document of documents) {
@@ -43,10 +50,31 @@ test("published content has detail pages while drafts have no generated route", 
   for (const collection of ["experiences", "resources"]) {
     const directory = join(root, "src/content", collection);
     for (const path of filesIn(directory).filter((path) => path.endsWith(".md"))) {
-      const metadata = parse(readFileSync(path, "utf8").split(/^---\s*$/m)[1]);
+      const metadata = frontmatter(path);
       const slug = relative(directory, path).replace(/\.md$/, "");
       const output = join(dist, collection, slug, "index.html");
       assert.equal(existsSync(output), !metadata.draft, `${collection}/${slug}: incorrect draft visibility`);
+    }
+  }
+  for (const path of filesIn(join(root, "src/content/talks")).filter((path) => path.endsWith(".md"))) {
+    const metadata = frontmatter(path);
+    const slug = relative(join(root, "src/content/talks"), path).replace(/\.md$/, "");
+    assert.equal(existsSync(join(dist, "talks", slug, "index.html")), Boolean(metadata.bvid) && !metadata.draft,
+      `talks/${slug}: pages are generated only for published talks with a recording`);
+  }
+});
+
+test("talk pages offer every slide and the original PDF", () => {
+  for (const path of filesIn(join(root, "src/content/talks")).filter((path) => path.endsWith(".md"))) {
+    const metadata = frontmatter(path);
+    const slug = relative(join(root, "src/content/talks"), path).replace(/\.md$/, "");
+    if (!metadata.bvid || metadata.draft) continue;
+    const html = readFileSync(join(dist, "talks", slug, "index.html"), "utf8");
+    assert.ok(html.includes(`player.bilibili.com/player.html?bvid=${metadata.bvid}`), `${slug}: missing video player`);
+    for (const deck of metadata.decks ?? []) {
+      const { pages } = JSON.parse(readFileSync(join(root, "src/data/slides", `${slug}--${deck.id}.json`), "utf8"));
+      for (let page = 1; page <= pages; page++) assert.ok(html.includes(`id="${deck.id}-${page}"`), `${slug}: missing slide ${page}`);
+      assert.ok(html.includes(`href="/talks/${slug}/${deck.id}.pdf"`), `${slug}: missing PDF download`);
     }
   }
 });
@@ -75,7 +103,7 @@ test("detail pages have unique comment mappings and production backlinks", () =>
   for (const file of filesIn(dist).filter((path) => path.endsWith(".html"))) {
     const route = `/${relative(dist, file).replace(/index\.html$/, "")}`;
     const html = readFileSync(file, "utf8");
-    const isDetail = /^\/(experiences|resources)\/(?!page\/)[^/]+\/$/.test(route);
+    const isDetail = /^\/(experiences|resources|talks)\/(?!page\/)[^/]+\/$/.test(route);
     const term = html.match(/data-term="([^"]+)"/)?.[1];
     assert.equal(Boolean(term), isDetail, `${route}: incorrect comment visibility`);
     if (!isDetail) continue;

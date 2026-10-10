@@ -6,7 +6,7 @@ export const site = {
   tagline: "计算机保研信息与经验交流",
   description:
     "整理计算机保研招生信息、实用资源和经验贴，供四非院校学生查阅与交流。",
-  qqGroup: "752140536",
+  qqGroup: "742203503",
   qqJoinUrl: "https://qm.qq.com/q/20geYjRZlq",
 };
 
@@ -23,5 +23,6 @@ export const navLinks = [
   { href: "/", label: "首页" },
   { href: "/resources", label: "保研资源" },
   { href: "/experiences", label: "保研经验" },
+  { href: "/talks", label: "直播回放" },
   { href: "/faq", label: "常见问题" },
 ];

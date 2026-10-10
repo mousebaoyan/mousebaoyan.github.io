@@ -2,15 +2,25 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import Features from "../components/Features.astro";
-import FeaturedTools from "../components/FeaturedTools.astro";
 import FeaturedExperiences from "../components/FeaturedExperiences.astro";
+import FeaturedTalks from "../components/FeaturedTalks.astro";
+import FeaturedTools from "../components/FeaturedTools.astro";
 import JoinUs from "../components/JoinUs.astro";
 ---
 
 <BaseLayout>
   <Hero />
   <Features />
-  <FeaturedTools />
-  <FeaturedExperiences />
+  <div class="home-sections">
+    <FeaturedExperiences />
+    <FeaturedTalks />
+    <FeaturedTools />
+  </div>
   <JoinUs />
 </BaseLayout>
+
+<style>
+  .home-sections > :global(.section:first-child) {
+    border-top: 1px solid var(--line-soft);
+  }
+</style>

@@ -8,9 +8,8 @@ import { groups } from "../data/faq";
   <aside class="faq__sidebar">
     <nav class="faq__nav" aria-label="常见问题分类">
       <p class="faq__nav-title">问题分类</p>
-      {groups.map((group, index) => (
+      {groups.map((group) => (
         <a href={`#${group.id}`}>
-          <span class="faq__nav-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
           {group.title}
         </a>
       ))}
@@ -27,7 +26,7 @@ import { groups } from "../data/faq";
       <section class="faq__group" id={group.id} aria-labelledby={`${group.id}-title`}>
         <header class="faq__group-header">
           <h2 id={`${group.id}-title`}>{group.title}</h2>
-          <span>{String(groupIndex + 1).padStart(2, "0")}</span>
+          <span>{group.questions.length} 个问题</span>
         </header>
         <div class="faq__list">
           {group.questions.map((item, index) => (
@@ -85,11 +84,6 @@ import { groups } from "../data/faq";
   .faq__nav a:hover {
     background: var(--blue-soft);
     color: #0063c7;
-  }
-  .faq__nav-index {
-    color: var(--ink-3);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
   }
   .faq__contact {
     display: flex;
@@ -217,7 +211,6 @@ import { groups } from "../data/faq";
       gap: 8px;
     }
     .faq__nav-title,
-    .faq__nav-index,
     .faq__contact {
       display: none;
     }

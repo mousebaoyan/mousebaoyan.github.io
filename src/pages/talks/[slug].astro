@@ -1,0 +1,225 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import SlideDeck from "../../components/SlideDeck.astro";
+import Comments from "../../components/Comments.astro";
+import { site } from "../../site.config";
+import { deckPdf, formatDuration, getTalks, isAvailable, slidesFor, talkDate } from "../../lib/talks";
+import { statSync } from "node:fs";
+import { join } from "node:path";
+
+export async function getStaticPaths() {
+  return (await getTalks()).filter(isAvailable).map((talk) => ({ params: { slug: talk.id }, props: { talk } }));
+}
+
+const { talk } = Astro.props;
+const { title, speakers, summary, bvid, duration, decks } = talk.data;
+const player = `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0&high_quality=1&danmaku=0`;
+const videoUrl = `https://www.bilibili.com/video/${bvid}/`;
+const fileSize = (href: string) => {
+  const bytes = statSync(join(process.cwd(), "public", href)).size;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+};
+const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}.pdf`;
+---
+
+<BaseLayout title={`${title} — 直播回放`} description={summary}>
+  <meta slot="head" name="giscus:backlink" content={`${site.url}/talks/${talk.id}/`} />
+  <div class="container talk">
+    <Breadcrumb crumbs={[
+      { label: "首页", href: "/" },
+      { label: "直播回放", href: "/talks" },
+      { label: title },
+    ]} />
+
+    <header class="talk__header">
+      <h1 class="talk__title">{title}</h1>
+      <p class="talk__summary">{summary}</p>
+      <dl class="talk__facts">
+        <div><dt>直播时间</dt><dd>{talkDate(talk)}</dd></div>
+        {speakers.length > 0 && <div><dt>分享人</dt><dd>{speakers.join("、")}</dd></div>}
+        {duration && <div><dt>回放时长</dt><dd>{formatDuration(duration)}</dd></div>}
+        {decks.length > 0 && <div><dt>课件</dt><dd><a href="#slides">{decks.length} 份</a></dd></div>}
+      </dl>
+    </header>
+
+    <section class="talk__video" aria-label="直播录屏">
+      <div class="talk__player">
+        <iframe
+          src={player}
+          title={`${title} 直播录屏（哔哩哔哩播放器）`}
+          loading="lazy"
+          allow="fullscreen; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
+        ></iframe>
+      </div>
+      <p class="talk__video-note">
+        播放器无法加载，或想发弹幕、看评论？
+        <a href={videoUrl} target="_blank" rel="noopener noreferrer">在哔哩哔哩观看 <span aria-hidden="true">↗</span></a>
+      </p>
+    </section>
+
+    {decks.length > 0 && (
+      <section class="talk__slides" id="slides" aria-labelledby="slides-title">
+        <h2 class="talk__section-title" id="slides-title">课件</h2>
+        {decks.map((deck) => {
+          const href = deckPdf(talk, deck);
+          return (
+            <article class="talk__deck" aria-labelledby={`${deck.id}-title`}>
+              <header class="talk__deck-head">
+                <div>
+                  <h3 id={`${deck.id}-title`}>{deck.title}</h3>
+                  <p>分享人 {deck.speaker} · 共 {slidesFor(talk, deck).pages} 页</p>
+                </div>
+                <a class="btn btn--primary" href={href} download={downloadName(deck)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 19.5h14" /></svg>
+                  下载 PDF<span class="talk__size">{fileSize(href)}</span>
+                </a>
+              </header>
+              <SlideDeck talk={talk} deck={deck} />
+            </article>
+          );
+        })}
+        <p class="talk__slides-note">课件版权归分享人所有，仅供个人学习参考。</p>
+      </section>
+    )}
+
+    <div class="talk__comments">
+      <Comments path={`/talks/${talk.id}/`} />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .talk {
+    max-width: 1080px;
+    padding-bottom: clamp(56px, 8vw, 96px);
+  }
+  .talk__header {
+    padding: clamp(28px, 4vw, 44px) 0 clamp(24px, 3vw, 32px);
+  }
+  .talk__title {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+  .talk__summary {
+    max-width: 44em;
+    margin-top: 14px;
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+  .talk__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 40px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .talk__facts dt {
+    color: #757a83;
+    font-size: 12px;
+  }
+  .talk__facts dd {
+    margin-top: 4px;
+    color: #343e4d;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .talk__facts a {
+    color: var(--blue-ink);
+  }
+  .talk__facts a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .talk__player {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--r);
+    background: #000;
+    overflow: hidden;
+  }
+  .talk__player iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .talk__video-note {
+    margin-top: 12px;
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+  .talk__video-note a {
+    color: var(--blue-ink);
+  }
+  .talk__video-note a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .talk__slides {
+    margin-top: clamp(48px, 7vw, 72px);
+    scroll-margin-top: calc(var(--nav-h) + 16px);
+  }
+  .talk__section-title {
+    font-size: clamp(1.5rem, 2.6vw, 1.85rem);
+    letter-spacing: -0.025em;
+  }
+  .talk__deck {
+    margin-top: 20px;
+  }
+  .talk__deck + .talk__deck {
+    margin-top: 48px;
+  }
+  .talk__deck-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    margin-bottom: 16px;
+  }
+  .talk__deck-head h3 {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .talk__deck-head p {
+    margin-top: 4px;
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+  .talk__size {
+    margin-left: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .talk__slides-note {
+    margin-top: 20px;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+  .talk__comments {
+    max-width: 760px;
+  }
+  @media (max-width: 600px) {
+    .talk__facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 20px;
+    }
+    .talk__deck-head {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .talk__player {
+      margin-inline: calc(var(--gutter) * -1);
+      border-radius: 0;
+    }
+  }
+</style>

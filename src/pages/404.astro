@@ -7,7 +7,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <p class="not-found__code">404</p>
     <h1 class="not-found__title">页面不存在</h1>
     <p class="not-found__msg">页面可能已移动或删除，请检查网址或返回首页。</p>
-    <a class="not-found__btn" href="/">返回首页</a>
+    <div class="not-found__actions">
+      <a class="btn btn--primary" href="/">返回首页</a>
+      <button class="btn btn--secondary" type="button" data-search-open hidden>搜索站内内容</button>
+    </div>
   </div>
 </BaseLayout>
 
@@ -36,22 +39,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     margin: 0;
   }
   .not-found__msg {
+    text-wrap: balance;
     color: var(--ink-2);
     font-size: 1.05rem;
     margin: 0;
   }
-  .not-found__btn {
-    display: inline-block;
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
     margin-top: 8px;
-    background: var(--gradient-accent);
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 500;
-    padding: 10px 24px;
-    border-radius: var(--r-pill);
-    transition: opacity 0.2s ease;
-  }
-  .not-found__btn:hover {
-    opacity: 0.9;
   }
 </style>

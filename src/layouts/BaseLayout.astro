@@ -14,6 +14,7 @@ const {
   title = site.name,
   description = site.description,
 } = Astro.props;
+const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -23,18 +24,14 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/jpeg" href="/logo.jpg" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#3b5bdb" />
+    <meta property="og:image" content={new URL("/logo.jpg", site.url)} />
+    {!isNotFound && <link rel="canonical" href={new URL(Astro.url.pathname, site.url)} />}
+    <meta name="theme-color" content="#ffffff" />
     <slot name="head" />
   </head>
   <body>
@@ -44,22 +41,5 @@ const {
     </main>
     <Footer />
     <SiteSearch />
-    <script>
-      const reveals = document.querySelectorAll<HTMLElement>('.reveal');
-      if (reveals.length > 0 && 'IntersectionObserver' in window) {
-        const io = new IntersectionObserver((entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              io.unobserve(entry.target);
-            }
-          }
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-        reveals.forEach((el) => {
-          el.setAttribute('data-reveal-pending', '');
-          io.observe(el);
-        });
-      }
-    </script>
   </body>
 </html>

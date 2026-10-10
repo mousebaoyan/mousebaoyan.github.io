@@ -5,17 +5,23 @@ import { site } from "../site.config";
 <section class="hero">
   <div class="container hero__inner">
     <div class="hero__copy">
-      <p class="hero__eyebrow">{site.name}</p>
+      <p class="hero__name">{site.name}</p>
       <h1 class="hero__title">计算机保研交流</h1>
       <p class="hero__sub">
         面向四非院校学生，交流计算机保研信息，分享实用资源与经验。
       </p>
-      <p class="hero__trust">1,000+ 名鼠群成员参与交流</p>
-      <a class="hero__cta" href="#join">加入鼠群</a>
+      <div class="hero__actions">
+        <a class="btn btn--primary hero__btn" href="/join">
+          加入鼠群
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+        </a>
+        <a class="btn btn--secondary hero__btn" href="/experiences">阅读经验贴</a>
+      </div>
+      <p class="hero__trust">1,000+ 名鼠群成员参与交流 · QQ 群 {site.qqGroup}</p>
     </div>
 
     <div class="hero__stage" aria-hidden="true">
-      <img class="hero__logo" src="/logo.jpg" alt="" width="320" height="320" />
+      <img class="hero__logo" src="/logo.jpg" alt="" width="320" height="320" fetchpriority="high" />
     </div>
   </div>
 </section>
@@ -23,107 +29,71 @@ import { site } from "../site.config";
 <style>
   .hero {
     background:
-      radial-gradient(
-        ellipse 90% 60% at 75% 15%,
-        rgba(0, 113, 227, 0.08) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        ellipse 70% 50% at 20% 80%,
-        rgba(110, 86, 207, 0.06) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        ellipse 50% 50% at 60% 70%,
-        rgba(232, 89, 12, 0.03) 0%,
-        transparent 50%
-      ),
+      radial-gradient(ellipse 90% 60% at 75% 15%, rgba(0, 113, 227, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 50% at 20% 80%, rgba(110, 86, 207, 0.06) 0%, transparent 50%),
       var(--bg);
     overflow: hidden;
-    min-height: calc(100svh - var(--nav-h));
-    display: flex;
-    align-items: center;
   }
   .hero__inner {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-columns: 1.1fr 0.9fr;
     align-items: center;
     gap: clamp(32px, 6vw, 72px);
-    padding-top: clamp(56px, 9vw, 104px);
-    padding-bottom: clamp(56px, 9vw, 104px);
+    min-height: min(640px, calc(100svh - var(--nav-h) - 120px));
+    padding-block: clamp(56px, 8vw, 96px) clamp(40px, 6vw, 72px);
   }
-  .hero__eyebrow {
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    font-weight: 600;
+  .hero__name {
     color: var(--ink-2);
-    letter-spacing: -0.01em;
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    font-weight: 600;
   }
   .hero__title {
-    margin-top: 6px;
-    font-size: clamp(2.9rem, 7vw, 5.2rem);
+    margin-top: 8px;
+    font-size: clamp(2.8rem, 6.6vw, 5rem);
     font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.02;
-    background: linear-gradient(
-      135deg,
-      var(--ink) 40%,
-      var(--blue) 80%,
-      var(--purple) 100%
-    );
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    background: linear-gradient(135deg, var(--ink) 40%, var(--blue) 80%, var(--purple) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .hero__sub {
     margin-top: 20px;
-    max-width: 26ch;
-    font-size: clamp(1.25rem, 2.6vw, 1.7rem);
-    font-weight: 500;
-    line-height: 1.32;
+    max-width: 22em;
     color: var(--ink-2);
+    text-wrap: balance;
+    font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+    font-weight: 500;
+    line-height: 1.5;
     letter-spacing: -0.015em;
   }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: clamp(28px, 4vw, 36px);
+  }
+  .hero__btn {
+    min-height: 48px;
+    padding-inline: 22px;
+    font-size: 16px;
+  }
   .hero__trust {
-    margin-top: clamp(28px, 4vw, 40px);
-    font-size: 1.02rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 22px;
     color: var(--ink-3);
-  }
-  .hero__cta {
-    display: inline-block;
-    margin-top: 24px;
-    background: var(--gradient-accent);
-    color: #fff;
-    font-size: 0.96rem;
-    font-weight: 500;
-    padding: 11px 28px;
-    border-radius: var(--r-pill);
-    transition: opacity 0.2s ease;
-  }
-  .hero__cta:hover {
-    opacity: 0.9;
+    font-size: 14px;
   }
   .hero__trust::before {
     content: "";
-    display: inline-block;
-    width: 8px;
-    height: 8px;
+    flex: none;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: #34c759;
-    margin-right: 8px;
-    vertical-align: middle;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.6;
-      transform: scale(0.85);
-    }
   }
 
   .hero__stage {
@@ -134,33 +104,17 @@ import { site } from "../site.config";
   .hero__stage::before {
     content: "";
     position: absolute;
-    width: clamp(340px, 46vw, 520px);
+    width: clamp(320px, 42vw, 500px);
     aspect-ratio: 1;
     background:
       radial-gradient(closest-side, rgba(0, 113, 227, 0.14), transparent 50%),
-      radial-gradient(
-        closest-side at 60% 60%,
-        rgba(110, 86, 207, 0.1),
-        transparent 60%
-      );
+      radial-gradient(closest-side at 60% 60%, rgba(110, 86, 207, 0.1), transparent 60%);
     filter: blur(20px);
-    animation: hero-glow 6s ease-in-out infinite alternate;
-  }
-
-  @keyframes hero-glow {
-    from {
-      transform: scale(1);
-      opacity: 0.8;
-    }
-    to {
-      transform: scale(1.08);
-      opacity: 1;
-    }
   }
   .hero__logo {
     position: relative;
-    width: clamp(200px, 34vw, 340px);
-    height: clamp(200px, 34vw, 340px);
+    width: clamp(200px, 30vw, 320px);
+    height: auto;
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 50%;
@@ -170,18 +124,32 @@ import { site } from "../site.config";
   @media (max-width: 820px) {
     .hero__inner {
       grid-template-columns: 1fr;
+      gap: 28px;
+      min-height: 0;
+      padding-block: 40px 48px;
       text-align: center;
-      gap: clamp(28px, 6vw, 40px);
     }
     .hero__sub {
       margin-inline: auto;
+    }
+    .hero__actions,
+    .hero__trust {
+      justify-content: center;
     }
     .hero__stage {
       order: -1;
     }
     .hero__logo {
-      width: clamp(180px, 50vw, 260px);
-      height: clamp(180px, 50vw, 260px);
+      width: clamp(160px, 44vw, 220px);
+    }
+  }
+  @media (max-width: 420px) {
+    .hero__actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .hero__btn {
+      padding-inline: 12px;
     }
   }
 </style>

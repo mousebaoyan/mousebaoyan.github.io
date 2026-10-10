@@ -1,6 +1,6 @@
 /* ============================================================
    四非保研鼠群 — 设计系统
-   风格：Apple-inspired · 极简瑞士 · 大留白大字
+   风格：Apple-inspired · 白底灰面 · 蓝紫强调 · 克制留白
    ============================================================ */
 
 :root {
@@ -8,7 +8,6 @@
   --bg: #ffffff;
   --bg-alt: #fbfbfd;
   --bg-grey: #f5f5f7;
-  --bg-dark: #000000;
 
   --ink: #1d1d1f;          /* 主文字 */
   --ink-2: #6e6e73;        /* 次要文字 */
@@ -21,11 +20,12 @@
 
   /* —— 强调色 —— */
   --blue: #0071e3;
+  --blue-ink: #0063c7;     /* 白底上的蓝色文字，对比度更高 */
   --blue-hover: #0077ed;
   --blue-soft: #e8f1fd;
+  --blue-line: #bfd3e8;    /* 卡片悬停描边 */
 
   --purple: #6e56cf;
-  --purple-hover: #7c63d8;
   --purple-soft: #f3f0ff;
 
   /* —— 渐变 —— */
@@ -37,36 +37,25 @@
                        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 113, 227, 0.1), transparent),
                        #000000;
 
-  /* —— 圆角 —— */
-  --r-sm: 12px;
-  --r: 18px;
-  --r-lg: 28px;
-  --r-xl: 36px;
+  /* —— 圆角：控件 10 / 卡片 16 / 大面板 24 —— */
+  --r-sm: 10px;
+  --r: 16px;
+  --r-lg: 24px;
   --r-pill: 980px;
 
-  /* —— 阴影（层次感）—— */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-glow-blue: 0 0 40px rgba(0, 113, 227, 0.12);
-
-  /* —— 玻璃效果 —— */
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-blur: blur(16px) saturate(180%);
 
   /* —— 排版 —— */
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    "Inter", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui,
-    sans-serif;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Consolas, monospace;
 
   /* —— 布局 —— */
-  --maxw: 1280px;
+  --maxw: 1200px;
   --maxw-wide: 1400px;
   --gutter: clamp(20px, 5vw, 40px);
   --nav-h: 64px;
+  --section-space: clamp(64px, 8vw, 112px);
 
   /* —— z 轴 —— */
   --z-nav: 50;
@@ -80,6 +69,9 @@
 }
 * {
   margin: 0;
+}
+[hidden] {
+  display: none !important;
 }
 
 html {
@@ -99,6 +91,16 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* 内容较少时页脚仍贴底 */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+body > main {
+  flex: 1;
+}
+
 img,
 svg {
   display: block;
@@ -116,13 +118,18 @@ h3,
 h4 {
   font-weight: 600;
   letter-spacing: -0.022em;
-  line-height: 1.08;
+  line-height: 1.15;
   color: var(--ink);
 }
 
 ul {
   list-style: none;
   padding: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
 }
 
 /* —— 布局工具 —— */
@@ -137,53 +144,36 @@ ul {
 }
 
 .section {
-  padding-block: clamp(72px, 11vw, 140px);
+  padding-block: var(--section-space);
 }
-.section--full {
-  min-height: 100svh;
+.section + .section {
+  border-top: 1px solid var(--line-soft);
+}
+
+/* 区块标题：左侧标题与说明，右侧“查看全部” */
+.section-head {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: clamp(24px, 3.5vw, 36px);
 }
-.section--alt {
-  background: linear-gradient(180deg, #fbfbfd 0%, #ffffff 100%);
-}
-.section--grey {
-  background: linear-gradient(180deg, #f5f5f7 0%, #fafafa 60%, #ffffff 100%);
-}
-
-.section__head {
-  max-width: 720px;
-  margin-bottom: clamp(40px, 6vw, 72px);
-}
-.section__head--center {
-  margin-inline: auto;
-  text-align: center;
-}
-
-.eyebrow {
-  display: block;
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  background: var(--gradient-accent);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 10px;
-}
-
-.section__title {
-  font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+.section-head__title {
+  font-size: clamp(1.75rem, 3.2vw, 2.4rem);
   letter-spacing: -0.028em;
 }
-
-.section__lead {
-  margin-top: 18px;
+.section-head__lead {
+  margin-top: 10px;
+  max-width: 40em;
   color: var(--ink-2);
-  font-size: clamp(1.12rem, 2vw, 1.32rem);
-  font-weight: 400;
-  line-height: 1.45;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+@media (max-width: 720px) {
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* —— 按钮 —— */
@@ -191,91 +181,92 @@ ul {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font: inherit;
-  font-weight: 400;
-  font-size: 1.0rem;
-  letter-spacing: -0.01em;
-  padding: 11px 22px;
-  border-radius: var(--r-pill);
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
   border: 1px solid transparent;
-  cursor: pointer;
-  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease,
-    opacity 0.22s ease;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
-.btn:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 3px;
+.btn svg {
+  flex: none;
 }
 .btn--primary {
-  background: var(--gradient-accent);
+  background: var(--ink);
+  border-color: var(--ink);
   color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-.btn--primary::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.15) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 .btn--primary:hover {
-  background: var(--gradient-accent);
+  background: #38383c;
+  border-color: #38383c;
 }
-.btn--primary:hover::after {
-  opacity: 1;
-}
-.btn--light {
-  background: #fff;
-  color: var(--ink);
-}
-.btn--light:hover {
-  opacity: 0.9;
-}
-.btn--ghost {
-  background: transparent;
-  color: var(--ink);
+.btn--secondary {
+  background: var(--bg);
   border-color: var(--line);
+  color: var(--ink);
 }
-.btn--ghost:hover {
-  border-color: var(--ink-3);
+.btn--secondary:hover {
+  background: var(--bg-grey);
+  border-color: #a9afb8;
+}
+.btn--small {
+  min-height: 36px;
+  padding: 7px 13px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
 }
 
-/* —— 箭头文字链接（Apple "Learn more ›"）—— */
+/* —— 箭头文字链接 —— */
 .link-arrow {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  color: var(--blue);
-  font-size: 1.06rem;
-  letter-spacing: -0.01em;
-  transition: opacity 0.2s ease;
+  gap: 4px;
+  flex: none;
+  color: var(--blue-ink);
+  font-size: 15px;
+  white-space: nowrap;
 }
 .link-arrow:hover {
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
 }
 .link-arrow svg {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   transition: transform 0.2s ease;
 }
 .link-arrow:hover svg {
   transform: translateX(2px);
 }
 
-/* —— 通用 —— */
-.grid {
-  display: grid;
-  gap: clamp(14px, 1.8vw, 22px);
+/* —— 标签 —— */
+.chip {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f3f5f8;
+  color: #5f6875;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.chip--blue {
+  background: var(--blue-soft);
+  color: var(--blue-ink);
 }
 
+/* —— 通用 —— */
 .icon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.7;
@@ -292,35 +283,6 @@ ul {
   white-space: nowrap;
 }
 
-/* —— 入场动画 —— */
-.reveal {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal[data-reveal-pending]:not(.is-visible) {
-  opacity: 0;
-  transform: translateY(24px);
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal--delay-1 { transition-delay: 0.08s; }
-.reveal--delay-2 { transition-delay: 0.16s; }
-.reveal--delay-3 { transition-delay: 0.24s; }
-.reveal--delay-4 { transition-delay: 0.32s; }
-.reveal--delay-5 { transition-delay: 0.40s; }
-
-/* —— 渐变文字工具 —— */
-.text-gradient {
-  background: var(--gradient-accent);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -330,10 +292,5 @@ ul {
   *::after {
     transition: none !important;
     animation: none !important;
-  }
-  .reveal,
-  .reveal[data-reveal-pending]:not(.is-visible) {
-    opacity: 1;
-    transform: none;
   }
 }

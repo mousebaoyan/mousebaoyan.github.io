@@ -2,11 +2,13 @@ import { getCollection, render } from "astro:content";
 import { groups } from "../data/faq";
 import { markdownSections } from "../lib/search-index";
 import type { SearchDocument } from "../lib/search";
+import { getTalks, isAvailable, slideHeading, slidesFor } from "../lib/talks";
 
 export async function GET() {
-  const [experiences, resources] = await Promise.all([
+  const [experiences, resources, talks] = await Promise.all([
     getCollection("experiences", ({ data }) => !data.draft),
     getCollection("tools", ({ data }) => !data.draft),
+    getTalks(),
   ]);
   const documents: SearchDocument[] = await Promise.all([
     ...experiences.map(async (entry): Promise<SearchDocument> => {
@@ -29,6 +31,20 @@ export async function GET() {
         sections: [{ heading: "", url, text: entry.data.description }, ...markdownSections(entry.body ?? "", url, headings)] };
     }),
   ]);
+  // 每页课件单独成节，搜索结果直接打开对应页
+  for (const talk of talks.filter(isAvailable)) {
+    const url = `/talks/${talk.id}/`;
+    documents.push({ title: talk.data.title, url, kind: "直播回放",
+      meta: ["直播", ...talk.data.speakers].join(" · "),
+      sections: [{ heading: "", url, text: talk.data.summary },
+        ...talk.data.decks.flatMap((deck) => {
+          const slides = slidesFor(talk, deck);
+          return slides.text.map((text, index) => ({
+            heading: `课件${slideHeading(deck, slides, index + 1)}`,
+            url: `${url}#${deck.id}-${index + 1}`, text,
+          }));
+        })] });
+  }
   for (const group of groups) {
     group.questions.forEach((item, index) => {
       const url = `/faq/#${group.id}-${index + 1}`;

@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import CollectionSection from "../../components/CollectionSection.astro";
+import TalkCard from "../../components/TalkCard.astro";
+import { getTalks, isAvailable } from "../../lib/talks";
+
+const talks = await getTalks();
+const available = talks.filter(isAvailable).length;
+---
+
+<BaseLayout
+  title="直播回放 — 四非保研鼠群"
+  description="鼠群往期保研经验分享直播的录屏与课件，课件可在线翻阅和下载。"
+>
+  <div class="container">
+    <PageHeader
+      title="直播回放"
+      lead="鼠群往期保研经验分享直播的录屏与课件。课件可以在网页上逐页翻阅，也可以下载原文件。"
+    />
+
+    <CollectionSection title="往期直播" summary={`共 ${talks.length} 场 · ${available} 场可观看`}>
+      <ol class="talk-list">
+        {talks.map((talk) => <li><TalkCard talk={talk} /></li>)}
+      </ol>
+    </CollectionSection>
+  </div>
+</BaseLayout>
+
+<style>
+  .talk-list {
+    display: grid;
+    gap: clamp(14px, 1.6vw, 20px);
+    padding: 0;
+    list-style: none;
+  }
+</style>

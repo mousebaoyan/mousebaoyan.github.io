@@ -7,6 +7,7 @@
     <a href="https://mousebaoyan.github.io/">访问网站</a> ·
     <a href="https://mousebaoyan.github.io/resources/">保研资源</a> ·
     <a href="https://mousebaoyan.github.io/experiences/">保研经验</a> ·
+    <a href="https://mousebaoyan.github.io/talks/">直播回放</a> ·
     <a href="https://mousebaoyan.github.io/join/">加入鼠群</a>
   </p>
   <p>
@@ -22,21 +23,22 @@
 
 | 页面 | 内容 |
 | --- | --- |
-| [首页](https://mousebaoyan.github.io/) | 鼠群介绍、精选资源、近期经验贴与入群入口 |
+| [首页](https://mousebaoyan.github.io/) | 鼠群介绍、栏目入口、近期经验贴、直播回放、精选资源与入群入口 |
 | [保研资源](https://mousebaoyan.github.io/resources/) | 按类别整理保研相关网站、工具与参考资料 |
 | [保研经验](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览保研经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
+| [直播回放](https://mousebaoyan.github.io/talks/) | 往期经验分享直播的录屏；课件可在网页上逐页翻阅（键盘、滑动翻页，章节跳转，缩略图，全屏），也可下载原 PDF |
 | [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
 | [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、入群步骤、群号复制与 QQ 入群链接 |
 
 网站适配桌面和手机，使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
-经验贴与资源详情页下方提供 Giscus 评论区，使用 GitHub 账号参与讨论，评论存储在本仓库的 Discussions 中。
+经验贴、资源与直播回放详情页下方提供 Giscus 评论区，使用 GitHub 账号参与讨论，评论存储在本仓库的 Discussions 中。
 
-顶部搜索支持经验贴、资源介绍和常见问题的全文检索，可按内容类型筛选、查看关键词高亮摘要，并跳转到对应章节或展开具体问题。点击搜索按钮，或使用 `⌘ K` / `Ctrl K` 打开。
+顶部搜索支持经验贴、资源介绍、直播课件（逐页）和常见问题的全文检索，可按内容类型筛选、查看关键词高亮摘要，并跳转到对应章节或展开具体问题。点击搜索按钮，或使用 `⌘ K` / `Ctrl K` 打开。
 
 ## 加入鼠群
 
-**QQ 群号：`752140536`** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qm.qq.com/q/20geYjRZlq)
+**QQ 群号：`742203503`** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qm.qq.com/q/20geYjRZlq)
 
 - **入群范围**：面向四非院校的计算机相关专业同学，不限制年级，已保研的同学也可以加入。
 - **申请信息**：请提供年级和本科院校。
@@ -80,7 +82,7 @@ npm run dev -- --background
 | `npm run astro -- dev logs` | 查看开发日志 |
 | `npm run astro -- dev stop` | 停止后台服务 |
 | `npm test` | 运行投稿流程与全文搜索测试 |
-| `npm run test:site` | 构建后检查草稿隔离、搜索索引及章节链接、站内链接与静态资源 |
+| `npm run test:site` | 构建后检查草稿隔离、搜索索引及章节链接、直播课件、站内链接与静态资源 |
 | `npm run build` | 构建静态网站，输出到 `dist/` |
 | `npm run preview` | 本地预览已构建的网站 |
 
@@ -99,9 +101,13 @@ src/
 ├── components/              # 导航、卡片、目录、分页等组件
 ├── content/
 │   ├── experiences/         # 经验贴 Markdown
-│   └── resources/           # 保研资源 Markdown
+│   ├── resources/           # 保研资源 Markdown
+│   └── talks/               # 直播回放 Markdown（录屏与课件信息）
+├── data/
+│   ├── faq.ts               # 常见问题
+│   └── slides/              # 课件每页文字（脚本生成，用于替代文本和搜索）
 ├── layouts/                 # 页面基础布局
-├── lib/                     # 经验贴排序与分页配置
+├── lib/                     # 经验贴分页、直播回放与搜索的辅助函数
 ├── pages/                   # 首页、列表页、详情页和入群指南
 ├── styles/                  # 全局样式与文章阅读样式
 ├── content.config.ts        # 内容字段校验
@@ -111,9 +117,10 @@ src/
 └── workflows/               # 审核发布和 GitHub Pages 部署
 scripts/
 ├── submissions/            # 投稿解析、发布逻辑与测试
+├── talks/build-slides.mjs  # 把课件 PDF 转成网页幻灯片
 └── site.test.mjs            # 构建产物、草稿隔离与站内链接检查
 docs/submission-review.md    # 管理员审核与维护指南
-public/                     # Logo 等静态文件
+public/                     # Logo、课件图片与 PDF 等静态文件
 ```
 
 ## 内容维护
@@ -163,6 +170,34 @@ public/                     # Logo 等静态文件
 
 </details>
 
+<details>
+<summary><strong>直播回放字段与课件处理</strong></summary>
+
+目录：[`src/content/talks/`](src/content/talks/)，文件名即页面地址，建议使用直播年月，如 `2026-05.md` 对应 `/talks/2026-05/`。
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `title` | 字符串 | 直播标题 |
+| `date` | 日期 | 直播日期，用于排序 |
+| `exactDate` | 布尔，可选 | 只知道月份时填 `false`，页面只显示到月；默认 `true` |
+| `speakers` | 字符串数组，可选 | 分享人，如 `[Cyan, 小邵新星, 星空]` |
+| `summary` | 字符串 | 一两句话的内容简介 |
+| `bvid` | 字符串，可选 | B 站视频 BV 号；不填时列表显示“待后续完善”，不生成详情页 |
+| `duration` | 整数，可选 | 录屏时长（秒） |
+| `decks` | 数组，可选 | 课件列表，每项包含 `id`（英文小写）、`title`、`speaker` 和可选的 `chapters`（`{ title, page }`，用于章节跳转） |
+| `draft` | 布尔，可选 | 是否为草稿，默认 `false` |
+
+添加课件需要 [poppler](https://poppler.freedesktop.org/)（`pdftoppm`、`pdftotext`）和 `cwebp`，macOS 可执行 `brew install poppler webp`。然后运行：
+
+```sh
+node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
+# 例如：node scripts/talks/build-slides.mjs ~/Downloads/课件.pdf 2026-05 cyan
+```
+
+脚本会生成 `public/talks/<直播>/<课件 id>/` 下每页的高清图与缩略图、可下载的 `<课件 id>.pdf`，以及 `src/data/slides/<直播>--<课件 id>.json`（每页文字，用于替代文本和站内搜索）。再在对应 Markdown 的 `decks` 中填写同一个 `id`。课件页面图片较大，请只提交需要公开的课件。
+
+</details>
+
 示例文件带有 `draft: true`，复制后请改为 `draft: false` 才会出现在列表中。草稿不会生成详情页；但本仓库公开，草稿源文件仍可在 GitHub 上查看，请勿写入私人信息。
 
 通过 Issue 自动发布的内容使用 `submission-<Issue 编号>.md` 命名。后续修改应以原 Issue 为来源，重新审核会更新同一文件和页面；直接修改生成文件的内容可能被后续审核覆盖。
@@ -177,7 +212,7 @@ public/                     # Logo 等静态文件
 
 ## 评论区
 
-经验贴与资源详情页共用 [`Comments.astro`](src/components/Comments.astro)。评论临近视口时加载，支持回复与 Markdown；阅读评论无需登录，发表评论需要 GitHub 账号。网络加载失败时保留重试和 GitHub 讨论入口。
+经验贴、资源与直播回放详情页共用 [`Comments.astro`](src/components/Comments.astro)。评论临近视口时加载，支持回复与 Markdown；阅读评论无需登录，发表评论需要 GitHub 账号。网络加载失败时保留重试和 GitHub 讨论入口。
 
 - **仓库设置**：开启 Discussions，并为本仓库安装 [Giscus App](https://github.com/apps/giscus/installations/new)。仅授权本仓库即可，无需个人访问令牌。
 - **讨论分类**：使用 `Announcements`（公告类型），由 Giscus 创建页面讨论，访客可在讨论下评论。公开仓库 ID、分类 ID 集中在 [`src/site.config.ts`](src/site.config.ts)；更换仓库或分类时应一并更新。
