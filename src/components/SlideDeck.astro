@@ -160,9 +160,35 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     touch-action: pan-y;
     user-select: none;
   }
-  .deck[data-ready] .deck__slide:not([data-active]) {
+  .deck[data-ready] .deck__slides {
+    position: relative;
+    overflow: hidden;
+  }
+  .deck[data-ready] .deck__slide:not([data-active], [data-leaving]) {
     display: none;
   }
+  /* 翻页：旧页滑出、新页滑入同时进行，不阻塞后续操作 */
+  .deck__slide[data-leaving] {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .deck__slide[data-leaving="forward"] {
+    animation: deck-out-left 0.32s ease-in both;
+  }
+  .deck__slide[data-leaving="backward"] {
+    animation: deck-out-right 0.32s ease-in both;
+  }
+  .deck__slide[data-entering="forward"] {
+    animation: deck-in-right 0.45s var(--ease-out) both;
+  }
+  .deck__slide[data-entering="backward"] {
+    animation: deck-in-left 0.45s var(--ease-out) both;
+  }
+  @keyframes deck-out-left { to { opacity: 0; transform: translateX(-6%); } }
+  @keyframes deck-out-right { to { opacity: 0; transform: translateX(6%); } }
+  @keyframes deck-in-right { from { opacity: 0; transform: translateX(8%); } }
+  @keyframes deck-in-left { from { opacity: 0; transform: translateX(-8%); } }
   .deck__arrow {
     position: absolute;
     top: 50%;
@@ -294,6 +320,15 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     border-radius: var(--r);
     background: var(--bg-alt);
   }
+  @starting-style {
+    .deck__thumbs:not([hidden]) {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+  .deck__thumbs {
+    transition: opacity 0.3s ease, transform 0.4s var(--ease-out);
+  }
   .deck__thumb {
     display: grid;
     gap: 6px;
@@ -314,10 +349,11 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     border: 1px solid var(--line-soft);
     border-radius: 8px;
     background: #fff;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.3s var(--ease-out);
   }
   .deck__thumb:hover img {
     border-color: var(--blue-line);
+    transform: translateY(-2px);
   }
   .deck__thumb[aria-current="true"] {
     color: var(--blue-ink);
@@ -407,6 +443,7 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
   }
 </style>
 
+
 <script>
   for (const deck of document.querySelectorAll<HTMLElement>("[data-deck]")) {
     const id = deck.dataset.deck!;
@@ -462,14 +499,34 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
       if (updateHash) history.replaceState(null, "", page === 1 ? location.pathname + location.search : `#${id}-${page}`);
     }
 
+    // 用户翻页：旧页滑出、新页滑入；连续翻页时直接结束上一段动画
+    const motion = matchMedia("(prefers-reduced-motion: no-preference)");
+    function navigate(target: number) {
+      target = Math.min(total, Math.max(1, target));
+      if (target === page) return;
+      const direction = target > page ? "forward" : "backward";
+      const leaving = slides[page - 1];
+      slides.forEach((slide) => {
+        slide.removeAttribute("data-leaving");
+        slide.removeAttribute("data-entering");
+      });
+      show(target);
+      if (!motion.matches || document.fullscreenElement) return;
+      const entering = slides[target - 1];
+      leaving.dataset.leaving = direction;
+      entering.dataset.entering = direction;
+      leaving.addEventListener("animationend", () => leaving.removeAttribute("data-leaving"), { once: true });
+      entering.addEventListener("animationend", () => entering.removeAttribute("data-entering"), { once: true });
+    }
+
     deck.setAttribute("data-ready", "");
     deck.querySelector<HTMLElement>(".deck__bar")!.hidden = false;
-    prevs.forEach((button) => { button.hidden = false; button.addEventListener("click", () => show(page - 1)); });
-    nexts.forEach((button) => { button.hidden = false; button.addEventListener("click", () => show(page + 1)); });
+    prevs.forEach((button) => { button.hidden = false; button.addEventListener("click", () => navigate(page - 1)); });
+    nexts.forEach((button) => { button.hidden = false; button.addEventListener("click", () => navigate(page + 1)); });
 
     deck.querySelectorAll<HTMLElement>("[data-deck-goto]").forEach((control) => control.addEventListener("click", (event) => {
       event.preventDefault();
-      show(Number(control.dataset.deckGoto));
+      navigate(Number(control.dataset.deckGoto));
       if (control.classList.contains("deck__thumb")) stage.scrollIntoView({ block: "nearest", behavior: "smooth" });
       stage.focus({ preventScroll: true });
     }));
@@ -485,7 +542,7 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
       if (!keys[event.key] || (["ArrowUp", "ArrowDown", " "].includes(event.key) && !stage.contains(event.target as Node) && !document.fullscreenElement)) return;
       if (event.target instanceof HTMLButtonElement && event.key === " ") return;
       event.preventDefault();
-      show(keys[event.key]());
+      navigate(keys[event.key]());
     });
 
     let startX = 0;
@@ -493,7 +550,7 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     stage.addEventListener("pointerdown", (event) => { startX = event.clientX; startY = event.clientY; });
     stage.addEventListener("pointerup", (event) => {
       const dx = event.clientX - startX;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) show(page + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) navigate(page + (dx < 0 ? 1 : -1));
     });
 
     thumbsToggle.addEventListener("click", () => {

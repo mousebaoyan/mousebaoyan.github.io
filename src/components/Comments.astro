@@ -12,20 +12,20 @@ const discussionUrl = `https://github.com/${comments.repo}/discussions/categorie
   <header class="comments__header">
     <div>
       <h2 id="comments-title">评论与交流</h2>
-      <p>欢迎补充信息、交流经验或提出问题。</p>
+      <p>补充信息、交流经验或提出问题</p>
     </div>
     <a class="comments__github" href={discussionUrl} target="_blank" rel="noopener noreferrer" data-discussion-link>
       GitHub 讨论
       <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><path d="M7 17 17 7M7 7h10v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
     </a>
   </header>
-  <p class="comments__note">使用 GitHub 账号登录后即可评论。评论公开可见，请友好交流，注意保护个人信息。</p>
+  <p class="comments__note">用 GitHub 账号登录即可评论。评论公开可见，请友好交流，注意保护个人信息。</p>
   <div class="comments__status" data-comment-status role="status" hidden>
     <span data-comment-message>正在加载评论…</span>
     <button type="button" data-comment-retry hidden>重新加载</button>
   </div>
   <div class="giscus" aria-label="文章评论" aria-busy="true"></div>
-  <noscript><p class="comments__noscript">启用 JavaScript 后可查看评论，或通过上方链接前往 GitHub 讨论。</p></noscript>
+  <noscript><p class="comments__noscript">启用 JavaScript 后可查看评论，也可以通过上方链接前往 GitHub 讨论</p></noscript>
 </section>
 
 <script>
@@ -48,7 +48,7 @@ const discussionUrl = `https://github.com/${comments.repo}/discussions/categorie
       mount.hidden = true;
       mount.setAttribute("aria-busy", "false");
       status.hidden = false;
-      message.textContent = "评论暂时无法加载，请重试或前往 GitHub 讨论。";
+      message.textContent = "评论暂时无法加载，请重试或前往 GitHub 讨论";
       retry.hidden = false;
     };
 

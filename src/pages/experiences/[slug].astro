@@ -48,7 +48,7 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
             <span class="article-category">保研经验</span>
             {exp.data.tags.map((tag) => <span class="article-tag">{tag}</span>)}
           </div>
-          <h1 class="article-title" id="article-title">{exp.data.title}</h1>
+          <h1 class="article-title" id="article-title" style={`view-transition-name: exp-${exp.id}; view-transition-class: morph`}>{exp.data.title}</h1>
           <p class="article-excerpt">{exp.data.excerpt}</p>
           <div class="article-byline">
             <span class="author-avatar" aria-hidden="true">{Array.from(exp.data.author)[0]}</span>

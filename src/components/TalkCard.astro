@@ -13,7 +13,7 @@ const Tag = available ? "a" : "div";
 ---
 
 <Tag
-  class:list={["talk-card", { "talk-card--pending": !available }]}
+  class:list={["talk-card", { "talk-card--pending": !available, lift: available }]}
   href={available ? `/talks/${talk.id}/` : undefined}
 >
   <div class="talk-card__cover" aria-hidden="true">
@@ -22,7 +22,7 @@ const Tag = available ? "a" : "div";
     <span class="talk-card__badge">
       {available ? (
         <><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg>直播回放</>
-      ) : "待后续完善"}
+      ) : "暂无录屏"}
     </span>
   </div>
 
@@ -31,18 +31,14 @@ const Tag = available ? "a" : "div";
       <time datetime={date.toISOString().slice(0, 10)}>{talkDate(talk)}</time>
       {speakers.length > 0 && <span>分享人：{speakers.join("、")}</span>}
     </p>
-    <Heading class="talk-card__title">{title}</Heading>
+    <Heading class="talk-card__title" style={available ? `view-transition-name: talk-${talk.id}; view-transition-class: morph` : undefined}>{title}</Heading>
     <p class="talk-card__summary">{summary}</p>
-    <div class="talk-card__facts">
-      {available ? (
-        <>
-          {duration && <span class="chip">回放 {formatDuration(duration)}</span>}
-          {decks.length > 0 && <span class="chip chip--blue">课件 {decks.length} 份 · {pages} 页</span>}
-        </>
-      ) : (
-        <span class="chip">录屏暂不可访问</span>
-      )}
-    </div>
+    {available && (
+      <div class="talk-card__facts">
+        {duration && <span class="chip">回放 {formatDuration(duration)}</span>}
+        {decks.length > 0 && <span class="chip chip--blue">课件 {decks.length} 份 · {pages} 页</span>}
+      </div>
+    )}
   </div>
 </Tag>
 
@@ -56,7 +52,6 @@ const Tag = available ? "a" : "div";
     border: 1px solid var(--line-soft);
     border-radius: var(--r);
     background: var(--bg);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   a.talk-card:hover {
     border-color: var(--blue-line);
@@ -110,6 +105,13 @@ const Tag = available ? "a" : "div";
     color: var(--blue-ink);
     font-size: 12px;
     font-weight: 500;
+  }
+  .talk-card__badge {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  a.talk-card:hover .talk-card__badge {
+    background: var(--blue);
+    color: #fff;
   }
   .talk-card__body {
     min-width: 0;

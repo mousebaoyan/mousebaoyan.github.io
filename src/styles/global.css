@@ -57,8 +57,55 @@
   --nav-h: 64px;
   --section-space: clamp(64px, 8vw, 112px);
 
+  /* —— 动效：出场用 out-expo，交互反馈用 out-quart —— */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.03), 0 12px 32px -12px rgba(0, 40, 100, 0.16);
+
   /* —— z 轴 —— */
   --z-nav: 50;
+}
+
+/* —— 跨页面过渡：导航栏保持不动，正文淡入淡出 —— */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: 160ms ease both vt-fade-out;
+}
+::view-transition-new(root) {
+  animation: 320ms var(--ease-out) both vt-fade-in;
+}
+/* 卡片标题过渡到详情页标题：按比例缩放不拉伸文字，旧标题先淡出以免重影 */
+::view-transition-group(*.morph) {
+  animation-duration: 440ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-old(*.morph),
+::view-transition-new(*.morph) {
+  width: auto;
+  height: 100%;
+  object-fit: none;
+  object-position: left top;
+}
+::view-transition-old(*.morph) {
+  animation: 120ms ease both vt-fade-out;
+}
+::view-transition-new(*.morph) {
+  animation: 280ms ease 80ms both vt-title-in;
+}
+@keyframes vt-title-in {
+  from { opacity: 0; }
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+::selection {
+  background: #d3e5fb;
 }
 
 /* —— Reset —— */
@@ -193,10 +240,18 @@ ul {
   letter-spacing: -0.005em;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    transform 0.2s var(--ease-quart);
 }
 .btn svg {
   flex: none;
+  transition: transform 0.25s var(--ease-quart);
+}
+.btn:hover svg:last-child:not(:first-child) {
+  transform: translateX(2px);
+}
+.btn:active {
+  transform: scale(0.97);
 }
 .btn--primary {
   background: var(--ink);
@@ -263,6 +318,66 @@ ul {
   color: var(--blue-ink);
 }
 
+/* —— 卡片：悬停微微浮起，光斑跟随指针（坐标由 BaseLayout 中的脚本写入）—— */
+.lift {
+  position: relative;
+  isolation: isolate;
+  transition: border-color 0.25s ease, background-color 0.25s ease,
+    box-shadow 0.35s var(--ease-quart), transform 0.35s var(--ease-quart);
+}
+.lift::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 113, 227, 0.07), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+  .lift:hover::before {
+    opacity: 1;
+  }
+}
+.lift:active {
+  transform: translateY(0) scale(0.995);
+}
+
+/* —— 复制成功：对勾描出 —— */
+.copy-check {
+  width: 0;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-right: -8px; /* 抵消按钮的 8px 间距，未复制时文字保持居中 */
+  opacity: 0;
+  transition: width 0.3s var(--ease-out), margin 0.3s var(--ease-out), opacity 0.2s ease;
+}
+.copy-check path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+[data-copied] .copy-check {
+  width: 16px;
+  margin-right: 0;
+  opacity: 1;
+}
+[data-copied] .copy-check path {
+  animation: copy-check-draw 0.45s var(--ease-out) 0.08s forwards;
+}
+@keyframes copy-check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
 /* —— 通用 —— */
 .icon {
   width: 22px;
@@ -284,6 +399,9 @@ ul {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
   html {
     scroll-behavior: auto;
   }

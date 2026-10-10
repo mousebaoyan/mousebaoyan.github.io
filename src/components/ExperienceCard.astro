@@ -14,7 +14,7 @@ const { title, author, date, school, target, excerpt, tags, slug, headingLevel: 
 const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
 ---
 
-<a class="exp-card" href={`/experiences/${slug}`} aria-label={`阅读经验贴：${title}`}>
+<a class="exp-card lift" href={`/experiences/${slug}`} aria-label={`阅读经验贴：${title}`}>
   <div class="exp-card__content">
     <div class="exp-card__meta">
       <span class="exp-card__author">
@@ -24,7 +24,7 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
       <span class="exp-card__separator" aria-hidden="true">·</span>
       <time datetime={date.toISOString()}>{dateLabel}</time>
     </div>
-    <Heading class="exp-card__title" title={title}>{title}</Heading>
+    <Heading class="exp-card__title" title={title} style={`view-transition-name: exp-${slug}; view-transition-class: morph`}>{title}</Heading>
     <p class="exp-card__excerpt">{excerpt}</p>
     <div class="exp-card__tags">
       {tags.slice(0, 3).map((tag) => <span class="exp-card__tag">{tag}</span>)}
@@ -58,7 +58,6 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
     border: 1px solid var(--line-soft);
     border-radius: 16px;
     background: var(--bg);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   .exp-card:hover {
     border-color: #bfd3e8;

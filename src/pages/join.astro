@@ -4,27 +4,27 @@ import PageHeader from "../components/PageHeader.astro";
 import { site } from "../site.config";
 
 const steps = [
-  { title: "搜索 QQ 群", text: `在 QQ 中搜索群号 ${site.qqGroup}，确认群名为“${site.name}”。` },
-  { title: "填写申请信息", text: "申请加入时，请提供年级和本科院校。" },
-  { title: "提交入群申请", text: "提交后留意 QQ 中的申请结果，通过后即可参与群内交流。" },
+  { title: "搜索 QQ 群", text: `在 QQ 中搜索群号 ${site.qqGroup}，确认群名为“${site.name}”` },
+  { title: "填写申请信息", text: "申请时请写明年级和本科院校" },
+  { title: "提交入群申请", text: "留意 QQ 里的审核结果，通过后即可参与交流" },
 ];
 ---
 
-<BaseLayout title="加入鼠群 — 四非保研鼠群" description="四非保研鼠群的入群条件、QQ 群号、入群步骤与交流规则。">
+<BaseLayout title="加入鼠群 — 四非保研鼠群" description="四非保研鼠群的入群条件、QQ 群号、入群步骤与交流规则">
   <div class="container">
     <PageHeader
       title="入群指南"
-      lead="面向四非院校计算机相关专业同学的 QQ 交流群。"
+      lead="面向四非院校计算机相关专业同学的 QQ 交流群"
     />
 
     <div class="join-guide">
       <div class="join-guide__content">
         <section class="join-guide__section" aria-labelledby="eligibility-title">
           <h2 id="eligibility-title">入群条件</h2>
-          <p>面向四非院校计算机相关专业的同学。不限制年级，已经保研的同学也可以加入交流。</p>
+          <p>面向四非院校计算机相关专业的同学，不限年级，已经保研的同学也欢迎加入</p>
           <div class="join-guide__note">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v2"/></svg>
-            <span>申请时需提供：<strong>年级、本科院校</strong></span>
+            <span>申请时请提供：<strong>年级、本科院校</strong></span>
           </div>
         </section>
 
@@ -63,11 +63,11 @@ const steps = [
           <strong id="join-group-number">{site.qqGroup}</strong>
         </div>
         <div class="join-guide__actions">
-          <button type="button" data-copy-group={site.qqGroup}>复制群号</button>
+          <button type="button" data-copy-group={site.qqGroup}><svg class="copy-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><span data-copy-label>复制群号</span></button>
           <a href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer" aria-label="打开 QQ 加群（新窗口打开）">打开 QQ 加群 <span aria-hidden="true">↗</span></a>
         </div>
         <p class="join-guide__copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
-        <p class="join-guide__help">若链接无法打开，可在 QQ 中搜索上方群号。</p>
+        <p class="join-guide__help">链接打不开时，可在 QQ 中搜索上方群号</p>
         <div class="join-guide__service">
           <strong>入群与交流免费</strong>
           <p>鼠群不提供付费辅导。群友以个人名义提供的付费服务与鼠群无关。</p>
@@ -294,11 +294,18 @@ const steps = [
   if (copyButton && copyStatus) {
     copyButton.addEventListener("click", async () => {
       copyButton.disabled = true;
+      const label = copyButton.querySelector<HTMLElement>("[data-copy-label]")!;
       try {
         await navigator.clipboard.writeText(copyButton.dataset.copyGroup ?? "");
-        copyStatus.textContent = "群号已复制，可在 QQ 中粘贴搜索。";
+        copyButton.dataset.copied = "";
+        label.textContent = "已复制";
+        copyStatus.textContent = "群号已复制，可在 QQ 中粘贴搜索";
+        setTimeout(() => {
+          delete copyButton.dataset.copied;
+          label.textContent = "复制群号";
+        }, 1800);
       } catch {
-        copyStatus.textContent = "复制失败，请选中上方群号手动复制。";
+        copyStatus.textContent = "复制失败，请手动选中上方群号";
       } finally {
         copyButton.disabled = false;
       }

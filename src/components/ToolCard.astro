@@ -9,9 +9,9 @@ interface Props {
 const { name, description, category, tags, slug } = Astro.props;
 ---
 
-<a class="tool-card" href={`/resources/${slug}`}>
+<a class="tool-card lift" href={`/resources/${slug}`}>
   <span class="tool-card__cat">{category}</span>
-  <h3 class="tool-card__name">{name}</h3>
+  <h3 class="tool-card__name" style={`view-transition-name: tool-${slug}; view-transition-class: morph`}>{name}</h3>
   <p class="tool-card__desc">{description}</p>
   <div class="tool-card__footer">
     <div class="tool-card__tags">
@@ -33,7 +33,6 @@ const { name, description, category, tags, slug } = Astro.props;
     border: 1px solid var(--line-soft);
     border-radius: var(--r);
     background: var(--bg);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   .tool-card:hover {
     border-color: var(--blue-line);

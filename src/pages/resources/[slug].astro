@@ -30,7 +30,7 @@ const { Content } = await render(tool);
     <article class="tool-detail">
       <header class="tool-detail__header">
         <span class="tool-detail__cat">{tool.data.category}</span>
-        <h1 class="tool-detail__title">{tool.data.name}</h1>
+        <h1 class="tool-detail__title" style={`view-transition-name: tool-${tool.id}; view-transition-class: morph`}>{tool.data.name}</h1>
         <p class="tool-detail__desc">{tool.data.description}</p>
         <div class="tool-detail__meta">
           <div class="tool-detail__tags">

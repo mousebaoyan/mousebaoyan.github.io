@@ -33,7 +33,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
     ]} />
 
     <header class="talk__header">
-      <h1 class="talk__title">{title}</h1>
+      <h1 class="talk__title" style={`view-transition-name: talk-${talk.id}; view-transition-class: morph`}>{title}</h1>
       <p class="talk__summary">{summary}</p>
       <dl class="talk__facts">
         <div><dt>直播时间</dt><dd>{talkDate(talk)}</dd></div>
@@ -56,7 +56,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
         ></iframe>
       </div>
       <p class="talk__video-note">
-        播放器无法加载，或想发弹幕、看评论？
+        想发弹幕、看评论，或播放器加载不出来？
         <a href={videoUrl} target="_blank" rel="noopener noreferrer">在哔哩哔哩观看 <span aria-hidden="true">↗</span></a>
       </p>
     </section>
@@ -73,7 +73,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
                   <h3 id={`${deck.id}-title`}>{deck.title}</h3>
                   <p>分享人 {deck.speaker} · 共 {slidesFor(talk, deck).pages} 页</p>
                 </div>
-                <a class="btn btn--primary" href={href} download={downloadName(deck)}>
+                <a class="btn btn--primary" href={href} download={downloadName(deck)} data-astro-prefetch="false">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 19.5h14" /></svg>
                   下载 PDF<span class="talk__size">{fileSize(href)}</span>
                 </a>
@@ -82,7 +82,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
             </article>
           );
         })}
-        <p class="talk__slides-note">课件版权归分享人所有，仅供个人学习参考。</p>
+        <p class="talk__slides-note">课件版权归分享人所有，仅供个人学习参考</p>
       </section>
     )}
 

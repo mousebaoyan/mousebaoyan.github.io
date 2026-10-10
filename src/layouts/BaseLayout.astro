@@ -41,5 +41,29 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     </main>
     <Footer />
     <SiteSearch />
+    <script>
+      // 卡片光斑：一个委托监听，按帧写入指针坐标
+      if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        let card: HTMLElement | null = null;
+        let x = 0;
+        let y = 0;
+        let queued = false;
+        document.addEventListener("pointermove", (event) => {
+          card = (event.target as Element).closest?.<HTMLElement>(".lift") ?? null;
+          if (!card) return;
+          x = event.clientX;
+          y = event.clientY;
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty("--mx", `${x - rect.left}px`);
+            card.style.setProperty("--my", `${y - rect.top}px`);
+          });
+        }, { passive: true });
+      }
+    </script>
   </body>
 </html>

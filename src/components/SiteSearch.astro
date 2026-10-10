@@ -22,10 +22,10 @@
         <div class="search-suggestions">
           {["夏令营", "面试", "导师", "简历", "入群"].map((term) => <button type="button" data-search-suggestion={term}>{term}<span aria-hidden="true">↗</span></button>)}
         </div>
-        <div class="search-guide"><span aria-hidden="true">⌕</span><p>可搜索标题、正文和直播课件的每一页。<br /><small>多个关键词可用空格分隔，例如「导师 联系」。</small></p></div>
+        <div class="search-guide"><span aria-hidden="true">⌕</span><p>可搜索标题、正文和直播课件的每一页<br /><small>多个关键词用空格分隔，例如「导师 联系」</small></p></div>
       </div>
       <ol class="search-results" data-search-results aria-label="搜索结果"></ol>
-      <div class="search-empty" data-search-empty hidden><strong>没有找到相关内容</strong><p>可尝试更短的关键词，或切换到“全部”。</p></div>
+      <div class="search-empty" data-search-empty hidden><strong>没有找到相关内容</strong><p>换个更短的关键词，或切换到“全部”</p></div>
       <button class="search-more" type="button" data-search-more hidden>显示更多结果</button>
       <button class="search-more" type="button" data-search-retry hidden>重新加载</button>
     </div>
@@ -81,9 +81,9 @@
     more.hidden = true;
     retry.hidden = !error;
     results.replaceChildren();
-    if (error) { status.textContent = "搜索内容加载失败，请重试。"; return; }
+    if (error) { status.textContent = "搜索内容加载失败，请重试"; return; }
     if (!documents) { status.textContent = "正在加载搜索内容…"; return; }
-    if (!query) { status.textContent = "搜索范围：保研经验、保研资源、直播课件与常见问题。"; return; }
+    if (!query) { status.textContent = "搜索范围：保研经验、保研资源、直播课件与常见问题"; return; }
     matches = searchDocuments(documents, query, kind);
     status.textContent = `找到 ${matches.length} 条结果${kind === "全部" ? "" : ` · ${kind}`}`;
     empty.hidden = matches.length > 0;
@@ -223,6 +223,10 @@
 <style>
   .site-search { position: fixed; inset: 0; margin: min(12vh, 100px) auto auto; padding: 0; width: min(680px, calc(100% - 40px)); max-width: none; max-height: calc(100dvh - 140px); border: 1px solid var(--line-soft); border-radius: 18px; color: var(--ink); background: var(--bg); box-shadow: 0 24px 80px #1d1d1f26; overflow: hidden; }
   .site-search::backdrop { background: #191e2e55; backdrop-filter: blur(5px); }
+  .site-search[open] { animation: search-in 0.38s var(--ease-out); }
+  .site-search[open]::backdrop { animation: search-backdrop-in 0.3s ease; }
+  @keyframes search-in { from { opacity: 0; transform: translateY(-10px) scale(0.98); } }
+  @keyframes search-backdrop-in { from { opacity: 0; } }
   .search-shell { display: flex; flex-direction: column; max-height: inherit; }
   .search-head { display: flex; flex: none; align-items: center; justify-content: space-between; padding: 24px 26px 18px; }
   .search-eyebrow { display: block; font-size: 11px; color: var(--ink-2); letter-spacing: .08em; margin-bottom: 6px; }

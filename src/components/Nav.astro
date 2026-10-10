@@ -13,6 +13,7 @@ const isActive = (href: string) =>
     </a>
 
     <nav class="nav__links" aria-label="主导航">
+      <span class="nav__pill" aria-hidden="true"></span>
       {navLinks.map((l) => (
         <a href={l.href} class={isActive(l.href) ? "active" : ""} aria-current={isActive(l.href) ? "page" : undefined}>{l.label}</a>
       ))}
@@ -52,10 +53,25 @@ const isActive = (href: string) =>
     position: sticky;
     top: 0;
     z-index: var(--z-nav);
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: saturate(160%) blur(20px);
-    -webkit-backdrop-filter: saturate(160%) blur(20px);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid var(--line-soft);
+    view-transition-name: site-nav;
+  }
+  /* 页面顶部时导航与背景融为一体，滚动后出现分隔线 */
+  @supports (animation-timeline: scroll()) {
+    .nav {
+      animation: nav-settle linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 64px;
+    }
+    @keyframes nav-settle {
+      from {
+        border-bottom-color: transparent;
+        background-color: rgba(255, 255, 255, 0);
+      }
+    }
   }
   .nav__bar {
     height: var(--nav-h);
@@ -80,26 +96,57 @@ const isActive = (href: string) =>
     object-fit: cover;
   }
   .nav__links {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 6px;
   }
   .nav__links a {
+    position: relative;
     padding: 9px 15px;
     border-radius: 9px;
     color: var(--ink-2);
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;
-    transition: color 0.18s ease, background-color 0.18s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
   }
   .nav__links a:hover {
     color: var(--ink);
     background: var(--bg-grey);
   }
   .nav__links a.active {
-    color: #0063c7;
+    color: var(--blue-ink);
     background: var(--blue-soft);
+  }
+  /* 脚本就绪后，由一块滑动的底色代替各链接自己的底色 */
+  .nav__pill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 9px;
+    background: var(--bg-grey);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.38s var(--ease-out), width 0.38s var(--ease-out),
+      background-color 0.25s ease, opacity 0.2s ease;
+  }
+  .nav__links[data-pill] a,
+  .nav__links[data-pill] a:hover {
+    background: transparent;
+  }
+  .nav__links[data-pill] .nav__pill {
+    opacity: 1;
+  }
+  .nav__links[data-pill="active"] .nav__pill {
+    background: var(--blue-soft);
+  }
+  .nav__links[data-pill="none"] .nav__pill {
+    opacity: 0;
+  }
+  .nav__links[data-pill="hover"] a.active:not(:hover) {
+    color: var(--ink-2);
   }
   .nav__actions {
     display: flex;
@@ -174,6 +221,7 @@ const isActive = (href: string) =>
   }
   .nav__mobile {
     display: none;
+    transition: opacity 0.25s ease, transform 0.35s var(--ease-out), display 0.35s allow-discrete;
     position: absolute;
     top: 100%;
     inset-inline: 0;
@@ -228,6 +276,26 @@ const isActive = (href: string) =>
     .nav__mobile:not([hidden]) {
       display: flex;
     }
+    @starting-style {
+      .nav__mobile:not([hidden]) {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+    }
+    .nav__mobile:not([hidden]) a {
+      animation: nav-item-in 0.4s var(--ease-out) both;
+    }
+    .nav__mobile:not([hidden]) a:nth-child(2) { animation-delay: 30ms; }
+    .nav__mobile:not([hidden]) a:nth-child(3) { animation-delay: 60ms; }
+    .nav__mobile:not([hidden]) a:nth-child(4) { animation-delay: 90ms; }
+    .nav__mobile:not([hidden]) a:nth-child(5) { animation-delay: 120ms; }
+    .nav__mobile:not([hidden]) a:nth-child(6) { animation-delay: 150ms; }
+    @keyframes nav-item-in {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    }
   }
 </style>
 
@@ -259,5 +327,34 @@ const isActive = (href: string) =>
     window.matchMedia("(min-width: 901px)").addEventListener("change", (event) => {
       if (event.matches) close();
     });
+  }
+
+  // 滑动底色：停在当前栏目上，悬停时滑到对应链接
+  const links = document.querySelector<HTMLElement>(".nav__links");
+  const pill = links?.querySelector<HTMLElement>(".nav__pill");
+  if (links && pill) {
+    const active = links.querySelector<HTMLAnchorElement>("a.active");
+    const moveTo = (link: HTMLAnchorElement | null, state: string) => {
+      if (!link) {
+        links.dataset.pill = "none";
+        return;
+      }
+      pill.style.width = `${link.offsetWidth}px`;
+      pill.style.transform = `translateX(${link.offsetLeft}px)`;
+      links.dataset.pill = state;
+    };
+    // 首次定位不做动画
+    pill.style.transition = "none";
+    moveTo(active, "active");
+    requestAnimationFrame(() => requestAnimationFrame(() => pill.style.removeProperty("transition")));
+    links.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+      link.addEventListener("pointerenter", () => moveTo(link, link === active ? "active" : "hover"));
+      link.addEventListener("focus", () => moveTo(link, link === active ? "active" : "hover"));
+    });
+    links.addEventListener("pointerleave", () => moveTo(active, "active"));
+    links.addEventListener("focusout", (event) => {
+      if (!links.contains(event.relatedTarget as Node)) moveTo(active, "active");
+    });
+    document.fonts?.ready.then(() => moveTo(active, "active"));
   }
 </script>
