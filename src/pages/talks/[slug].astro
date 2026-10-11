@@ -4,7 +4,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import SlideDeck from "../../components/SlideDeck.astro";
 import Comments from "../../components/Comments.astro";
 import { site } from "../../site.config";
-import { deckPdf, formatDuration, getTalks, isAvailable, slidesFor, talkDate } from "../../lib/talks";
+import { deckPdf, deckPptx, formatDuration, getTalks, isAvailable, slidesFor, talkDate } from "../../lib/talks";
 import { statSync } from "node:fs";
 import { join } from "node:path";
 
@@ -20,7 +20,6 @@ const fileSize = (href: string) => {
   const bytes = statSync(join(process.cwd(), "public", href)).size;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 };
-const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}.pdf`;
 ---
 
 <BaseLayout title={`${title} — 直播回放`} description={summary}>
@@ -70,7 +69,10 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
       <section class="talk__slides" id="slides" aria-labelledby="slides-title">
         <h2 class="talk__section-title" id="slides-title">课件</h2>
         {decks.map((deck) => {
-          const href = deckPdf(talk, deck);
+          const downloads = [
+            { href: deckPdf(talk, deck), format: "PDF" },
+            ...(deck.pptx ? [{ href: deckPptx(talk, deck), format: "PPTX" }] : []),
+          ];
           return (
             <article class="talk__deck" aria-labelledby={`${deck.id}-title`}>
               <header class="talk__deck-head">
@@ -78,10 +80,14 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
                   <h3 id={`${deck.id}-title`}>{deck.title}</h3>
                   <p>分享人 {deck.speaker}，共 {slidesFor(talk, deck).pages} 页</p>
                 </div>
-                <a class="btn btn--primary" href={href} download={downloadName(deck)} data-astro-prefetch="false">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 19.5h14" /></svg>
-                  下载 PDF<span class="talk__size">{fileSize(href)}</span>
-                </a>
+                <div class="talk__downloads">
+                  {downloads.map(({ href, format }, index) => (
+                    <a class:list={["btn", index === 0 ? "btn--primary" : "btn--secondary"]} href={href} download={`${title}-${deck.speaker}.${format.toLowerCase()}`} data-astro-prefetch="false">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 19.5h14" /></svg>
+                      下载 {format}<span class="talk__size">{fileSize(href)}</span>
+                    </a>
+                  ))}
+                </div>
               </header>
               <SlideDeck talk={talk} deck={deck} />
             </article>
@@ -230,6 +236,12 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
     margin-top: 4px;
     color: var(--ink-2);
     font-size: 13px;
+  }
+  .talk__downloads {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-shrink: 0;
   }
   .talk__size {
     margin-left: 2px;

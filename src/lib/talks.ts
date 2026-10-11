@@ -24,6 +24,7 @@ export const slideImage = (talk: Talk, deck: Deck, page: number, thumb = false) 
   `/talks/${talk.id}/${deck.id}/${String(page).padStart(2, "0")}${thumb ? "-thumb" : ""}.webp`;
 
 export const deckPdf = (talk: Talk, deck: Deck) => `/talks/${talk.id}/${deck.id}.pdf`;
+export const deckPptx = (talk: Talk, deck: Deck) => `/talks/${talk.id}/${deck.id}.pptx`;
 
 export function talkDate(talk: Talk) {
   const { date, exactDate } = talk.data;

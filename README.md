@@ -190,6 +190,7 @@ public/                     # Logo、课件图片与 PDF 等静态文件
 | `bvid` | 字符串，可选 | B 站视频 BV 号；不填时列表显示“待后续完善”，不生成详情页 |
 | `duration` | 整数，可选 | 录屏时长（秒） |
 | `decks` | 数组，可选 | 课件列表，每项包含 `id`（英文小写）、`title`、`speaker` 和可选的 `chapters`（`{ title, page }`，用于章节跳转） |
+| `decks[].pptx` | 布尔，可选 | 有 PPT 原文件时填 `true`，并放到 `public/talks/<直播>/<课件 id>.pptx`；页面同时提供 PDF 与 PPTX 下载，默认 `false` |
 | `draft` | 布尔，可选 | 是否为草稿，默认 `false` |
 
 添加课件需要 [poppler](https://poppler.freedesktop.org/)（`pdftoppm`、`pdftotext`）和 `cwebp`，macOS 可执行 `brew install poppler webp`。然后运行：

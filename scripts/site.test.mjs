@@ -64,17 +64,27 @@ test("published content has detail pages while drafts have no generated route", 
   }
 });
 
-test("talk pages offer every slide and the original PDF", () => {
+test("talk pages offer every slide, PDF, and available PPTX source", () => {
+  const timeline = readFileSync(join(dist, "talks/index.html"), "utf8");
   for (const path of filesIn(join(root, "src/content/talks")).filter((path) => path.endsWith(".md"))) {
     const metadata = frontmatter(path);
     const slug = relative(join(root, "src/content/talks"), path).replace(/\.md$/, "");
     if (!metadata.bvid || metadata.draft) continue;
     const html = readFileSync(join(dist, "talks", slug, "index.html"), "utf8");
+    assert.ok(timeline.includes(`href="/talks/${slug}/"`), `${slug}: missing replay on timeline`);
     assert.ok(html.includes(`player.bilibili.com/player.html?bvid=${metadata.bvid}`), `${slug}: missing video player`);
+    assert.ok(html.includes(`href="https://www.bilibili.com/video/${metadata.bvid}/"`), `${slug}: missing Bilibili link`);
     for (const deck of metadata.decks ?? []) {
       const { pages } = JSON.parse(readFileSync(join(root, "src/data/slides", `${slug}--${deck.id}.json`), "utf8"));
       for (let page = 1; page <= pages; page++) assert.ok(html.includes(`id="${deck.id}-${page}"`), `${slug}: missing slide ${page}`);
       assert.ok(html.includes(`href="/talks/${slug}/${deck.id}.pdf"`), `${slug}: missing PDF download`);
+      const pptx = `/talks/${slug}/${deck.id}.pptx`;
+      assert.equal(html.includes(`href="${pptx}"`), Boolean(deck.pptx), `${slug}: incorrect PPTX download visibility`);
+      if (deck.pptx) {
+        const source = readFileSync(join(root, "public", pptx));
+        assert.equal(source.subarray(0, 2).toString(), "PK", `${slug}: invalid PPTX source`);
+        assert.deepEqual(readFileSync(join(dist, pptx)), source, `${slug}: PPTX source changed during build`);
+      }
     }
   }
 });

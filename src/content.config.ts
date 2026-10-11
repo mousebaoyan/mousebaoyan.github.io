@@ -47,6 +47,7 @@ const talks = defineCollection({
       id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
       title: z.string(),
       speaker: z.string(),
+      pptx: z.boolean().default(false),
       chapters: z.array(z.object({ title: z.string(), page: z.number().int().positive() })).default([]),
     })).default([]),
     draft: z.boolean().default(false),
