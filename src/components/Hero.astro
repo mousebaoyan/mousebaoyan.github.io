@@ -237,7 +237,7 @@ const tints = ["camp", "pre", "tm", "sun", "prep"];
       padding-block: clamp(64px, 9vh, 120px);
     }
   }
-  /* 竖屏手机：插画在标题上方，信息栏两行 */
+  /* 竖屏手机：插画在标题上方，文字跟插画一起居中，信息栏两行 */
   @media (max-width: 600px) {
     .hero__inner {
       grid-template-columns: minmax(0, 1fr);
@@ -250,8 +250,22 @@ const tints = ["camp", "pre", "tm", "sun", "prep"];
       justify-self: center;
       width: min(54%, 220px, 26svh);
     }
+    .hero__copy {
+      text-align: center;
+    }
     .hero__title {
+      justify-items: center;
       font-size: clamp(2.5rem, 12vw, 3.5rem);
+    }
+    /* 岸线也居中，从中间向两边画出 */
+    .hero__shore i {
+      transform-origin: center;
+    }
+    .hero__shore i:nth-child(2) {
+      margin-left: 14%;
+    }
+    .hero__shore i:nth-child(3) {
+      margin-left: 30%;
     }
     .hero__lead {
       margin-top: 22px;
