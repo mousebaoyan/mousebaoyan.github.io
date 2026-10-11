@@ -4,26 +4,50 @@
    ============================================================ */
 
 :root {
+  color-scheme: light;
+
   /* —— 中性色（Apple 体系）—— */
   --bg: #ffffff;
   --bg-alt: #fbfbfd;
   --bg-grey: #f5f5f7;
+  --surface: #ffffff;          /* 卡片、弹窗 */
+  --surface-hover: #fafcff;
+  --glass: rgba(255, 255, 255, 0.85);
+  --nav-bg: rgba(255, 255, 255, 0.82);
 
-  --ink: #1d1d1f;          /* 主文字 */
-  --ink-2: #6e6e73;        /* 次要文字 */
-  --ink-3: #86868b;        /* 弱化文字 */
-  --on-dark: #f5f5f7;      /* 深色底上的主文字 */
-  --on-dark-2: #a1a1a6;    /* 深色底上的次要文字 */
+  --ink: #1d1d1f;              /* 主文字 */
+  --ink-1: #3f4652;            /* 较强的次要文字：数值、小标题 */
+  --ink-2: #6e6e73;            /* 次要文字 */
+  --ink-3: #6c6f76;            /* 弱化文字：日期、标签名 */
+  --ink-4: #878b92;            /* 装饰：分隔符、图标、大号弱化数字 */
+  --prose-ink: #353840;        /* 长文正文 */
+  --on-ink: #ffffff;           /* 主按钮（墨色底）上的文字 */
+  --ink-hover: #38383c;
+  --on-dark: #f5f5f7;          /* 始终为深色的区域上的文字 */
+  --on-dark-2: #a1a1a6;
 
-  --line: #d2d2d7;         /* 发丝线 */
+  --line: #d2d2d7;             /* 发丝线 */
   --line-soft: #e8e8ed;
+  --line-strong: #a9afb8;
+
+  --chip-bg: #f3f5f8;
+  --chip-ink: #5f6875;
+  --avatar-bg: #edf3f9;
+  --avatar-ink: #416286;
+  --highlight: #fff0c2;
+  --track: rgba(29, 29, 31, 0.06);
+  --backdrop: rgba(25, 30, 46, 0.33);
 
   /* —— 强调色 —— */
   --blue: #0071e3;
-  --blue-ink: #0063c7;     /* 白底上的蓝色文字，对比度更高 */
+  --blue-ink: #0063c7;         /* 浅底上的蓝色文字，对比度更高 */
+  --blue-ink-strong: #004f9d;
   --blue-hover: #0077ed;
   --blue-soft: #e8f1fd;
-  --blue-line: #bfd3e8;    /* 卡片悬停描边 */
+  --blue-wash: #f4f8fd;        /* 极浅的蓝色底，用于提示与悬停 */
+  --blue-line: #bfd3e8;        /* 卡片悬停描边 */
+  --blue-muted-ink: #416184;
+  --focus-ring: rgba(0, 113, 227, 0.07);
 
   --purple: #6e56cf;
   --purple-soft: #f3f0ff;
@@ -32,7 +56,7 @@
   --gradient-accent: linear-gradient(135deg, #0071e3 0%, #6e56cf 100%);
   --gradient-accent-soft: linear-gradient(135deg, #e8f1fd 0%, #f3f0ff 100%);
 
-  /* —— 深色表面 —— */
+  /* —— 始终为深色的区域（入群横幅）—— */
   --bg-dark-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(110, 86, 207, 0.15), transparent),
                        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 113, 227, 0.1), transparent),
                        #000000;
@@ -44,6 +68,8 @@
   --r-pill: 980px;
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.03), 0 12px 32px -12px rgba(0, 40, 100, 0.16);
+  --shadow-pop: 0 24px 80px rgba(29, 29, 31, 0.15);
 
   /* —— 排版 —— */
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
@@ -60,52 +86,106 @@
   /* —— 动效：出场用 out-expo，交互反馈用 out-quart —— */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-quart: cubic-bezier(0.25, 1, 0.5, 1);
-  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.03), 0 12px 32px -12px rgba(0, 40, 100, 0.16);
 
   /* —— z 轴 —— */
   --z-nav: 50;
 }
 
-/* —— 跨页面过渡：导航栏保持不动，正文淡入淡出 —— */
+/* —— 深色模式：近黑底、抬亮的表面与更亮的蓝紫，保证文字对比度 —— */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0d0d0f;
+  --bg-alt: #121215;
+  --bg-grey: #1b1b1f;
+  --surface: #151518;
+  --surface-hover: #191c22;
+  --glass: rgba(28, 28, 32, 0.85);
+  --nav-bg: rgba(13, 13, 15, 0.76);
+
+  --ink: #f5f5f7;
+  --ink-1: #d2d2d7;
+  --ink-2: #a1a1a6;
+  --ink-3: #8d8d93;
+  --ink-4: #717178;
+  --prose-ink: #d8d8dd;
+  --on-ink: #0d0d0f;
+  --ink-hover: #d2d2d7;
+
+  --line: #3a3a3f;
+  --line-soft: #26262b;
+  --line-strong: #5a5a61;
+
+  --chip-bg: #222226;
+  --chip-ink: #b0b0b6;
+  --avatar-bg: #1c2633;
+  --avatar-ink: #9fc2e8;
+  --highlight: rgba(255, 214, 10, 0.28);
+  --track: rgba(255, 255, 255, 0.1);
+  --backdrop: rgba(0, 0, 0, 0.6);
+
+  --blue: #2997ff;
+  --blue-ink: #5eb0ff;
+  --blue-ink-strong: #8cc6ff;
+  --blue-hover: #47a6ff;
+  --blue-soft: rgba(41, 151, 255, 0.16);
+  --blue-wash: rgba(41, 151, 255, 0.07);
+  --blue-line: #2d4b6e;
+  --blue-muted-ink: #9cc0e6;
+  --focus-ring: rgba(41, 151, 255, 0.25);
+
+  --purple: #a48cf5;
+  --purple-soft: rgba(164, 140, 245, 0.16);
+
+  --gradient-accent: linear-gradient(135deg, #2997ff 0%, #a48cf5 100%);
+  --gradient-accent-soft: linear-gradient(135deg, rgba(41, 151, 255, 0.18) 0%, rgba(164, 140, 245, 0.18) 100%);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 36px -12px rgba(0, 0, 0, 0.8);
+  --shadow-pop: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* —— 跨页面过渡：导航栏保持不动，正文原地淡入淡出，不做位移 —— */
 @view-transition {
   navigation: auto;
 }
-::view-transition-old(root) {
-  animation: 160ms ease both vt-fade-out;
+/* 用浏览器默认的交叉淡化：新旧画面不透明度互补，中途不会变暗 */
+::view-transition-group(root) {
+  animation-duration: 240ms;
 }
-::view-transition-new(root) {
-  animation: 320ms var(--ease-out) both vt-fade-in;
+/* 导航栏直接换成新页面的（只是当前栏目变化，交叉淡化反而会闪）；
+   品牌区在过渡期间保持旧画面，避免标志图片尚未绘制时闪一下 */
+::view-transition-old(site-nav) {
+  display: none;
 }
-/* 卡片标题过渡到详情页标题：按比例缩放不拉伸文字，旧标题先淡出以免重影 */
-::view-transition-group(*.morph) {
-  animation-duration: 440ms;
-  animation-timing-function: var(--ease-out);
+::view-transition-new(site-nav) {
+  animation: none;
 }
-::view-transition-old(*.morph),
-::view-transition-new(*.morph) {
-  width: auto;
-  height: 100%;
-  object-fit: none;
-  object-position: left top;
+::view-transition-old(site-brand) {
+  animation: none;
 }
-::view-transition-old(*.morph) {
-  animation: 120ms ease both vt-fade-out;
-}
-::view-transition-new(*.morph) {
-  animation: 280ms ease 80ms both vt-title-in;
-}
-@keyframes vt-title-in {
-  from { opacity: 0; }
-}
-@keyframes vt-fade-out {
-  to { opacity: 0; }
-}
-@keyframes vt-fade-in {
-  from { opacity: 0; transform: translateY(6px); }
+::view-transition-new(site-brand) {
+  animation: none;
+  opacity: 0;
 }
 
+/* 切换主题：整页一次性展开，不做淡入淡出，也不单独处理导航和标题 */
+html[data-theme-switch] * {
+  view-transition-name: none !important;
+}
+html[data-theme-switch]::view-transition-old(root),
+html[data-theme-switch]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* 选中的文字统一用主文字色，灰色小字选中后也清楚 */
 ::selection {
-  background: #d3e5fb;
+  background: var(--blue-soft);
+  color: var(--ink);
+}
+:root[data-theme="dark"] ::selection {
+  background: rgba(41, 151, 255, 0.35);
 }
 
 /* —— Reset —— */
@@ -256,20 +336,20 @@ ul {
 .btn--primary {
   background: var(--ink);
   border-color: var(--ink);
-  color: #fff;
+  color: var(--on-ink);
 }
 .btn--primary:hover {
-  background: #38383c;
-  border-color: #38383c;
+  background: var(--ink-hover);
+  border-color: var(--ink-hover);
 }
 .btn--secondary {
-  background: var(--bg);
+  background: var(--surface);
   border-color: var(--line);
   color: var(--ink);
 }
 .btn--secondary:hover {
   background: var(--bg-grey);
-  border-color: #a9afb8;
+  border-color: var(--line-strong);
 }
 .btn--small {
   min-height: 36px;
@@ -306,8 +386,8 @@ ul {
   display: inline-block;
   padding: 3px 8px;
   border-radius: 6px;
-  background: #f3f5f8;
-  color: #5f6875;
+  background: var(--chip-bg);
+  color: var(--chip-ink);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.6;
@@ -331,7 +411,7 @@ ul {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 113, 227, 0.07), transparent 70%);
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--blue-wash), transparent 70%);
   opacity: 0;
   transition: opacity 0.35s ease;
   pointer-events: none;
@@ -376,6 +456,52 @@ ul {
 }
 @keyframes copy-check-draw {
   to { stroke-dashoffset: 0; }
+}
+
+/* —— 代码高亮：跟随页面主题 —— */
+.astro-code span {
+  color: var(--shiki-light);
+}
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark);
+}
+
+/* —— 按钮与控件上的文字不可选中，避免点击、拖动时误选 —— */
+button,
+summary,
+.btn,
+.nav,
+.link-arrow,
+.chip,
+.deck__chapters,
+.deck__bar,
+.deck__thumbs,
+.pagination,
+.talk-card__badge,
+.tool-card__go,
+.exp-card__read,
+.entry__count,
+.comments__github,
+.join__btn,
+.join__guide,
+.join-guide__actions,
+.join-guide__faq,
+.faq__nav,
+.page-header__action,
+.article-back,
+.back-link,
+.hero__stage,
+.talk-card__cover,
+.entry__icon,
+img {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* —— 快捷键提示：按系统显示 ⌘ 或 Ctrl（由 BaseLayout 的首屏脚本标记）—— */
+:root[data-mac] .kbd-other,
+:root:not([data-mac]) .kbd-mac {
+  display: none;
 }
 
 /* —— 通用 —— */

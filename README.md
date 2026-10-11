@@ -30,7 +30,7 @@
 | [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
 | [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、入群步骤、群号复制与 QQ 入群链接 |
 
-网站适配桌面和手机，使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
+网站适配桌面和手机，支持浅色与深色模式（默认跟随系统，导航栏按钮可手动切换；与系统一致时恢复跟随），使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
 经验贴、资源与直播回放详情页下方提供 Giscus 评论区，使用 GitHub 账号参与讨论，评论存储在本仓库的 Discussions 中。
 
@@ -94,6 +94,8 @@ npm run build
 npm run test:site
 ```
 
+颜色请使用 [`src/styles/global.css`](src/styles/global.css) 中的配色变量（如 `--ink-2`、`--surface`、`--blue-ink`），不要直接写颜色值，否则深色模式下可能看不清。
+
 ## 项目结构
 
 ```text
@@ -109,7 +111,7 @@ src/
 ├── layouts/                 # 页面基础布局
 ├── lib/                     # 经验贴分页、直播回放与搜索的辅助函数
 ├── pages/                   # 首页、列表页、详情页和入群指南
-├── styles/                  # 全局样式与文章阅读样式
+├── styles/                  # 全局样式（含浅色/深色配色变量）与文章阅读样式
 ├── content.config.ts        # 内容字段校验
 └── site.config.ts           # 网站名称、群号、入群链接与导航
 .github/
@@ -217,7 +219,7 @@ node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
 - **仓库设置**：开启 Discussions，并为本仓库安装 [Giscus App](https://github.com/apps/giscus/installations/new)。仅授权本仓库即可，无需个人访问令牌。
 - **讨论分类**：使用 `Announcements`（公告类型），由 Giscus 创建页面讨论，访客可在讨论下评论。公开仓库 ID、分类 ID 集中在 [`src/site.config.ts`](src/site.config.ts)；更换仓库或分类时应一并更新。
 - **页面关联**：使用带前后斜杠的固定路径（如 `/experiences/submission-1/`），开启严格匹配。改标题不会改变关联；更换文章文件名或路径会产生新关联，请先安排旧讨论迁移。首次评论时才创建对应 Discussion。
-- **样式**：[`public/giscus/mouse-light.css`](public/giscus/mouse-light.css) 是 iframe 内的独立主题，包含本站字体、灰白底色、蓝紫按钮和圆角。正式站点通过 HTTPS 加载主题；本地 HTTP 预览由页面读取同一 CSS，再通过 Giscus 的主题更新接口传入，避免 HTTPS iframe 无法读取本地 HTTP 样式的问题。无需安装额外服务。
+- **样式**：[`public/giscus/mouse-light.css`](public/giscus/mouse-light.css) 与 [`mouse-dark.css`](public/giscus/mouse-dark.css) 是 iframe 内的浅色、深色主题，包含本站字体、底色、蓝紫按钮和圆角，随网站主题切换。正式站点通过 HTTPS 加载主题；本地 HTTP 预览由页面读取同一 CSS，再通过 Giscus 的主题更新接口传入，避免 HTTPS iframe 无法读取本地 HTTP 样式的问题。无需安装额外服务。
 - **来源限制**：根目录 [`giscus.json`](giscus.json) 允许正式域名和本地调试地址，推送到默认分支后生效。更换域名时同时更新该文件及 `site.url`，后者用于讨论的正式页面回链。
 - **管理评论**：在 GitHub Discussions 中处理评论、锁定讨论或限制用户。评论和 GitHub 身份公开可见，请勿提交个人隐私信息。
 

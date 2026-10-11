@@ -24,7 +24,7 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
       <span class="exp-card__separator" aria-hidden="true">·</span>
       <time datetime={date.toISOString()}>{dateLabel}</time>
     </div>
-    <Heading class="exp-card__title" title={title} style={`view-transition-name: exp-${slug}; view-transition-class: morph`}>{title}</Heading>
+    <Heading class="exp-card__title" title={title}>{title}</Heading>
     <p class="exp-card__excerpt">{excerpt}</p>
     <div class="exp-card__tags">
       {tags.slice(0, 3).map((tag) => <span class="exp-card__tag">{tag}</span>)}
@@ -57,11 +57,11 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
     padding: 20px 28px;
     border: 1px solid var(--line-soft);
     border-radius: 16px;
-    background: var(--bg);
+    background: var(--surface);
   }
   .exp-card:hover {
-    border-color: #bfd3e8;
-    background: #fafcff;
+    border-color: var(--blue-line);
+    background: var(--surface-hover);
   }
   .exp-card:focus-visible {
     outline: 2px solid var(--blue);
@@ -75,14 +75,14 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    color: #757a83;
+    color: var(--ink-3);
     font-size: 12px;
   }
   .exp-card__author {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: #505967;
+    color: var(--ink-1);
     font-size: 13px;
   }
   .exp-card__avatar {
@@ -91,12 +91,12 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #edf3f9;
-    color: #416286;
+    background: var(--avatar-bg);
+    color: var(--avatar-ink);
     font-size: 12px;
   }
   .exp-card__separator {
-    color: #afb4bc;
+    color: var(--ink-4);
   }
   .exp-card__title {
     display: -webkit-box;
@@ -116,7 +116,7 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
     -webkit-line-clamp: 2;
     overflow: hidden;
     margin-top: 8px;
-    color: #6b7079;
+    color: var(--ink-2);
     font-size: 15px;
     line-height: 1.7;
     overflow-wrap: anywhere;
@@ -130,8 +130,8 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
   .exp-card__tag {
     padding: 3px 8px;
     border-radius: 5px;
-    background: #f3f5f8;
-    color: #626c7a;
+    background: var(--chip-bg);
+    color: var(--ink-2);
     font-size: 11px;
     line-height: 1.6;
     overflow-wrap: anywhere;
@@ -151,17 +151,17 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
   }
   .exp-card__background dt {
     margin-bottom: 4px;
-    color: #777d87;
+    color: var(--ink-3);
     font-size: 12px;
   }
   .exp-card__background dd {
-    color: #4c5563;
+    color: var(--ink-1);
     font-size: 14px;
     line-height: 1.7;
     overflow-wrap: anywhere;
   }
   .exp-card__background .exp-card__target {
-    color: #343e4d;
+    color: var(--ink-1);
     font-weight: 500;
   }
   .exp-card__read {
@@ -170,7 +170,7 @@ const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "lo
     gap: 10px;
     padding-top: 16px;
     margin-top: auto;
-    color: #1761ae;
+    color: var(--blue-ink);
     font-size: 13px;
   }
   @media (max-width: 860px) {

@@ -1,5 +1,6 @@
 ---
 import { site, navLinks } from "../site.config";
+import logo from "../assets/logo-96.webp?inline";
 const year = new Date().getFullYear();
 ---
 
@@ -8,7 +9,7 @@ const year = new Date().getFullYear();
     <div class="footer__cols">
       <div class="footer__brand">
         <a class="footer__logo" href="#top">
-          <img src="/logo.jpg" alt="" width="26" height="26" />
+          <img src={logo} alt="" width="26" height="26" />
           <span>{site.name}</span>
         </a>
         <p class="footer__desc">{site.description}</p>

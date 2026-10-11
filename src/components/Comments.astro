@@ -80,18 +80,35 @@ const discussionUrl = `https://github.com/${comments.repo}/discussions/categorie
       }
     });
 
+    // Giscus themes follow the site theme. Production loads the CSS over
+    // HTTPS; local HTTP previews pass the same CSS as a data URL instead.
+    const localPreview = location.protocol === "http:";
+    const previewThemes: Record<string, string> = {};
+    const currentTheme = () => document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+    const themeValue = async (theme: string) => {
+      const href = new URL(`/giscus/mouse-${theme}.css`, location.origin).href;
+      if (!localPreview) return href;
+      if (!previewThemes[theme]) {
+        try {
+          const response = await fetch(href, { signal: AbortSignal.timeout(5000) });
+          if (response.ok) previewThemes[theme] = `data:text/css;charset=utf-8,${encodeURIComponent(await response.text())}`;
+        } catch { /* Fall back to Giscus's built-in theme of the same brightness. */ }
+      }
+      return previewThemes[theme] ?? theme;
+    };
+    window.addEventListener("themechange", async () => {
+      const iframe = mount.querySelector("iframe");
+      if (!iframe) return;
+      const theme = await themeValue(currentTheme());
+      iframe.contentWindow?.postMessage({ giscus: { setConfig: { theme } } }, "https://giscus.app");
+    });
+
     const load = async () => {
       if (started) return;
       started = true;
       status.hidden = false;
-      const themeUrl = new URL("/giscus/mouse-light.css", location.origin).href;
-      const localPreview = location.protocol === "http:";
-      if (localPreview) {
-        try {
-          const response = await fetch(themeUrl, { signal: AbortSignal.timeout(5000) });
-          if (response.ok) localTheme = `data:text/css;charset=utf-8,${encodeURIComponent(await response.text())}`;
-        } catch { /* Keep Giscus's built-in light theme if the preview CSS is unavailable. */ }
-      }
+      const theme = await themeValue(currentTheme());
+      if (localPreview && theme.startsWith("data:")) localTheme = theme;
       const script = document.createElement("script");
       script.src = "https://giscus.app/client.js";
       script.async = true;
@@ -101,7 +118,7 @@ const discussionUrl = `https://github.com/${comments.repo}/discussions/categorie
         category: config.category, categoryId: config.categoryId,
         mapping: "specific", term: section.dataset.term, strict: "1",
         reactionsEnabled: "0", emitMetadata: "1", inputPosition: "top",
-        theme: localPreview ? "light" : themeUrl,
+        theme: localPreview ? currentTheme() : theme,
         lang: "zh-CN",
       });
       script.addEventListener("error", fail, { once: true });

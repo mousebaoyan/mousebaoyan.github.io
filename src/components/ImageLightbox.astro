@@ -126,6 +126,15 @@
   .image-viewer__status:empty {
     display: none;
   }
+  /* 看图层始终是深色，选中文字时用深蓝底白字 */
+  .image-viewer ::selection {
+    background: rgba(41, 151, 255, 0.45);
+    color: #fff;
+  }
+  .image-viewer button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
   .image-viewer__caption {
     flex: none;
     max-height: 88px;

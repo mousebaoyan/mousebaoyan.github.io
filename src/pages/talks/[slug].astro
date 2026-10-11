@@ -33,7 +33,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
     ]} />
 
     <header class="talk__header">
-      <h1 class="talk__title" style={`view-transition-name: talk-${talk.id}; view-transition-class: morph`}>{title}</h1>
+      <h1 class="talk__title">{title}</h1>
       <p class="talk__summary">{summary}</p>
       <dl class="talk__facts">
         <div><dt>直播时间</dt><dd>{talkDate(talk)}</dd></div>
@@ -86,9 +86,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
       </section>
     )}
 
-    <div class="talk__comments">
-      <Comments path={`/talks/${talk.id}/`} />
-    </div>
+    <Comments path={`/talks/${talk.id}/`} />
   </div>
 </BaseLayout>
 
@@ -121,12 +119,12 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
     border-top: 1px solid var(--line-soft);
   }
   .talk__facts dt {
-    color: #757a83;
+    color: var(--ink-3);
     font-size: 12px;
   }
   .talk__facts dd {
     margin-top: 4px;
-    color: #343e4d;
+    color: var(--ink-1);
     font-size: 15px;
     font-weight: 500;
   }
@@ -195,7 +193,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
   }
   .talk__size {
     margin-left: 2px;
-    color: rgba(255, 255, 255, 0.6);
+    opacity: 0.6;
     font-size: 12px;
     font-weight: 400;
   }
@@ -203,9 +201,6 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
     margin-top: 20px;
     color: var(--ink-3);
     font-size: 12px;
-  }
-  .talk__comments {
-    max-width: 760px;
   }
   @media (max-width: 600px) {
     .talk__facts {

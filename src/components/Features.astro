@@ -81,11 +81,11 @@ const entries = [
     padding: 22px 22px 20px;
     border: 1px solid var(--line-soft);
     border-radius: var(--r);
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--glass);
   }
   .entry:hover {
     border-color: var(--blue-line);
-    background: #fafcff;
+    background: var(--surface-hover);
   }
   .entry:focus-visible {
     outline: 2px solid var(--blue);
@@ -129,7 +129,7 @@ const entries = [
     transition: transform 0.2s ease;
   }
   /* 接在首屏入场之后依次出现 */
-  .entries__grid > li {
+  :global(:root[data-entrance]) .entries__grid > li {
     animation: entry-rise 0.9s var(--ease-out) both;
   }
   .entries__grid > li:nth-child(1) { animation-delay: 0.4s; }

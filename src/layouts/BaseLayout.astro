@@ -21,6 +21,22 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>
+      // 首次绘制前确定主题：有手动选择时使用选择，否则跟随系统
+      (() => {
+        let stored = null;
+        try { stored = localStorage.getItem("theme"); } catch {}
+        const dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        // 首屏入场动画只在从站外进入时播放，站内来回切换不重播
+        let internal = false;
+        try { internal = new URL(document.referrer).origin === location.origin; } catch {}
+        if (!internal) document.documentElement.dataset.entrance = "";
+        // 快捷键提示在首次绘制前按系统确定，避免脚本运行后文字变化引起按钮跳动
+        if (/Mac|iPhone|iPad/.test(navigator.platform)) document.documentElement.dataset.mac = "";
+      })();
+    </script>
+    <noscript><style>[data-search-open] { display: none !important; }</style></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/jpeg" href="/logo.jpg" />
     <meta name="generator" content={Astro.generator} />
@@ -31,7 +47,8 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     <meta property="og:type" content="website" />
     <meta property="og:image" content={new URL("/logo.jpg", site.url)} />
     {!isNotFound && <link rel="canonical" href={new URL(Astro.url.pathname, site.url)} />}
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0d0f" media="(prefers-color-scheme: dark)" />
     <slot name="head" />
   </head>
   <body>

@@ -45,6 +45,16 @@ const rules = [
     color: var(--on-dark);
     overflow: hidden;
   }
+  /* 深色模式下与页面背景接近，用细线分隔 */
+  :global(:root[data-theme="dark"]) .join {
+    border-block: 1px solid var(--line-soft);
+  }
+  /* 横幅始终是深色，选中文字时用深蓝底白字 */
+  .join ::selection {
+    background: rgba(41, 151, 255, 0.45);
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+  }
   .join__inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
@@ -134,13 +144,14 @@ const rules = [
   .join__btn:hover {
     background: rgba(255, 255, 255, 0.08);
   }
+  /* 横幅始终是深色，按钮用固定的深蓝以保证白字对比度 */
   .join__btn--copy {
-    border-color: var(--blue);
-    background: var(--blue);
+    border-color: #0071e3;
+    background: #0071e3;
   }
   .join__btn--copy:hover {
-    border-color: var(--blue-hover);
-    background: var(--blue-hover);
+    border-color: #0077ed;
+    background: #0077ed;
   }
   .join__guide {
     align-self: flex-start;

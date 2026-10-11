@@ -30,10 +30,15 @@ import { site } from "../site.config";
 </section>
 
 <style>
+  :global(:root[data-theme="dark"]) .hero {
+    --hero-glow: 0.16;
+    --hero-glow-2: 0.12;
+    --logo-shadow: 0.7;
+  }
   .hero {
     background:
-      radial-gradient(ellipse 90% 60% at 75% 15%, rgba(0, 113, 227, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse 70% 50% at 20% 80%, rgba(110, 86, 207, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 90% 60% at 75% 15%, rgb(0 113 227 / var(--hero-glow, 0.08)) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 50% at 20% 80%, rgb(110 86 207 / var(--hero-glow-2, 0.06)) 0%, transparent 50%),
       var(--bg);
     overflow: hidden;
   }
@@ -60,6 +65,11 @@ import { site } from "../site.config";
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  /* 渐变文字本身是透明的，选中时改用实色，否则选中后看不到字 */
+  .hero__title::selection {
+    color: var(--ink);
+    -webkit-text-fill-color: var(--ink);
   }
   .hero__sub {
     margin-top: 20px;
@@ -124,11 +134,11 @@ import { site } from "../site.config";
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 50%;
-    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, var(--logo-shadow, 0.28));
   }
 
   /* 首屏只有这一段编排好的入场：文字依次浮现，标志随后落定 */
-  .hero__copy > * {
+  :global(:root[data-entrance]) .hero__copy > * {
     animation: hero-rise 0.9s var(--ease-out) both;
   }
   .hero__name { animation-delay: 0.05s; }
@@ -136,7 +146,7 @@ import { site } from "../site.config";
   .hero__sub { animation-delay: 0.2s; }
   .hero__actions { animation-delay: 0.28s; }
   .hero__trust { animation-delay: 0.36s; }
-  .hero__stage {
+  :global(:root[data-entrance]) .hero__stage {
     animation: hero-settle 1.2s var(--ease-out) 0.1s both;
   }
   @keyframes hero-rise {

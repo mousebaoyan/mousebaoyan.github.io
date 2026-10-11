@@ -31,7 +31,7 @@ const Tag = available ? "a" : "div";
       <time datetime={date.toISOString().slice(0, 10)}>{talkDate(talk)}</time>
       {speakers.length > 0 && <span>分享人：{speakers.join("、")}</span>}
     </p>
-    <Heading class="talk-card__title" style={available ? `view-transition-name: talk-${talk.id}; view-transition-class: morph` : undefined}>{title}</Heading>
+    <Heading class="talk-card__title">{title}</Heading>
     <p class="talk-card__summary">{summary}</p>
     {available && (
       <div class="talk-card__facts">
@@ -51,11 +51,11 @@ const Tag = available ? "a" : "div";
     padding: 16px;
     border: 1px solid var(--line-soft);
     border-radius: var(--r);
-    background: var(--bg);
+    background: var(--surface);
   }
   a.talk-card:hover {
     border-color: var(--blue-line);
-    background: #fafcff;
+    background: var(--surface-hover);
   }
   a.talk-card:focus-visible {
     outline: 2px solid var(--blue);
@@ -86,6 +86,11 @@ const Tag = available ? "a" : "div";
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  /* 渐变文字本身是透明的，选中时改用实色，否则选中后看不到字 */
+  .talk-card__year::selection {
+    color: var(--ink);
+    -webkit-text-fill-color: var(--ink);
+  }
   .talk-card__day {
     margin-top: 8px;
     color: var(--ink-2);
@@ -101,7 +106,7 @@ const Tag = available ? "a" : "div";
     gap: 5px;
     padding: 3px 9px 3px 8px;
     border-radius: var(--r-pill);
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--glass);
     color: var(--blue-ink);
     font-size: 12px;
     font-weight: 500;
@@ -110,8 +115,8 @@ const Tag = available ? "a" : "div";
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   a.talk-card:hover .talk-card__badge {
-    background: var(--blue);
-    color: #fff;
+    background: var(--blue-ink);
+    color: var(--bg);
   }
   .talk-card__body {
     min-width: 0;
@@ -121,7 +126,7 @@ const Tag = available ? "a" : "div";
     display: flex;
     flex-wrap: wrap;
     gap: 4px 16px;
-    color: #757a83;
+    color: var(--ink-3);
     font-size: 13px;
   }
   .talk-card__title {
@@ -137,7 +142,7 @@ const Tag = available ? "a" : "div";
     -webkit-line-clamp: 2;
     overflow: hidden;
     margin-top: 8px;
-    color: #6b7079;
+    color: var(--ink-2);
     font-size: 15px;
     line-height: 1.7;
   }
@@ -156,8 +161,8 @@ const Tag = available ? "a" : "div";
   }
   .talk-card--pending .talk-card__year {
     background: none;
-    -webkit-text-fill-color: #a1a1a6;
-    color: #a1a1a6;
+    -webkit-text-fill-color: var(--ink-4);
+    color: var(--ink-4);
   }
   .talk-card--pending .talk-card__day {
     color: var(--ink-3);
@@ -166,7 +171,7 @@ const Tag = available ? "a" : "div";
     color: var(--ink-2);
   }
   .talk-card--pending .talk-card__title {
-    color: #4c5563;
+    color: var(--ink-1);
   }
 
   @media (max-width: 640px) {

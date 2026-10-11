@@ -11,7 +11,7 @@ const { name, description, category, tags, slug } = Astro.props;
 
 <a class="tool-card lift" href={`/resources/${slug}`}>
   <span class="tool-card__cat">{category}</span>
-  <h3 class="tool-card__name" style={`view-transition-name: tool-${slug}; view-transition-class: morph`}>{name}</h3>
+  <h3 class="tool-card__name">{name}</h3>
   <p class="tool-card__desc">{description}</p>
   <div class="tool-card__footer">
     <div class="tool-card__tags">
@@ -32,11 +32,11 @@ const { name, description, category, tags, slug } = Astro.props;
     padding: clamp(20px, 2.4vw, 26px);
     border: 1px solid var(--line-soft);
     border-radius: var(--r);
-    background: var(--bg);
+    background: var(--surface);
   }
   .tool-card:hover {
     border-color: var(--blue-line);
-    background: #fafcff;
+    background: var(--surface-hover);
   }
   .tool-card:focus-visible {
     outline: 2px solid var(--blue);

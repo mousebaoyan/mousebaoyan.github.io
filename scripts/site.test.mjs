@@ -114,4 +114,5 @@ test("detail pages have unique comment mappings and production backlinks", () =>
   }
   assert.ok(mappings.size > 0);
   assert.ok(isFile(join(dist, "giscus/mouse-light.css")));
+  assert.ok(isFile(join(dist, "giscus/mouse-dark.css")));
 });

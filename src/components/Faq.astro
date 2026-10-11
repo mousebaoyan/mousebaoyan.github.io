@@ -77,13 +77,13 @@ import { groups } from "../data/faq";
     min-height: 44px;
     padding: 10px 12px;
     border-radius: 9px;
-    color: #505967;
+    color: var(--ink-1);
     font-size: 14px;
     transition: color 0.18s ease, background-color 0.18s ease;
   }
   .faq__nav a:hover {
     background: var(--blue-soft);
-    color: #0063c7;
+    color: var(--blue-ink);
   }
   .faq__contact {
     display: flex;
@@ -112,7 +112,7 @@ import { groups } from "../data/faq";
     align-items: center;
     gap: 8px;
     margin-top: 12px;
-    color: #0063c7;
+    color: var(--blue-ink);
     font-size: 14px;
   }
   .faq__contact a:hover,
@@ -173,11 +173,11 @@ import { groups } from "../data/faq";
     transition: background-color 0.3s ease;
   }
   .faq__item[open] {
-    background: #fafbfd;
+    background: var(--bg-alt);
   }
   .faq__icon {
     flex: none;
-    color: #6e7785;
+    color: var(--ink-2);
   }
   .faq__item[open] .faq__icon {
     color: var(--blue);
@@ -209,7 +209,7 @@ import { groups } from "../data/faq";
   }
   .faq__answer {
     padding: 0 60px 22px 24px;
-    color: #5f6773;
+    color: var(--ink-2);
     font-size: 15px;
     line-height: 1.85;
     overflow-wrap: anywhere;
