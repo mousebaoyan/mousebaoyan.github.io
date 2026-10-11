@@ -78,6 +78,11 @@ const placed = groups.map((group) => {
     const routes = [...map.querySelectorAll<HTMLAnchorElement>(".map__route")];
     const paths = routes.map(() => svg.appendChild(document.createElementNS(NS, "path")));
     const ends = routes.map(() => svg.appendChild(document.createElementNS(NS, "circle")));
+    // 「四非」的路线用标志里的朝阳橙
+    routes.forEach((route, index) => {
+      paths[index].dataset.from = route.dataset.from;
+      ends[index].dataset.from = route.dataset.from;
+    });
     const draw = () => {
       const box = svg.getBoundingClientRect();
       if (!box.width) return;
@@ -172,6 +177,13 @@ const placed = groups.map((group) => {
     stroke-width: 1.5;
     transition: fill 0.25s ease, stroke 0.25s ease, opacity 0.25s ease;
   }
+  .map__lines :global(path[data-from="四非"]) {
+    stroke: var(--sun-strong);
+    stroke-width: 2;
+  }
+  .map__lines :global(circle[data-from="四非"]) {
+    stroke: var(--sun-strong);
+  }
   .map[data-focus] .map__lines :global(:is(path, circle):not([data-on])) {
     opacity: 0.3;
   }
@@ -199,6 +211,10 @@ const placed = groups.map((group) => {
     border-radius: 50%;
     background: var(--ink);
     box-shadow: 0 0 0 5px var(--bg-grey);
+  }
+  .map__group[data-group="四非"] .map__node {
+    background: var(--sun-strong);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--sun) 35%, var(--bg));
   }
   .map__group-name {
     font-size: 22px;

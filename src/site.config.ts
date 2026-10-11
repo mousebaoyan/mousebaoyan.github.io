@@ -7,6 +7,8 @@ export const site = {
   description:
     "四非院校同学的计算机保研信息站：招生信息、实用资源、经验贴与直播回放",
   qqGroup: "742203503",
+  // 首页展示的群人数，人数变化时改这里
+  memberCount: "1000+",
   qqJoinUrl: "https://qm.qq.com/q/20geYjRZlq",
 };
 

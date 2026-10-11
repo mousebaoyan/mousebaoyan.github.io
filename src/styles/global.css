@@ -50,6 +50,10 @@
   --tone-tm: #2563eb;
   --tone-tm-ink: #1d4ed8;
 
+  /* —— 标志配色：朝阳橙，用在群友头像和「四非」的路线上 —— */
+  --sun: #f4be92;
+  --sun-strong: #e8956b;
+
   /* —— 强调色（链接、焦点）与录取蓝一致 —— */
   --blue: #2563eb;
   --blue-ink: #1d4ed8;         /* 浅底上的蓝色文字，对比度更高 */
@@ -142,6 +146,9 @@
   --tone-pre-ink: #f5c56a;
   --tone-tm: #5b8cff;
   --tone-tm-ink: #8aadff;
+
+  --sun: #f2b48a;
+  --sun-strong: #d98a5f;
 
   --blue: #5b8cff;
   --blue-ink: #8aadff;
@@ -514,10 +521,12 @@ summary,
 .pagination,
 .cal__tabs,
 .cal__now,
+.cal__milestones em,
 .chart__today,
 .chart__axis,
 .steps__num,
 .talk__avatars,
+.hero__avatars,
 .talk__play,
 .exp__avatar,
 .feature__cover,

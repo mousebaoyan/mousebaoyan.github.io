@@ -1,18 +1,30 @@
 ---
+import { getCollection } from "astro:content";
 import { site } from "../site.config";
 import LogoArt from "./LogoArt.astro";
-import YearCalendar from "./home/YearCalendar.astro";
+
+// 头像用真实投稿人和直播分享人名字的首字
+const experiences = await getCollection("experiences", ({ data }) => !data.draft);
+const talks = await getCollection("talks", ({ data }) => !data.draft);
+const names = [...new Set([
+  ...experiences.map((entry) => entry.data.author),
+  ...talks.flatMap((talk) => talk.data.speakers),
+])].filter((name) => name !== "匿名").slice(0, 5);
+const tints = ["camp", "pre", "tm", "sun", "prep"];
 ---
 
+<!-- 首屏：上面是标题和插画，底部一条信息栏放群友人数和当前阶段 -->
 <section class="hero">
   <div class="container hero__inner">
     <div class="hero__copy">
       <h1 class="hero__title display">
         <span class="visually-hidden">{site.name}：</span>
-        <span class="hero__from">四非鼠鼠</span>
-        <span class="hero__to">一起上岸</span>
+        <span class="hero__light">四非鼠鼠</span>
+        <span class="hero__solid">一起上岸</span>
+        <!-- 「上岸」下面的水平线，取自标志里鼠鼠们脚下的岸，颜色依次是夏令营、预推免、推免 -->
+        <span class="hero__shore" aria-hidden="true"><i></i><i></i><i></i></span>
       </h1>
-      <p class="hero__lead"><span>四非院校计算机同学的保研互助群，</span><span>一千多名群友在这里交流</span></p>
+      <p class="hero__lead">四非院校计算机同学的保研互助群</p>
       <div class="hero__actions">
         <a class="btn btn--primary" href="/join">加入鼠群</a>
         <a class="btn btn--secondary" href="#routes">看看大家去了哪</a>
@@ -23,48 +35,187 @@ import YearCalendar from "./home/YearCalendar.astro";
       <LogoArt priority />
     </div>
   </div>
-  <YearCalendar />
+
+  <div class="container">
+    <div class="hero__foot">
+      <p class="hero__members">
+        <span class="hero__avatars" aria-hidden="true">
+          {names.map((name, index) => <span data-tint={tints[index % tints.length]}>{Array.from(name)[0]}</span>)}
+        </span>
+        <span><strong>{site.memberCount}</strong> 群友</span>
+      </p>
+      <!-- 文字由保研日历的脚本按访问日期填入 -->
+      <a class="hero__next" href="#calendar">
+        <span data-hero-now>看看现在该做什么</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6" /></svg>
+      </a>
+    </div>
+  </div>
 </section>
 
 <style>
+  /* 首屏占满一屏：主体居中，信息栏贴底 */
   .hero {
-    padding-bottom: clamp(40px, 5vw, 72px);
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - var(--nav-h));
   }
   .hero__inner {
+    flex: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
     align-items: center;
-    gap: clamp(32px, 5vw, 72px);
-    padding-block: clamp(32px, 5vw, 64px) clamp(36px, 4.5vw, 60px);
+    gap: clamp(40px, 6vw, 96px);
+    padding-block: clamp(40px, 7vh, 96px);
   }
-  /* 标题两行错开，第二行向右缩进 */
+
+  /* —— 标题：两行字号相同，字重一轻一重；下面三道长短递减的岸线 —— */
   .hero__title {
     display: grid;
-    font-size: clamp(3rem, 6vw, 4.75rem);
-    line-height: 1.08;
+    justify-items: start;
+    font-size: clamp(3rem, 6.4vw, 5.5rem);
+    line-height: 1.14;
+    letter-spacing: 0.02em;
   }
-  .hero__to {
-    padding-left: 1.6em;
+  .hero__light {
+    font-weight: 400;
+  }
+  .hero__solid {
+    font-weight: 700;
+  }
+  .hero__shore {
+    display: grid;
+    gap: 0.09em;
+    width: 4.1em;
+    margin-top: 0.24em;
+  }
+  .hero__shore i {
+    display: block;
+    height: 0.06em;
+    border-radius: 1em;
+    background: var(--tone-camp);
+    transform-origin: left;
+  }
+  .hero__shore i:nth-child(2) {
+    width: 72%;
+    margin-left: 10%;
+    background: var(--tone-pre);
+  }
+  .hero__shore i:nth-child(3) {
+    width: 40%;
+    margin-left: 22%;
+    background: var(--tone-tm);
   }
   .hero__lead {
-    margin-top: 28px;
+    margin-top: clamp(28px, 4vh, 44px);
     color: var(--ink-2);
-    font-size: 17px;
-    line-height: 1.75;
-  }
-  .hero__lead span {
-    display: inline-block;
+    font-size: 18px;
+    line-height: 1.7;
   }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 26px;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .hero__actions .btn {
+    min-height: 48px;
+    padding-inline: 22px;
+    font-size: 16px;
   }
 
+  /* 插画同时受宽度和屏幕高度限制，矮屏笔记本上不会顶到信息栏 */
   .hero__art {
     justify-self: end;
-    width: min(100%, 440px);
+    width: min(100%, 460px, 52svh);
+  }
+
+  /* —— 底部信息栏 —— */
+  .hero__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 32px;
+    padding-block: 20px clamp(20px, 3vh, 32px);
+    border-top: 1px solid var(--line-soft);
+  }
+  .hero__members {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  .hero__members strong {
+    margin-right: 2px;
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  /* 群友头像：真实群友名字的首字，叠在一起 */
+  .hero__avatars {
+    display: flex;
+  }
+  .hero__avatars span {
+    --tint: var(--tone-prep);
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--bg);
+    background: color-mix(in srgb, var(--tint) 22%, var(--bg));
+    color: color-mix(in srgb, var(--tint) 60%, var(--ink));
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .hero__avatars span + span {
+    margin-left: -10px;
+  }
+  .hero__avatars [data-tint="camp"] { --tint: var(--tone-camp); }
+  .hero__avatars [data-tint="pre"] { --tint: var(--tone-pre); }
+  .hero__avatars [data-tint="tm"] { --tint: var(--tone-tm); }
+  .hero__avatars [data-tint="sun"] { --tint: var(--sun-strong); }
+
+  .hero__next {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  .hero__next svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: hero-next 2.4s var(--ease-quart) 1.5s infinite;
+  }
+  @keyframes hero-next {
+    0%, 60%, 100% { translate: 0 0; }
+    30% { translate: 0 4px; }
+  }
+  @media (hover: hover) {
+    .hero__next:hover {
+      color: var(--ink);
+    }
+  }
+
+  /* 从站外打开时，岸线从左向右画出 */
+  :global(:root[data-entrance]) .hero__shore i {
+    animation: hero-shore 1s var(--ease-out) both;
+  }
+  :global(:root[data-entrance]) .hero__shore i:nth-child(2) { animation-delay: 0.1s; }
+  :global(:root[data-entrance]) .hero__shore i:nth-child(3) { animation-delay: 0.2s; }
+  @keyframes hero-shore {
+    from { transform: scaleX(0); }
   }
 
   /* 平板和横屏手机：插画缩小，仍放在右侧 */
@@ -73,33 +224,56 @@ import YearCalendar from "./home/YearCalendar.astro";
       grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr);
       gap: 28px;
     }
+    .hero__title {
+      font-size: clamp(3rem, 7.6vw, 4.5rem);
+    }
   }
-  /* 竖屏手机：插画在标题上方 */
+  /* 竖屏平板太高，首屏不再强制占满，让日历露出来 */
+  @media (min-width: 601px) and (orientation: portrait) {
+    .hero {
+      min-height: 0;
+    }
+    .hero__inner {
+      padding-block: clamp(64px, 9vh, 120px);
+    }
+  }
+  /* 竖屏手机：插画在标题上方，信息栏两行 */
   @media (max-width: 600px) {
     .hero__inner {
       grid-template-columns: minmax(0, 1fr);
-      gap: 36px;
+      align-content: center;
+      gap: 32px;
+      padding-block: 24px 32px;
     }
     .hero__art {
       order: -1;
       justify-self: center;
-      width: min(58%, 250px);
+      width: min(54%, 220px, 26svh);
     }
-  }
-  @media (max-width: 720px) {
     .hero__title {
       font-size: clamp(2.5rem, 12vw, 3.5rem);
     }
-    .hero__to {
-      padding-left: 0.9em;
-    }
     .hero__lead {
-      margin-top: 20px;
+      margin-top: 22px;
       font-size: 16px;
     }
     .hero__actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      margin-top: 20px;
+    }
+    .hero__actions .btn {
+      padding-inline: 12px;
+    }
+    .hero__foot {
+      padding-top: 16px;
+      gap: 8px 20px;
+    }
+    .hero__members {
+      gap: 12px;
+    }
+    .hero__next {
+      font-size: 14px;
     }
   }
 </style>
