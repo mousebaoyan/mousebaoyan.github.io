@@ -1,0 +1,676 @@
+---
+import { phases, milestones, activitySpans } from "../../data/calendar";
+
+// 构建时先按构建日期渲染一次，页面打开时由下方内联脚本按访问者的日期校正
+const now = new Date();
+const year = now.getFullYear();
+const t0 = Date.UTC(year, 0, 1);
+const span = Date.UTC(year + 1, 0, 1) - t0;
+const at = (monthDay: string) => {
+  const [month, day] = monthDay.split("-").map(Number);
+  return (Date.UTC(year, month - 1, day) - t0) / span;
+};
+const today = (Date.UTC(year, now.getMonth(), now.getDate()) - t0) / span;
+const segments = phases.map((phase, index) => {
+  const start = at(phase.start);
+  const end = index + 1 < phases.length ? at(phases[index + 1].start) : 1;
+  return { ...phase, s: start.toFixed(4), w: (end - start).toFixed(4) };
+});
+const current = segments.findLastIndex((phase) => Number(phase.s) <= today);
+const months = Array.from({ length: 12 }, (_, index) => ({
+  month: index + 1,
+  s: at(`${index + 1}-01`).toFixed(4),
+}));
+const yearMilestones = (milestones[year] ?? []).map((item) => ({
+  ...item,
+  s: at(item.date.slice(5)).toFixed(4),
+  label: item.label,
+  day: `${Number(item.date.slice(5, 7))} 月 ${Number(item.date.slice(8))} 日`,
+}));
+const milestonesIn = (index: number) => yearMilestones.filter((item) =>
+  Number(item.s) >= Number(segments[index].s)
+  && Number(item.s) < Number(segments[index].s) + Number(segments[index].w));
+const clientPhases = phases.map(({ id, start, cohort }) => ({ id, start, cohort }));
+const lanes = activitySpans(year);
+---
+
+<div class="cal container" data-cal data-year={year}>
+  <div class="cal__head">
+    <h2 class="cal__title"><span data-cal-year>{year}</span> 年保研日历</h2>
+    <p class="cal__date">今天是 <time data-cal-today>{now.getMonth() + 1} 月 {now.getDate()} 日</time></p>
+  </div>
+
+  <div class="cal__track" style={`--today: ${today.toFixed(4)}`} data-late={today > 0.9 ? "" : undefined}>
+    <ol class="cal__months" aria-hidden="true">
+      {months.map(({ month, s }) => <li style={`--s: ${s}`}>{month}<span>月</span></li>)}
+    </ol>
+    <div class="cal__bars" aria-hidden="true">
+      {segments.map((phase, index) => (
+        <span class="cal__bar" data-tone={phase.tone} data-phase={phase.id}
+          data-selected={index === current ? "" : undefined} style={`--s: ${phase.s}; --w: ${phase.w}`}></span>
+      ))}
+      <span class="cal__future"></span>
+    </div>
+    <!-- 贯穿多个阶段的套磁：细线是持续进行，粗段是最集中的时候 -->
+    {lanes.map((lane) => (
+      <div class="cal__lane" style={`--s: ${lane.s.toFixed(4)}; --w: ${lane.w.toFixed(4)}`}>
+        <span class="cal__lane-name" aria-hidden="true">{lane.name}</span>
+        <span class="cal__lane-line" aria-hidden="true"></span>
+        {lane.peakSpans.map((peak) => (
+          <span class="cal__lane-peak" aria-hidden="true"
+            style={`--ps: ${((peak.s - lane.s) / lane.w).toFixed(4)}; --pw: ${(peak.w / lane.w).toFixed(4)}`}></span>
+        ))}
+        <p class="visually-hidden">{lane.name}：{lane.note}</p>
+      </div>
+    ))}
+    <span class="cal__future cal__future--lane" aria-hidden="true"></span>
+    <span class="cal__now" aria-hidden="true"><span>今天</span></span>
+
+    <div class="cal__tabs" role="tablist" aria-label="保研阶段">
+      {segments.map((phase, index) => (
+        <button class="cal__tab" type="button" role="tab" id={`phase-tab-${phase.id}`}
+          aria-controls={`phase-${phase.id}`} aria-selected={index === current ? "true" : "false"}
+          tabindex={index === current ? 0 : -1} data-tone={phase.tone} style={`--s: ${phase.s}; --w: ${phase.w}`}>
+          {phase.name}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="cal__panels">
+    {segments.map((phase, index) => (
+      <section class="cal__panel" role="tabpanel" id={`phase-${phase.id}`} aria-labelledby={`phase-tab-${phase.id}`}
+        data-tone={phase.tone} hidden={index !== current}>
+        <div class="cal__intro">
+          <p class="cal__kicker">{phase.name}<span class="cal__range">{phase.range}</span></p>
+          <h3 class="cal__goal display">{phase.goal.split(/(?<=，)/).map((part) => <span>{part}</span>)}</h3>
+          <p class="cal__status">
+            <span class="cal__ring" data-ring hidden aria-hidden="true"><b data-ring-days></b><small>天</small></span>
+            <span class="cal__cohort" data-cohort>{String(year + 1 + phase.cohort).slice(2)} 届</span>
+            <span data-status>{index === current ? "进行中" : ""}</span>
+          </p>
+        </div>
+        <ul class="cal__todo">
+          {phase.todo.map((item) => <li>{item}</li>)}
+        </ul>
+        <div class="cal__aside">
+          {milestonesIn(index).length > 0 && (
+            <ol class="cal__milestones" data-year-only aria-label={`${year} 年关键日期`}>
+              {milestonesIn(index).map((item) => (
+                <li data-date={item.date}>
+                  <time datetime={item.date}>{item.day}</time>
+                  <span>{item.label}</span>
+                  <em data-countdown></em>
+                </li>
+              ))}
+            </ol>
+          )}
+          <ul class="cal__links">
+            {phase.links.map((link) => (
+              <li>
+                <a href={link.href} {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                  {link.label}
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    {link.external
+                      ? <path d="M7 17 17 7M8 7h9v9" />
+                      : <path d="m9 6 6 6-6 6" />}
+                  </svg>
+                  {link.external && <span class="visually-hidden">（新窗口打开）</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))}
+  </div>
+</div>
+
+<script is:inline define:vars={{ clientPhases }}>
+  // 首次绘制前按访问者的日期确定「今天」和当前阶段，避免构建日期过期
+  (() => {
+    const root = document.querySelector("[data-cal]");
+    if (!root) return;
+    const now = new Date();
+    const y = now.getFullYear();
+    const DAY = 864e5;
+    const at = (year, monthDay) => {
+      const [m, d] = monthDay.split("-").map(Number);
+      return Date.UTC(year, m - 1, d);
+    };
+    const today = Date.UTC(y, now.getMonth(), now.getDate());
+    const t0 = Date.UTC(y, 0, 1);
+    const track = root.querySelector(".cal__track");
+    const position = (today - t0) / (Date.UTC(y + 1, 0, 1) - t0);
+    track.style.setProperty("--today", position.toFixed(4));
+    track.toggleAttribute("data-late", position > 0.9);
+    root.querySelector("[data-cal-year]").textContent = y;
+    root.querySelector("[data-cal-today]").textContent = `${now.getMonth() + 1} 月 ${now.getDate()} 日`;
+    // 关键日期只对应某一年，跨年后隐藏
+    if (Number(root.dataset.year) !== y) root.querySelectorAll("[data-year-only]").forEach((el) => el.hidden = true);
+
+    let current = 0;
+    clientPhases.forEach((phase, index) => { if (at(y, phase.start) <= today) current = index; });
+    root.dataset.current = String(current);
+    const tabs = root.querySelectorAll("[role=tab]");
+    const panels = root.querySelectorAll("[role=tabpanel]");
+    const bars = root.querySelectorAll(".cal__bar");
+    clientPhases.forEach((phase, index) => {
+      const selected = index === current;
+      tabs[index].setAttribute("aria-selected", String(selected));
+      tabs[index].tabIndex = selected ? 0 : -1;
+      panels[index].hidden = !selected;
+      bars[index].toggleAttribute("data-selected", selected);
+      let start = at(y, phase.start);
+      let occurrence = y;
+      let text = "进行中";
+      const ring = panels[index].querySelector("[data-ring]");
+      ring.hidden = index !== current;
+      if (index === current) {
+        // 当前阶段：圆环显示阶段已经过去的比例，中间是剩余天数
+        const end = index + 1 < clientPhases.length ? at(y, clientPhases[index + 1].start) : Date.UTC(y + 1, 0, 1);
+        const left = Math.round((end - today) / DAY);
+        ring.style.setProperty("--p", ((today - start) / (end - start)).toFixed(3));
+        ring.querySelector("[data-ring-days]").textContent = left;
+      } else {
+        if (start <= today) start = at(occurrence = y + 1, phase.start);
+        const days = Math.round((start - today) / DAY);
+        text = days === 1 ? "明天开始" : `${days} 天后开始`;
+      }
+      panels[index].querySelector("[data-status]").textContent = text;
+      panels[index].querySelector("[data-cohort]").textContent = `${String(occurrence + 1 + phase.cohort).slice(2)} 届`;
+    });
+    let next = true;
+    root.querySelectorAll(".cal__milestones li").forEach((item) => {
+      const date = Date.parse(item.dataset.date);
+      const days = Math.round((date - today) / DAY);
+      const countdown = item.querySelector("[data-countdown]");
+      if (days < 0) {
+        item.dataset.state = "done";
+        countdown.textContent = "已过";
+      } else if (next) {
+        next = false;
+        item.dataset.state = "next";
+        countdown.textContent = days === 0 ? "就是今天" : `还有 ${days} 天`;
+      }
+    });
+  })();
+</script>
+
+<script>
+  // 阶段切换：点击或用方向键在阶段之间移动
+  const root = document.querySelector<HTMLElement>("[data-cal]");
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    const panels = [...root.querySelectorAll<HTMLElement>("[role=tabpanel]")];
+    const bars = [...root.querySelectorAll<HTMLElement>(".cal__bar")];
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const selected = i === index;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        panels[i].hidden = !selected;
+        bars[i].toggleAttribute("data-selected", selected);
+      });
+      if (focus) tabs[index].focus();
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(index));
+      tab.addEventListener("keydown", (event) => {
+        const last = tabs.length - 1;
+        const target = { ArrowRight: index === last ? 0 : index + 1, ArrowLeft: index === 0 ? last : index - 1, Home: 0, End: last }[event.key];
+        if (target === undefined) return;
+        event.preventDefault();
+        select(target, true);
+      });
+    });
+  }
+</script>
+
+<style>
+  @property --today {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+  [data-tone="prep"] { --tone: var(--tone-prep); --tone-ink: var(--tone-prep-ink); }
+  [data-tone="camp"] { --tone: var(--tone-camp); --tone-ink: var(--tone-camp-ink); }
+  [data-tone="pre"] { --tone: var(--tone-pre); --tone-ink: var(--tone-pre-ink); }
+  [data-tone="tm"] { --tone: var(--tone-tm); --tone-ink: var(--tone-tm-ink); }
+
+  .cal__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  .cal__title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .cal__date {
+    color: var(--ink-2);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* —— 时间轴：月份刻度、阶段色条、今天的位置、阶段名 —— */
+  .cal__track {
+    position: relative;
+    height: 142px;
+    margin-top: 18px;
+  }
+  .cal__months {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    padding: 0;
+    list-style: none;
+  }
+  .cal__months li,
+  .cal__bar,
+  .cal__tab {
+    position: absolute;
+    left: calc(var(--s) * 100%);
+  }
+  .cal__months li {
+    top: 26px;
+    padding-left: 6px;
+    padding-right: 4px;
+    border-left: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink-3);
+    font-size: 12px;
+    line-height: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cal__bars {
+    position: absolute;
+    inset: 54px 0 auto;
+    height: 12px;
+  }
+  .cal__bar {
+    top: 0;
+    width: calc(var(--w) * 100% - 3px);
+    height: 100%;
+    border-radius: 3px;
+    background: var(--tone);
+    transform: scaleY(0.67);
+    transition: transform 0.4s var(--ease-out);
+  }
+  .cal__bar[data-selected] {
+    transform: none;
+  }
+  /* 今天之后的部分盖一层底色，色条变浅，看得出一年走到了哪里 */
+  .cal__future {
+    position: absolute;
+    inset: -4px 0 -4px calc(var(--today) * 100%);
+    background: color-mix(in srgb, var(--bg) 62%, transparent);
+    pointer-events: none;
+  }
+  .cal__lane {
+    position: absolute;
+    top: 76px;
+    left: calc(var(--s) * 100%);
+    width: calc(var(--w) * 100%);
+    height: 14px;
+    pointer-events: none;
+  }
+  .cal__lane-name {
+    position: absolute;
+    right: calc(100% + 8px);
+    top: 50%;
+    translate: 0 -50%;
+    color: var(--tone-prep-ink);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .cal__lane-line,
+  .cal__lane-peak {
+    position: absolute;
+    border-radius: 4px;
+    background: var(--tone-prep);
+  }
+  .cal__lane-line {
+    inset: 6px 0;
+    height: 2px;
+  }
+  .cal__lane-peak {
+    top: 2px;
+    left: calc(var(--ps) * 100%);
+    width: calc(var(--pw) * 100%);
+    height: 10px;
+  }
+  .cal__future--lane {
+    inset: 72px 0 auto calc(var(--today) * 100%);
+    height: 22px;
+  }
+  .cal__now {
+    position: absolute;
+    top: 0;
+    left: calc(var(--today) * 100%);
+    height: 96px;
+    width: 2px;
+    margin-left: -1px;
+    border-radius: 1px;
+    background: var(--ink);
+    pointer-events: none;
+  }
+  .cal__now span {
+    position: absolute;
+    top: -2px;
+    left: 8px;
+    padding: 1px 7px;
+    border-radius: 5px;
+    background: var(--ink);
+    color: var(--on-ink);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+  /* 年底附近标签放到线的左侧，不会超出页面 */
+  .cal__track[data-late] .cal__now span {
+    left: auto;
+    right: 8px;
+  }
+  .cal__tabs {
+    position: absolute;
+    inset: 46px 0 0;
+  }
+  .cal__tab {
+    top: 0;
+    bottom: 0;
+    width: calc(var(--w) * 100%);
+    padding: 52px 0 0 1px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: var(--ink-2);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  @media (hover: hover) {
+    .cal__tab:hover {
+      color: var(--ink);
+    }
+  }
+  .cal__tab[aria-selected="true"] {
+    color: var(--tone-ink);
+    font-weight: 650;
+  }
+  .cal__tab:focus-visible {
+    outline-offset: 2px;
+  }
+
+  /* 首次从站外打开时，今天的标记从一月一日走到今天：首页唯一一段自动播放的动画 */
+  :global(:root[data-entrance]) .cal__track {
+    animation: cal-sweep 1.6s var(--ease-out) 0.25s both;
+  }
+  @keyframes cal-sweep {
+    from { --today: 0; }
+  }
+
+  /* —— 阶段详情 —— */
+  .cal__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 0.9fr);
+    gap: 24px clamp(28px, 4vw, 56px);
+    padding-top: 28px;
+    transition: opacity 0.3s ease, translate 0.4s var(--ease-out);
+  }
+  @starting-style {
+    .cal__panel {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+  .cal__kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    color: var(--tone-ink);
+    font-size: 14px;
+    font-weight: 650;
+  }
+  .cal__kicker::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--tone);
+  }
+  .cal__range {
+    color: var(--ink-2);
+    font-weight: 400;
+  }
+  /* 目标按逗号分段换行，不会把最后一个字单独挤到下一行 */
+  .cal__goal span {
+    display: inline-block;
+  }
+  .cal__goal {
+    margin-top: 12px;
+    font-size: clamp(1.5rem, 2.2vw, 1.75rem);
+    line-height: 1.12;
+  }
+  .cal__status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+  /* 当前阶段的进度环 */
+  .cal__ring {
+    display: grid;
+    place-content: center;
+    width: 58px;
+    height: 58px;
+    margin-right: 4px;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side, var(--bg) 82%, transparent 84%),
+      conic-gradient(var(--tone) calc(var(--p, 0) * 1turn), var(--line-soft) 0);
+    text-align: center;
+    line-height: 1;
+  }
+  .cal__ring b {
+    color: var(--ink);
+    font-size: 19px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .cal__ring small {
+    margin-top: 2px;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+  .cal__ring:not([hidden]) {
+    display: grid;
+  }
+  .cal__cohort {
+    padding: 1px 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink-1);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cal__todo {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding-top: 4px;
+  }
+  .cal__todo li {
+    position: relative;
+    padding-left: 20px;
+    color: var(--ink-1);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .cal__todo li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.72em;
+    width: 8px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--tone);
+  }
+  .cal__aside {
+    display: grid;
+    align-content: start;
+    gap: 20px;
+  }
+  .cal__milestones {
+    display: grid;
+    gap: 2px;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+  }
+  .cal__milestones li {
+    display: grid;
+    grid-template-columns: 5.6em minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 5px 0;
+    color: var(--ink-1);
+    line-height: 1.5;
+  }
+  .cal__milestones time {
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .cal__milestones em {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .cal__milestones [data-state="done"] span {
+    color: var(--ink-3);
+  }
+  .cal__milestones [data-state="next"] :is(span, em) {
+    color: var(--tone-ink);
+    font-weight: 650;
+  }
+  .cal__links li + li {
+    border-top: 1px solid var(--line-soft);
+  }
+  .cal__links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 0;
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  @media (hover: hover) {
+    .cal__links a:hover {
+      color: var(--blue-ink);
+    }
+  }
+  .cal__links svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: var(--ink-4);
+    transition: transform 0.25s var(--ease-quart), color 0.2s ease;
+  }
+  @media (hover: hover) {
+    .cal__links a:hover svg {
+      color: currentColor;
+      transform: translateX(2px);
+    }
+  }
+  .cal__links li:first-child a {
+    padding-top: 0;
+  }
+
+  @media (max-width: 1100px) {
+    .cal__panel {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .cal__intro {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* —— 手机：阶段名改为一行可换行的按钮，时间轴只保留刻度与色条 —— */
+  @media (max-width: 720px) {
+    .cal__track {
+      height: auto;
+      padding-top: 96px;
+    }
+
+    .cal__months li span {
+      display: none;
+    }
+    .cal__months li {
+      font-size: 12px;
+      padding-left: 4px;
+    }
+    .cal__links li:first-child a {
+      padding-top: 11px;
+      margin-top: -11px;
+    }
+    .cal__tabs {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+    .cal__tab {
+      position: static;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: auto;
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font-size: 14px;
+    }
+    .cal__tab::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 2px;
+      background: var(--tone);
+    }
+    .cal__tab[aria-selected="true"] {
+      border-color: var(--tone);
+      background: color-mix(in srgb, var(--tone) 10%, var(--bg));
+    }
+    .cal__panel {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      padding-top: 24px;
+    }
+    .cal__goal {
+      font-size: 1.6rem;
+    }
+  }
+</style>

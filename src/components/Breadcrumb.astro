@@ -30,12 +30,17 @@ const { crumbs } = Astro.props;
     color: var(--ink-3);
     padding: 20px 0 0;
   }
+  /* 点击区域上下各加 12px，用负外边距抵消 */
   .breadcrumb__link {
+    padding: 12px 6px;
+    margin: -12px -6px;
     color: var(--ink-3);
     transition: color 0.2s;
   }
-  .breadcrumb__link:hover {
-    color: var(--ink);
+  @media (hover: hover) {
+    .breadcrumb__link:hover {
+      color: var(--ink);
+    }
   }
   .breadcrumb__sep {
     color: var(--ink-3);

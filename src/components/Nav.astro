@@ -91,10 +91,10 @@ const isActive = (href: string) =>
     display: inline-flex;
     align-items: center;
     justify-self: start;
+    min-height: 44px;
     gap: 11px;
     font-weight: 650;
     font-size: 17px;
-    letter-spacing: 0.01em;
     white-space: nowrap;
   }
   .nav__logo {
@@ -118,9 +118,11 @@ const isActive = (href: string) =>
     white-space: nowrap;
     transition: color 0.2s ease, background-color 0.2s ease;
   }
-  .nav__links a:hover {
-    color: var(--ink);
-    background: var(--bg-grey);
+  @media (hover: hover) {
+    .nav__links a:hover {
+      color: var(--ink);
+      background: var(--bg-grey);
+    }
   }
   .nav__links a.active {
     color: var(--blue-ink);
@@ -139,9 +141,13 @@ const isActive = (href: string) =>
     transition: transform 0.38s var(--ease-out), width 0.38s var(--ease-out),
       background-color 0.25s ease, opacity 0.2s ease;
   }
-  .nav__links[data-pill] a,
-  .nav__links[data-pill] a:hover {
+  .nav__links[data-pill] a {
     background: transparent;
+  }
+  @media (hover: hover) {
+    .nav__links[data-pill] a:hover {
+      background: transparent;
+    }
   }
   .nav__links[data-pill] .nav__pill {
     opacity: 1;
@@ -152,8 +158,10 @@ const isActive = (href: string) =>
   .nav__links[data-pill="none"] .nav__pill {
     opacity: 0;
   }
-  .nav__links[data-pill="hover"] a.active:not(:hover) {
-    color: var(--ink-2);
+  @media (hover: hover) {
+    .nav__links[data-pill="hover"] a.active:not(:hover) {
+      color: var(--ink-2);
+    }
   }
   .nav__actions {
     display: flex;
@@ -175,9 +183,11 @@ const isActive = (href: string) =>
     cursor: pointer;
     transition: color 0.18s ease, border-color 0.18s ease;
   }
-  .nav__theme:hover {
-    color: var(--ink);
-    border-color: var(--line);
+  @media (hover: hover) {
+    .nav__theme:hover {
+      color: var(--ink);
+      border-color: var(--line);
+    }
   }
   .nav__theme:focus-visible {
     outline: 2px solid var(--blue);
@@ -201,7 +211,9 @@ const isActive = (href: string) =>
     transform: none;
   }
   .nav__search { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 11px; border: 1px solid var(--line-soft); border-radius: 10px; color: var(--ink-2); background: var(--bg-alt); font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
-  .nav__search:hover { color: var(--ink); border-color: var(--line); }
+  @media (hover: hover) {
+    .nav__search:hover { color: var(--ink); border-color: var(--line); }
+  }
   .nav__search kbd { padding: 1px 5px; border: 1px solid var(--line-soft); border-radius: 4px; background: var(--surface); color: var(--ink-2); font: inherit; font-size: 10px; }
   .nav__search:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
   @media (max-width: 1100px) {
@@ -223,9 +235,11 @@ const isActive = (href: string) =>
     white-space: nowrap;
     transition: background-color 0.18s ease, border-color 0.18s ease;
   }
-  .nav__join:hover {
-    background: var(--ink-hover);
-    border-color: var(--ink-hover);
+  @media (hover: hover) {
+    .nav__join:hover {
+      background: var(--ink-hover);
+      border-color: var(--ink-hover);
+    }
   }
   .nav a:focus-visible,
   .nav__toggle:focus-visible {
@@ -245,9 +259,13 @@ const isActive = (href: string) =>
     cursor: pointer;
     padding: 0;
   }
-  .nav__toggle:hover,
   .nav__toggle[aria-expanded="true"] {
     background: var(--bg-grey);
+  }
+  @media (hover: hover) {
+    .nav__toggle:hover {
+      background: var(--bg-grey);
+    }
   }
   .nav__toggle span {
     display: block;
@@ -286,9 +304,11 @@ const isActive = (href: string) =>
     font-size: 15px;
     font-weight: 500;
   }
-  .nav__mobile a:hover {
-    background: var(--bg-grey);
-    color: var(--ink);
+  @media (hover: hover) {
+    .nav__mobile a:hover {
+      background: var(--bg-grey);
+      color: var(--ink);
+    }
   }
   .nav__mobile a.active {
     background: var(--blue-soft);

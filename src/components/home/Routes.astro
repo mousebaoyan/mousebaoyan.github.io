@@ -1,0 +1,315 @@
+---
+import { getPublishedExperiences, splitSchool } from "../../lib/experiences";
+
+const experiences = await getPublishedExperiences();
+// 按本科院校类型分组，画成从左侧出发、连到各自录取去向的路线图
+const GROUPS = ["四非", "双非", "双一流"];
+const groupOf = (school: string) => GROUPS.find((name) => school.includes(name)) ?? "其他";
+// 优先展示 featured 的文章，再按日期补足
+const picked = [...experiences]
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured))
+  .slice(0, 8);
+const routes = picked.map((entry) => ({
+  id: entry.id,
+  author: entry.data.author,
+  group: groupOf(entry.data.school),
+  ...splitSchool(entry.data.school),
+  target: entry.data.target,
+  direction: entry.data.major,
+}));
+const groups = [...GROUPS, "其他"]
+  .map((name) => ({ name, routes: routes.filter((route) => route.group === name) }))
+  .filter((group) => group.routes.length > 0);
+let row = 1;
+const placed = groups.map((group) => {
+  const start = row;
+  row += group.routes.length;
+  return { ...group, start };
+});
+---
+
+{routes.length > 0 && (
+  <section class="routes" id="routes" aria-labelledby="routes-title">
+    <div class="container">
+      <header class="routes__head">
+        <h2 class="routes__title display" id="routes-title">大家去了哪</h2>
+        <p class="routes__lead">群友投稿的保研经历，从本科院校到录取去向</p>
+        <a class="link-arrow" href="/experiences">
+          全部 {experiences.length} 篇
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </header>
+
+      <div class="map" data-route-map>
+        <svg class="map__lines" aria-hidden="true"></svg>
+        {placed.map((group) => (
+          <>
+            <div class="map__group" data-group={group.name} style={`grid-row: ${group.start} / span ${group.routes.length}`}>
+              <span class="map__node"></span>
+              <span class="map__group-name">{group.name}</span>
+              <span class="map__group-count">{group.routes.length} 人</span>
+            </div>
+            {group.routes.map((route, index) => (
+              <a class="map__route" href={`/experiences/${route.id}`} data-from={group.name}
+                style={`grid-row: ${group.start + index}`}>
+                <span class="map__top">
+                  <span class="map__target">{route.target}</span>
+                  {route.direction && <span class="map__direction">{route.direction}</span>}
+                </span>
+                <span class="map__detail">
+                  <span>{route.author}</span>
+                  <span>本科 {route.from}{route.major && ` ${route.major}`}</span>
+                </span>
+              </a>
+            ))}
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  // 路线：从本科类型的圆点画一条曲线到每条录取去向，随布局变化重画
+  const map = document.querySelector<HTMLElement>("[data-route-map]");
+  const svg = map?.querySelector<SVGSVGElement>(".map__lines");
+  if (map && svg) {
+    const NS = "http://www.w3.org/2000/svg";
+    const routes = [...map.querySelectorAll<HTMLAnchorElement>(".map__route")];
+    const paths = routes.map(() => svg.appendChild(document.createElementNS(NS, "path")));
+    const ends = routes.map(() => svg.appendChild(document.createElementNS(NS, "circle")));
+    const draw = () => {
+      const box = svg.getBoundingClientRect();
+      if (!box.width) return;
+      svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
+      routes.forEach((route, index) => {
+        const group = map.querySelector(`[data-group="${route.dataset.from}"]`)!;
+        const node = group.querySelector(".map__node")!.getBoundingClientRect();
+        const label = Math.max(...[...group.querySelectorAll(".map__group-name, .map__group-count")].map((el) => el.getBoundingClientRect().right));
+        const target = route.querySelector(".map__target")!.getBoundingClientRect();
+        // 曲线从组名右侧出发，不压住文字
+        const x1 = label - box.left + 12;
+        const y1 = node.top + node.height / 2 - box.top;
+        const y2 = target.top + target.height / 2 - box.top;
+        const x2 = box.width;
+        const bend = (x2 - x1) * 0.5;
+        paths[index].setAttribute("d", `M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}`);
+        ends[index].setAttribute("cx", String(x2));
+        ends[index].setAttribute("cy", String(y2));
+        ends[index].setAttribute("r", "4");
+      });
+    };
+    const highlight = (index: number | null) => {
+      map.toggleAttribute("data-focus", index !== null);
+      paths.forEach((path, i) => path.toggleAttribute("data-on", i === index));
+      ends.forEach((end, i) => end.toggleAttribute("data-on", i === index));
+    };
+    routes.forEach((route, index) => {
+      route.addEventListener("pointerenter", () => highlight(index));
+      route.addEventListener("focus", () => highlight(index));
+      route.addEventListener("pointerleave", () => highlight(null));
+      route.addEventListener("blur", () => highlight(null));
+    });
+    new ResizeObserver(draw).observe(map);
+    document.fonts?.ready.then(draw);
+  }
+</script>
+
+<style>
+  .routes {
+    padding-block: var(--section-space);
+    border-top: 1px solid var(--line-soft);
+  }
+  .routes__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 10px 32px;
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+  .routes__title {
+    font-size: clamp(2rem, 3.4vw, 2.5rem);
+    line-height: 1.1;
+  }
+  .routes__lead {
+    grid-row: 2;
+    color: var(--ink-2);
+    font-size: 16px;
+  }
+  .routes__head .link-arrow {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  /* —— 路线图：左列本科类型，中间曲线，右列录取去向 —— */
+  .map {
+    position: relative;
+    display: grid;
+    grid-template-columns: 9rem minmax(80px, 1fr) minmax(0, 1.5fr);
+    grid-auto-rows: auto;
+    row-gap: 8px;
+  }
+  /* 绝对定位在中间一列的网格区域里，曲线不参与行高计算 */
+  .map__lines {
+    position: absolute;
+    inset: 0;
+    grid-column: 2 / 3;
+    grid-row: 1 / -1;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .map__lines :global(path) {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.25s ease;
+  }
+  .map__lines :global(circle) {
+    fill: var(--bg);
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    transition: fill 0.25s ease, stroke 0.25s ease, opacity 0.25s ease;
+  }
+  .map[data-focus] .map__lines :global(:is(path, circle):not([data-on])) {
+    opacity: 0.3;
+  }
+  .map__lines :global(path[data-on]) {
+    stroke: var(--ink);
+    stroke-width: 2.5;
+  }
+  .map__lines :global(circle[data-on]) {
+    fill: var(--ink);
+    stroke: var(--ink);
+  }
+  .map__group {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: center;
+    column-gap: 12px;
+    padding-right: 12px;
+  }
+  .map__node {
+    grid-row: 1 / 3;
+    align-self: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 0 0 5px var(--bg-grey);
+  }
+  .map__group-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .map__group-count {
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .map__route {
+    grid-column: 3;
+    display: grid;
+    gap: 6px;
+    padding: 16px 20px;
+    margin-left: -1px;
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    background: var(--surface);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  @media (hover: hover) {
+    .map__route:hover {
+      border-color: var(--line-strong);
+      background: var(--bg-alt);
+    }
+  }
+  .map__route:focus-visible {
+    outline-offset: 3px;
+  }
+  .map__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 16px;
+  }
+  .map__direction {
+    padding: 2px 9px;
+    border-radius: 6px;
+    background: var(--chip-bg);
+    color: var(--chip-ink);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .map__target {
+    font-size: 19px;
+    font-weight: 650;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  .map__detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    color: var(--ink-3);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .map__detail span:first-child {
+    color: var(--ink-1);
+  }
+
+  /* 手机：不画曲线，本科类型作为小标题 */
+  @media (max-width: 760px) {
+    .map {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .map__lines {
+      display: none;
+    }
+    .map__group,
+    .map__route {
+      grid-column: 1;
+      grid-row: auto !important;
+    }
+    .map__group {
+      margin-top: 18px;
+      padding-bottom: 4px;
+    }
+    .map__group:first-of-type {
+      margin-top: 0;
+    }
+    .map__node {
+      width: 10px;
+      height: 10px;
+      box-shadow: 0 0 0 4px var(--bg-grey);
+    }
+    .map__group-name {
+      font-size: 18px;
+    }
+    .map__group-count {
+      grid-row: 1;
+      grid-column: 3;
+      align-self: center;
+    }
+    .map__route {
+      padding: 14px 16px;
+    }
+    .map__target {
+      font-size: 17px;
+    }
+  }
+  @media (max-width: 560px) {
+    .routes__head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .routes__head .link-arrow {
+      grid-row: 3;
+      grid-column: 1;
+    }
+  }
+</style>

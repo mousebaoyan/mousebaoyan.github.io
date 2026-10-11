@@ -71,9 +71,11 @@
   text-underline-offset: 0.2em;
   overflow-wrap: anywhere;
 }
-.experience-prose a:hover {
-  color: var(--blue-ink-strong);
-  text-decoration-color: currentColor;
+@media (hover: hover) {
+  .experience-prose a:hover {
+    color: var(--blue-ink-strong);
+    text-decoration-color: currentColor;
+  }
 }
 .experience-prose a:focus-visible {
   outline: 2px solid var(--blue);

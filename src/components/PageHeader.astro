@@ -1,51 +1,76 @@
 ---
+import SceneArt from "./SceneArt.astro";
+
 interface Props {
   title: string;
   lead?: string;
   action?: { label: string; href: string };
+  art?: "path" | "screen" | "calendar" | "bubbles" | "sunset";
 }
-const { title, lead, action } = Astro.props;
+const { title, lead, action, art } = Astro.props;
 ---
 
-<header class="page-header">
+<header class:list={["page-header", { "page-header--art": art }]}>
   <div class="page-header__copy">
-    <h1 class="page-header__title">{title}</h1>
+    <h1 class="page-header__title display">{title}</h1>
     {lead && <p class="page-header__lead">{lead}</p>}
+    {(action || Astro.slots.has("meta")) && (
+      <div class="page-header__row">
+        {action && (
+          <a class="btn btn--secondary page-header__action" href={action.href} target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            {action.label}<span class="visually-hidden">（新窗口打开）</span>
+          </a>
+        )}
+        <slot name="meta" />
+      </div>
+    )}
   </div>
-  {action && (
-    <a class="btn btn--secondary page-header__action" href={action.href} target="_blank" rel="noopener noreferrer" aria-label={`${action.label}（新窗口打开）`}>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-      {action.label}
-    </a>
-  )}
+  {art && <SceneArt name={art} class="page-header__art" />}
 </header>
 
 <style>
   .page-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px 40px;
-    padding: clamp(40px, 6vw, 72px) 0 clamp(28px, 4vw, 40px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 24px clamp(32px, 6vw, 96px);
+    padding: clamp(36px, 5vw, 64px) 0 clamp(32px, 4vw, 48px);
+  }
+  .page-header--art {
+    grid-template-columns: minmax(0, 1fr) clamp(180px, 22vw, 260px);
   }
   .page-header__copy {
     max-width: 640px;
   }
   .page-header__title {
-    font-size: clamp(2rem, 4.4vw, 2.9rem);
-    letter-spacing: -0.03em;
-    line-height: 1.12;
+    font-size: clamp(2.25rem, 4.6vw, 3.25rem);
+    line-height: 1.1;
   }
   .page-header__lead {
     margin-top: 14px;
     color: var(--ink-2);
-    font-size: clamp(1rem, 1.6vw, 1.1rem);
-    line-height: 1.65;
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+  .page-header__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin-top: 24px;
+    color: var(--ink-3);
+    font-size: 14px;
   }
   @media (max-width: 640px) {
-    .page-header {
-      flex-direction: column;
-      align-items: flex-start;
+    .page-header--art {
+      grid-template-columns: minmax(0, 1fr) 96px;
+      align-items: start;
+      padding-top: 28px;
+    }
+    .page-header__art {
+      margin-top: 4px;
     }
   }
 </style>

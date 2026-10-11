@@ -1,216 +1,170 @@
 ---
+import type { CollectionEntry } from "astro:content";
+import { readingStats, splitSchool } from "../lib/experiences";
+
 interface Props {
-  title: string;
-  author: string;
-  date: Date;
-  school: string;
-  target: string;
-  excerpt: string;
-  tags: string[];
-  slug: string;
-  headingLevel?: "h2" | "h3";
+  entry: CollectionEntry<"experiences">;
 }
-const { title, author, date, school, target, excerpt, tags, slug, headingLevel: Heading = "h3" } = Astro.props;
-const dateLabel = date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
+const { entry } = Astro.props;
+const { title, author, date, school, target, major } = entry.data;
+const { from, major: subject } = splitSchool(school);
+const { minutes } = readingStats(entry.body);
 ---
 
-<a class="exp-card lift" href={`/experiences/${slug}`} aria-label={`阅读经验贴：${title}`}>
-  <div class="exp-card__content">
-    <div class="exp-card__meta">
-      <span class="exp-card__author">
-        <span class="exp-card__avatar" aria-hidden="true">{Array.from(author)[0]}</span>
-        {author}
-      </span>
-      <span class="exp-card__separator" aria-hidden="true">·</span>
-      <time datetime={date.toISOString()}>{dateLabel}</time>
-    </div>
-    <Heading class="exp-card__title" title={title}>{title}</Heading>
-    <p class="exp-card__excerpt">{excerpt}</p>
-    <div class="exp-card__tags">
-      {tags.slice(0, 3).map((tag) => <span class="exp-card__tag">{tag}</span>)}
-    </div>
-  </div>
-
-  <div class="exp-card__context">
-    <dl class="exp-card__background">
-      <div>
-        <dt>本科背景</dt>
-        <dd>{school}</dd>
-      </div>
-      <div>
-        <dt>录取去向</dt>
-        <dd class="exp-card__target">{target}</dd>
-      </div>
-    </dl>
-    <span class="exp-card__read" aria-hidden="true">
-      阅读全文
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16m-6-6 6 6-6 6" /></svg>
+<a class="exp lift" href={`/experiences/${entry.id}`}>
+  <!-- 一段竖向的路线：空心点是本科院校，实心点是录取去向 -->
+  <span class="exp__route">
+    <span class="exp__stop exp__stop--from">
+      <span class="visually-hidden">本科</span>
+      <span class="exp__school">{from}</span>
+      {subject && <span class="exp__subject">{subject}</span>}
     </span>
-  </div>
+    <span class="exp__stop exp__stop--to">
+      <span class="visually-hidden">录取去向</span>
+      <span class="exp__target">{target}</span>
+      {major && <span class="exp__direction">{major}</span>}
+    </span>
+  </span>
+  <h2 class="exp__title">{title}</h2>
+  <span class="exp__foot">
+    <span class="exp__avatar" aria-hidden="true">{Array.from(author)[0]}</span>
+    <span class="exp__author">{author}</span>
+    <time datetime={date.toISOString()}>{date.getMonth() + 1} 月 {date.getDate()} 日</time>
+    <span>约 {minutes} 分钟</span>
+  </span>
 </a>
 
 <style>
-  .exp-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 220px;
-    gap: 40px;
-    padding: 20px 28px;
+  .exp {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    height: 100%;
+    padding: 24px 26px 22px;
     border: 1px solid var(--line-soft);
-    border-radius: 16px;
+    border-radius: 18px;
     background: var(--surface);
   }
-  .exp-card:hover {
-    border-color: var(--blue-line);
-    background: var(--surface-hover);
+  @media (hover: hover) {
+    .exp:hover {
+      border-color: var(--line);
+    }
   }
-  .exp-card:focus-visible {
-    outline: 2px solid var(--blue);
+  .exp:focus-visible {
     outline-offset: 4px;
   }
-  .exp-card__content {
-    min-width: 0;
+  .exp__route {
+    display: grid;
+    gap: 14px;
   }
-  .exp-card__meta {
+  .exp__stop {
+    position: relative;
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+    padding-left: 28px;
+  }
+  .exp__stop::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.42em;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+  .exp__stop--from::before {
+    border: 2px solid var(--ink-4);
+    background: var(--surface);
+  }
+  .exp__stop--to::before {
+    top: 0.5em;
+    background: var(--ink);
+  }
+  /* 两点之间的虚线 */
+  .exp__stop--from::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: calc(0.42em + 16px);
+    bottom: -14px;
+    border-left: 2px dotted var(--ink-4);
+  }
+  .exp__school {
+    color: var(--ink-1);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .exp__subject {
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .exp__target {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+  }
+  .exp__direction {
+    justify-self: start;
+    margin-top: 4px;
+    padding: 2px 9px;
+    border-radius: 6px;
+    background: var(--chip-bg);
+    color: var(--chip-ink);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .exp__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-soft);
+    color: var(--ink-2);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+  @media (hover: hover) {
+    .exp:hover .exp__title {
+      color: var(--ink);
+    }
+  }
+  .exp__foot {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 6px 12px;
+    margin-top: auto;
     color: var(--ink-3);
-    font-size: 12px;
-  }
-  .exp-card__author {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--ink-1);
     font-size: 13px;
+    font-variant-numeric: tabular-nums;
   }
-  .exp-card__avatar {
+  .exp__avatar {
     display: grid;
     place-items: center;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
+    margin-right: -4px;
     border-radius: 50%;
     background: var(--avatar-bg);
     color: var(--avatar-ink);
     font-size: 12px;
   }
-  .exp-card__separator {
-    color: var(--ink-4);
-  }
-  .exp-card__title {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    margin-top: 10px;
-    font-size: 23px;
-    font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.45;
-    overflow-wrap: anywhere;
-  }
-  .exp-card__excerpt {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    margin-top: 8px;
-    color: var(--ink-2);
-    font-size: 15px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-  }
-  .exp-card__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 12px;
-  }
-  .exp-card__tag {
-    padding: 3px 8px;
-    border-radius: 5px;
-    background: var(--chip-bg);
-    color: var(--ink-2);
-    font-size: 11px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-  }
-  .exp-card__context {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-left: 28px;
-    border-left: 1px solid var(--line-soft);
-    min-width: 0;
-  }
-  .exp-card__background {
-    display: grid;
-    gap: 16px;
-    width: 100%;
-  }
-  .exp-card__background dt {
-    margin-bottom: 4px;
-    color: var(--ink-3);
-    font-size: 12px;
-  }
-  .exp-card__background dd {
+  .exp__author {
     color: var(--ink-1);
-    font-size: 14px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-  }
-  .exp-card__background .exp-card__target {
-    color: var(--ink-1);
-    font-weight: 500;
-  }
-  .exp-card__read {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding-top: 16px;
-    margin-top: auto;
-    color: var(--blue-ink);
-    font-size: 13px;
-  }
-  @media (max-width: 860px) {
-    .exp-card {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 16px;
-      padding: 20px 24px;
-    }
-    .exp-card__context {
-      border-left: 0;
-      border-top: 1px solid var(--line-soft);
-      padding: 14px 0 0;
-    }
-    .exp-card__background {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
-    }
-    .exp-card__read {
-      align-self: flex-end;
-      padding-top: 10px;
-    }
   }
   @media (max-width: 540px) {
-    .exp-card {
-      padding: 18px 20px;
-      gap: 16px;
+    .exp {
+      padding: 20px 20px 18px;
     }
-    .exp-card__title {
-      -webkit-line-clamp: 3;
-      font-size: 19px;
-      line-height: 1.6;
-    }
-    .exp-card__excerpt {
-      font-size: 14px;
-    }
-    .exp-card__tags {
-      margin-top: 10px;
-    }
-    .exp-card__background dd {
-      font-size: 13px;
+    .exp__target {
+      font-size: 18px;
     }
   }
 </style>

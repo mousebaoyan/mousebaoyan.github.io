@@ -1,37 +1,387 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import CollectionSection from "../../components/CollectionSection.astro";
-import TalkCard from "../../components/TalkCard.astro";
-import { getTalks, isAvailable } from "../../lib/talks";
+import { formatDuration, getTalks, isAvailable, slideImage, slidesFor } from "../../lib/talks";
 
 const talks = await getTalks();
 const available = talks.filter(isAvailable).length;
+// 时间线：同一年的场次只在第一场旁标出年份
+const stops = talks.map((talk, index) => {
+  const year = talk.data.date.getFullYear();
+  const deck = talk.data.decks[0];
+  const pages = talk.data.decks.reduce((sum, item) => sum + slidesFor(talk, item).pages, 0);
+  const slides = deck ? slidesFor(talk, deck) : undefined;
+  // 章节第一页只有章节名（过渡页）时，缩略图改用下一页，链接仍指向章节开头
+  const chapters = deck && slides ? deck.chapters.slice(0, 5).map((chapter, i) => {
+    const next = deck.chapters[i + 1]?.page ?? slides.pages + 1;
+    const divider = (slides.text[chapter.page - 1] ?? "").trim().split("\n").length <= 1;
+    return { ...chapter, thumb: divider && chapter.page + 1 < next ? chapter.page + 1 : chapter.page };
+  }) : [];
+  return {
+    talk,
+    deck,
+    pages,
+    chapters,
+    more: deck ? deck.chapters.length > chapters.length : false,
+    year: index === 0 || talks[index - 1].data.date.getFullYear() !== year ? year : undefined,
+    month: `${talk.data.date.getMonth() + 1} 月`,
+  };
+});
 ---
 
-<BaseLayout
-  title="直播回放 — 四非保研鼠群"
-  description="鼠群往期保研经验分享直播的录屏与课件"
->
+<BaseLayout title="直播回放 — 四非保研鼠群" description="鼠群往期保研经验分享直播的录屏与课件">
   <div class="container">
-    <PageHeader
-      title="直播回放"
-      lead="鼠群往期保研经验分享直播的录屏与课件"
-    />
+    <PageHeader title="直播回放" lead="鼠群往期保研经验分享直播的录屏与课件" art="screen">
+      <span slot="meta">共 {talks.length} 场，{available} 场可以观看</span>
+    </PageHeader>
 
-    <CollectionSection title="往期直播" summary={`共 ${talks.length} 场 · ${available} 场可观看`}>
-      <ol class="talk-list">
-        {talks.map((talk) => <li><TalkCard talk={talk} /></li>)}
-      </ol>
-    </CollectionSection>
+    <ol class="timeline">
+      {stops.map(({ talk, deck, pages, chapters, more, year, month }) => (
+        <li class:list={["stop", { "stop--pending": !isAvailable(talk) }]}>
+          {year && <span class="stop__year">{year}</span>}
+          <span class="stop__dot" aria-hidden="true"></span>
+          {isAvailable(talk) ? (
+            <article class="talk" aria-labelledby={`talk-${talk.id}`}>
+              <a class="talk__cover" href={`/talks/${talk.id}/`} tabindex="-1" aria-hidden="true">
+                {deck && <img src={slideImage(talk, deck, 1)} alt="" width="1600" height="900" loading="lazy" decoding="async" />}
+                <span class="talk__play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></svg></span>
+              </a>
+              <div class="talk__body">
+                <p class="talk__when">{year ?? talk.data.date.getFullYear()} 年 {month}</p>
+                <h2 class="talk__title" id={`talk-${talk.id}`}><a href={`/talks/${talk.id}/`}>{talk.data.title}</a></h2>
+                {talk.data.speakers.length > 0 && (
+                  <p class="talk__speakers">
+                    <span class="talk__avatars" aria-hidden="true">
+                      {talk.data.speakers.map((name) => <span>{Array.from(name)[0]}</span>)}
+                    </span>
+                    {talk.data.speakers.join("、")}
+                  </p>
+                )}
+                <p class="talk__summary">{talk.data.summary}</p>
+                <p class="talk__facts">
+                  {talk.data.duration && <span>回放 {formatDuration(talk.data.duration)}</span>}
+                  {pages > 0 && <span>课件 {pages} 页</span>}
+                </p>
+              </div>
+              {deck && chapters.length > 0 && (
+                <ol class="talk__chapters" aria-label={`${talk.data.title} 课件章节`}>
+                  {chapters.map((chapter) => (
+                    <li>
+                      <a href={`/talks/${talk.id}/#${deck.id}-${chapter.page}`}>
+                        <img src={slideImage(talk, deck, chapter.thumb, true)} alt="" width="320" height="180" loading="lazy" decoding="async" />
+                        <span>{chapter.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                  {more && (
+                    <li>
+                      <a class="talk__more" href={`/talks/${talk.id}/#slides`}>
+                        <span>全部 {pages} 页</span>
+                      </a>
+                    </li>
+                  )}
+                </ol>
+              )}
+            </article>
+          ) : (
+            <div class="talk talk--pending">
+              <span class="talk__cover talk__cover--empty" aria-hidden="true"></span>
+              <div class="talk__body">
+                {!talk.data.title.startsWith(String(talk.data.date.getFullYear())) && (
+                  <p class="talk__when">{talk.data.date.getFullYear()} 年 {month}</p>
+                )}
+                <h2 class="talk__title">{talk.data.title}</h2>
+                <p class="talk__summary">录屏暂时无法访问，待后续完善</p>
+              </div>
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
   </div>
 </BaseLayout>
 
 <style>
-  .talk-list {
+  /* —— 时间线：左侧年份，竖线串起每一场直播 —— */
+  .timeline {
+    --rail: 132px;
+    position: relative;
+    padding: clamp(32px, 4vw, 48px) 0 clamp(56px, 7vw, 96px);
+    border-top: 1px solid var(--line);
+    list-style: none;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: clamp(32px, 4vw, 48px);
+    bottom: clamp(56px, 7vw, 96px);
+    left: calc(var(--rail) - 28px);
+    border-left: 2px solid var(--line-soft);
+  }
+  .stop {
+    position: relative;
+    padding-left: var(--rail);
+  }
+  .stop + .stop {
+    margin-top: clamp(36px, 4.5vw, 56px);
+  }
+  .stop__year {
+    position: absolute;
+    left: 0;
+    top: -6px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .stop__dot {
+    position: absolute;
+    top: 6px;
+    left: calc(var(--rail) - 34px);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 0 0 5px var(--bg);
+  }
+  .stop--pending .stop__dot {
+    border: 2px solid var(--ink-4);
+    background: var(--bg);
+  }
+  .stop--pending .stop__year {
+    color: var(--ink-3);
+  }
+
+  .talk {
     display: grid;
-    gap: clamp(14px, 1.6vw, 20px);
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    gap: 20px clamp(24px, 3.5vw, 44px);
+    align-items: start;
+  }
+  .talk__cover {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    background: #fff;
+  }
+  .talk__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-out);
+  }
+  :global(:root[data-theme="dark"]) .talk__cover img,
+  :global(:root[data-theme="dark"]) .talk__chapters img {
+    filter: brightness(0.9);
+  }
+  .talk__play {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-ink);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transition: transform 0.3s var(--ease-quart);
+  }
+  .talk__play svg {
+    width: 18px;
+    height: 18px;
+    margin-left: 2px;
+    fill: currentColor;
+  }
+  @media (hover: hover) {
+    .talk:has(.talk__cover:hover, .talk__title a:hover) .talk__cover img {
+      transform: scale(1.015);
+    }
+    .talk:has(.talk__cover:hover, .talk__title a:hover) .talk__play {
+      transform: scale(1.06);
+    }
+  }
+  .talk__body {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+  }
+  .talk__when {
+    color: var(--ink-3);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .talk__title {
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  @media (hover: hover) {
+    .talk__title a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+  }
+  .talk__speakers {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink-1);
+    font-size: 14px;
+  }
+  .talk__avatars {
+    display: flex;
+  }
+  .talk__avatars span {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--bg);
+    background: var(--avatar-bg);
+    color: var(--avatar-ink);
+    font-size: 12px;
+  }
+  .talk__avatars span + span {
+    margin-left: -6px;
+  }
+  .talk__summary {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    max-width: 36em;
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .talk__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 2px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+
+  /* 章节胶片：每章第一页的缩略图，点开直接跳到那一页 */
+  .talk__chapters {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
     padding: 0;
     list-style: none;
+  }
+  .talk__chapters a {
+    display: grid;
+    gap: 8px;
+    color: var(--ink-2);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .talk__chapters img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    object-fit: cover;
+    background: #fff;
+    transition: border-color 0.2s ease, translate 0.3s var(--ease-quart);
+  }
+  .talk__chapters a > span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  @media (hover: hover) {
+    .talk__chapters a:hover {
+      color: var(--ink);
+    }
+    .talk__chapters a:hover img {
+      border-color: var(--line-strong);
+      translate: 0 -2px;
+    }
+  }
+  .talk__more {
+    align-content: center;
+    justify-items: center;
+    height: 100%;
+    max-height: calc(100% - 26px);
+    aspect-ratio: 16 / 9;
+    border: 1px dashed var(--line-strong);
+    border-radius: 8px;
+  }
+  .talk__chapters a.talk__more {
+    color: var(--ink-1);
+  }
+
+  /* 暂无录屏：斜线占位，整体弱化 */
+  .talk--pending {
+    grid-template-columns: 200px minmax(0, 1fr);
+    align-items: center;
+  }
+  .talk__cover--empty {
+    background: repeating-linear-gradient(-45deg, var(--bg-grey) 0 7px, var(--bg) 7px 14px);
+  }
+  .talk--pending .talk__title {
+    color: var(--ink-1);
+    font-size: 1.15rem;
+  }
+  .talk--pending .talk__summary {
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 960px) {
+    .talk {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .talk--pending {
+      grid-template-columns: 160px minmax(0, 1fr);
+    }
+    .talk__chapters {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 720px) {
+    .timeline {
+      --rail: 28px;
+    }
+    .timeline::before {
+      left: 6px;
+    }
+    .stop__dot {
+      left: 0;
+    }
+    .stop__year {
+      position: static;
+      display: block;
+      margin-bottom: 12px;
+      font-size: 22px;
+    }
+    .stop:has(.stop__year) .stop__dot {
+      top: 40px;
+    }
+    .talk--pending {
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 14px;
+    }
+    .talk--pending .talk__title {
+      font-size: 1rem;
+    }
+    .talk__chapters {
+      gap: 8px;
+    }
+    .talk__chapters a {
+      font-size: 12px;
+    }
   }
 </style>

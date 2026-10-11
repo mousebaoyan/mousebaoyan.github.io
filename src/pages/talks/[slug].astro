@@ -33,13 +33,18 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
     ]} />
 
     <header class="talk__header">
-      <h1 class="talk__title">{title}</h1>
+      <p class="talk__when">{talkDate(talk)}</p>
+      <h1 class="talk__title display">{title}</h1>
+      {speakers.length > 0 && (
+        <p class="talk__speakers">
+          <span class="talk__avatars" aria-hidden="true">{speakers.map((name) => <span>{Array.from(name)[0]}</span>)}</span>
+          <span><span class="visually-hidden">分享人：</span>{speakers.join("、")}</span>
+        </p>
+      )}
       <p class="talk__summary">{summary}</p>
       <dl class="talk__facts">
-        <div><dt>直播时间</dt><dd>{talkDate(talk)}</dd></div>
-        {speakers.length > 0 && <div><dt>分享人</dt><dd>{speakers.join("、")}</dd></div>}
-        {duration && <div><dt>回放时长</dt><dd>{formatDuration(duration)}</dd></div>}
-        {decks.length > 0 && <div><dt>课件</dt><dd><a href="#slides">{decks.length} 份</a></dd></div>}
+        {duration && <div><dt>回放</dt><dd>{formatDuration(duration)}</dd></div>}
+        {decks.length > 0 && <div><dt>课件</dt><dd><a href="#slides">{decks.reduce((sum, deck) => sum + slidesFor(talk, deck).pages, 0)} 页</a></dd></div>}
       </dl>
     </header>
 
@@ -56,7 +61,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
         ></iframe>
       </div>
       <p class="talk__video-note">
-        想发弹幕、看评论，或播放器加载不出来？
+        播放器加载不出来，或者想看弹幕和评论？
         <a href={videoUrl} target="_blank" rel="noopener noreferrer">在哔哩哔哩观看 <span aria-hidden="true">↗</span></a>
       </p>
     </section>
@@ -71,7 +76,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
               <header class="talk__deck-head">
                 <div>
                   <h3 id={`${deck.id}-title`}>{deck.title}</h3>
-                  <p>分享人 {deck.speaker} · 共 {slidesFor(talk, deck).pages} 页</p>
+                  <p>分享人 {deck.speaker}，共 {slidesFor(talk, deck).pages} 页</p>
                 </div>
                 <a class="btn btn--primary" href={href} download={downloadName(deck)} data-astro-prefetch="false">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 19.5h14" /></svg>
@@ -98,10 +103,40 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
   .talk__header {
     padding: clamp(28px, 4vw, 44px) 0 clamp(24px, 3vw, 32px);
   }
+  .talk__when {
+    color: var(--ink-3);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
   .talk__title {
-    font-size: clamp(1.9rem, 4vw, 2.6rem);
-    letter-spacing: -0.03em;
-    line-height: 1.2;
+    margin-top: 8px;
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.15;
+  }
+  .talk__speakers {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    color: var(--ink-1);
+    font-size: 15px;
+  }
+  .talk__avatars {
+    display: flex;
+  }
+  .talk__avatars span {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--bg);
+    background: var(--avatar-bg);
+    color: var(--avatar-ink);
+    font-size: 13px;
+  }
+  .talk__avatars span + span {
+    margin-left: -7px;
   }
   .talk__summary {
     max-width: 44em;
@@ -113,10 +148,10 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
   .talk__facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 40px;
+    gap: 14px 48px;
     margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid var(--line-soft);
+    border-top: 1px solid var(--line);
   }
   .talk__facts dt {
     color: var(--ink-3);
@@ -124,16 +159,19 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
   }
   .talk__facts dd {
     margin-top: 4px;
-    color: var(--ink-1);
-    font-size: 15px;
-    font-weight: 500;
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
   }
   .talk__facts a {
     color: var(--blue-ink);
   }
-  .talk__facts a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  @media (hover: hover) {
+    .talk__facts a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
   }
 
   .talk__player {
@@ -156,9 +194,11 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
   .talk__video-note a {
     color: var(--blue-ink);
   }
-  .talk__video-note a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  @media (hover: hover) {
+    .talk__video-note a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
   }
 
   .talk__slides {
@@ -204,9 +244,7 @@ const downloadName = (deck: (typeof decks)[number]) => `${title}-${deck.speaker}
   }
   @media (max-width: 600px) {
     .talk__facts {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px 20px;
+      gap: 14px 32px;
     }
     .talk__deck-head {
       flex-direction: column;

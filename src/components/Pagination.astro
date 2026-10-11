@@ -71,17 +71,19 @@ const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1)
   .pagination__step {
     border-color: var(--line-soft);
   }
-  .pagination a:hover {
-    background: var(--bg-grey);
-    border-color: var(--line);
+  @media (hover: hover) {
+    .pagination a:hover {
+      background: var(--bg-grey);
+      border-color: var(--line);
+    }
   }
   .pagination a:focus-visible {
     outline: 2px solid var(--blue);
     outline-offset: 3px;
   }
   .pagination [aria-current="page"] {
-    color: var(--blue-ink);
-    background: var(--blue-soft);
+    color: var(--on-ink);
+    background: var(--ink);
     font-weight: 600;
   }
   .pagination [aria-disabled="true"],

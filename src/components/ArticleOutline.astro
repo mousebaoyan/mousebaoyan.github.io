@@ -65,7 +65,7 @@ const sectionCount = headings.filter(({ depth }) => depth === 2).length;
   }
   .outline-count {
     margin-left: auto;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--ink-2);
   }
   .outline-chevron {
@@ -102,15 +102,17 @@ const sectionCount = headings.filter(({ depth }) => depth === 2).length;
     font-size: 13px;
     color: var(--ink-2);
   }
-  a[data-heading-link]:hover {
-    background: var(--bg-alt);
-    color: var(--ink-1);
+  @media (hover: hover) {
+    a[data-heading-link]:hover {
+      background: var(--bg-alt);
+      color: var(--ink-1);
+    }
   }
   a[data-heading-link][aria-current="location"] {
-    border-left-color: var(--blue);
-    color: var(--blue-ink);
-    background: var(--blue-wash);
-    font-weight: 500;
+    border-left-color: var(--ink);
+    color: var(--ink);
+    background: var(--bg-grey);
+    font-weight: 600;
   }
   .reading-settings {
     margin-top: 22px;
@@ -156,8 +158,14 @@ const sectionCount = headings.filter(({ depth }) => depth === 2).length;
   [data-reading-percent] {
     font-variant-numeric: tabular-nums;
   }
-  .reading-status a:hover {
-    color: var(--blue-ink);
+  .reading-status a {
+    padding-block: 13px;
+    margin-block: -13px;
+  }
+  @media (hover: hover) {
+    .reading-status a:hover {
+      color: var(--blue-ink);
+    }
   }
   :is(a, button, summary):focus-visible {
     outline: 2px solid var(--blue);

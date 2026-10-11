@@ -1,65 +1,75 @@
 /* ============================================================
    四非保研鼠群 — 设计系统
-   风格：Apple-inspired · 白底灰面 · 蓝紫强调 · 克制留白
+   白底黑字，颜色只用来区分保研的四个阶段：
+   备战（石墨）· 夏令营（叶绿）· 预推免（琥珀）· 推免与录取（录取蓝）
+   全站使用系统字体，大标题靠字号、字重和字距建立层级
    ============================================================ */
 
 :root {
   color-scheme: light;
 
-  /* —— 中性色（Apple 体系）—— */
+  /* —— 中性色 —— */
   --bg: #ffffff;
-  --bg-alt: #fbfbfd;
-  --bg-grey: #f5f5f7;
+  --bg-alt: #f9fafb;
+  --bg-grey: #f3f4f6;
   --surface: #ffffff;          /* 卡片、弹窗 */
-  --surface-hover: #fafcff;
-  --glass: rgba(255, 255, 255, 0.85);
-  --nav-bg: rgba(255, 255, 255, 0.82);
+  --surface-hover: #f9fafb;
+  --glass: rgba(255, 255, 255, 0.88);
+  --nav-bg: rgba(255, 255, 255, 0.84);
 
-  --ink: #1d1d1f;              /* 主文字 */
-  --ink-1: #3f4652;            /* 较强的次要文字：数值、小标题 */
-  --ink-2: #6e6e73;            /* 次要文字 */
-  --ink-3: #6c6f76;            /* 弱化文字：日期、标签名 */
-  --ink-4: #878b92;            /* 装饰：分隔符、图标、大号弱化数字 */
-  --prose-ink: #353840;        /* 长文正文 */
+  --ink: #14161b;              /* 主文字 */
+  --ink-1: #343a46;            /* 较强的次要文字：数值、小标题 */
+  --ink-2: #5d6470;            /* 次要文字 */
+  --ink-3: #686e79;            /* 弱化文字：日期、标签名 */
+  --ink-4: #8a909b;            /* 装饰：分隔符、图标、刻度 */
+  --prose-ink: #30353f;        /* 长文正文 */
   --on-ink: #ffffff;           /* 主按钮（墨色底）上的文字 */
-  --ink-hover: #38383c;
-  --on-dark: #f5f5f7;          /* 始终为深色的区域上的文字 */
-  --on-dark-2: #a1a1a6;
+  --ink-hover: #2c3039;
+  --on-dark: #f3f4f6;          /* 始终为深色的区域上的文字 */
+  --on-dark-2: #a3a9b4;
 
-  --line: #d2d2d7;             /* 发丝线 */
-  --line-soft: #e8e8ed;
-  --line-strong: #a9afb8;
+  --line: #d9dce1;             /* 发丝线 */
+  --line-soft: #eaecf0;
+  --line-strong: #aab0ba;
 
-  --chip-bg: #f3f5f8;
-  --chip-ink: #5f6875;
-  --avatar-bg: #edf3f9;
-  --avatar-ink: #416286;
+  --chip-bg: #f1f3f6;
+  --chip-ink: #576070;
+  --avatar-bg: #eaf0fd;
+  --avatar-ink: #3a55a0;
   --highlight: #fff0c2;
-  --track: rgba(29, 29, 31, 0.06);
-  --backdrop: rgba(25, 30, 46, 0.33);
+  --track: rgba(20, 22, 27, 0.06);
+  --backdrop: rgba(20, 24, 36, 0.36);
 
-  /* —— 强调色 —— */
-  --blue: #0071e3;
-  --blue-ink: #0063c7;         /* 浅底上的蓝色文字，对比度更高 */
-  --blue-ink-strong: #004f9d;
-  --blue-hover: #0077ed;
-  --blue-soft: #e8f1fd;
-  --blue-wash: #f4f8fd;        /* 极浅的蓝色底，用于提示与悬停 */
-  --blue-line: #bfd3e8;        /* 卡片悬停描边 */
-  --blue-muted-ink: #416184;
-  --focus-ring: rgba(0, 113, 227, 0.07);
+  /* —— 阶段色：填充用于色条和标记，-ink 用于文字 —— */
+  --tone-prep: #9097a4;
+  --tone-prep-ink: #4f5663;
+  --tone-camp: #1f9d63;
+  --tone-camp-ink: #157347;
+  --tone-pre: #e8a21a;
+  --tone-pre-ink: #8f5b06;
+  --tone-tm: #2563eb;
+  --tone-tm-ink: #1d4ed8;
+
+  /* —— 强调色（链接、焦点）与录取蓝一致 —— */
+  --blue: #2563eb;
+  --blue-ink: #1d4ed8;         /* 浅底上的蓝色文字，对比度更高 */
+  --blue-ink-strong: #1e3a8a;
+  --blue-hover: #1d4ed8;
+  --blue-soft: #e5edfd;
+  --blue-wash: #f3f6fe;        /* 极浅的蓝色底，用于提示与悬停 */
+  --blue-line: #bccdf7;        /* 卡片悬停描边 */
+  --blue-muted-ink: #3f5a94;
+  --focus-ring: rgba(37, 99, 235, 0.1);
 
   --purple: #6e56cf;
   --purple-soft: #f3f0ff;
 
-  /* —— 渐变 —— */
-  --gradient-accent: linear-gradient(135deg, #0071e3 0%, #6e56cf 100%);
-  --gradient-accent-soft: linear-gradient(135deg, #e8f1fd 0%, #f3f0ff 100%);
+  /* —— 渐变（旧页面的封面年份仍在使用）—— */
+  --gradient-accent: linear-gradient(135deg, #2563eb 0%, #1f9d63 100%);
+  --gradient-accent-soft: linear-gradient(135deg, #e5edfd 0%, #e3f5ec 100%);
 
-  /* —— 始终为深色的区域（入群横幅）—— */
-  --bg-dark-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(110, 86, 207, 0.15), transparent),
-                       radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 113, 227, 0.1), transparent),
-                       #000000;
+  /* —— 始终为深色的区域 —— */
+  --bg-dark-gradient: #14161b;
 
   /* —— 圆角：控件 10 / 卡片 16 / 大面板 24 —— */
   --r-sm: 10px;
@@ -68,8 +78,8 @@
   --r-pill: 980px;
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.03), 0 12px 32px -12px rgba(0, 40, 100, 0.16);
-  --shadow-pop: 0 24px 80px rgba(29, 29, 31, 0.15);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.03), 0 12px 32px -12px rgba(20, 30, 60, 0.18);
+  --shadow-pop: 0 24px 80px rgba(20, 22, 27, 0.16);
 
   /* —— 排版 —— */
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
@@ -81,7 +91,7 @@
   --maxw-wide: 1400px;
   --gutter: clamp(20px, 5vw, 40px);
   --nav-h: 64px;
-  --section-space: clamp(64px, 8vw, 112px);
+  --section-space: clamp(56px, 6.5vw, 88px);
 
   /* —— 动效：出场用 out-expo，交互反馈用 out-quart —— */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -91,54 +101,65 @@
   --z-nav: 50;
 }
 
-/* —— 深色模式：近黑底、抬亮的表面与更亮的蓝紫，保证文字对比度 —— */
+/* —— 深色模式：近黑底、抬亮的表面与提亮的阶段色，保证文字对比度 —— */
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #0d0d0f;
-  --bg-alt: #121215;
-  --bg-grey: #1b1b1f;
-  --surface: #151518;
-  --surface-hover: #191c22;
-  --glass: rgba(28, 28, 32, 0.85);
-  --nav-bg: rgba(13, 13, 15, 0.76);
+  --bg: #0e0f12;
+  --bg-alt: #13151a;
+  --bg-grey: #1a1d23;
+  --surface: #15171c;
+  --surface-hover: #1a1d24;
+  --glass: rgba(26, 28, 34, 0.88);
+  --nav-bg: rgba(14, 15, 18, 0.78);
 
-  --ink: #f5f5f7;
-  --ink-1: #d2d2d7;
-  --ink-2: #a1a1a6;
-  --ink-3: #8d8d93;
-  --ink-4: #717178;
-  --prose-ink: #d8d8dd;
-  --on-ink: #0d0d0f;
-  --ink-hover: #d2d2d7;
+  --ink: #f3f4f6;
+  --ink-1: #d5d8de;
+  --ink-2: #a3a9b4;
+  --ink-3: #8f95a0;
+  --ink-4: #6c727d;
+  --prose-ink: #d9dce2;
+  --on-ink: #0e0f12;
+  --ink-hover: #d5d8de;
 
-  --line: #3a3a3f;
-  --line-soft: #26262b;
-  --line-strong: #5a5a61;
+  --line: #343843;
+  --line-soft: #23262e;
+  --line-strong: #555b67;
 
-  --chip-bg: #222226;
-  --chip-ink: #b0b0b6;
-  --avatar-bg: #1c2633;
-  --avatar-ink: #9fc2e8;
+  --chip-bg: #20232a;
+  --chip-ink: #b3b8c2;
+  --avatar-bg: #1c2539;
+  --avatar-ink: #a8c0f5;
   --highlight: rgba(255, 214, 10, 0.28);
   --track: rgba(255, 255, 255, 0.1);
   --backdrop: rgba(0, 0, 0, 0.6);
 
-  --blue: #2997ff;
-  --blue-ink: #5eb0ff;
-  --blue-ink-strong: #8cc6ff;
-  --blue-hover: #47a6ff;
-  --blue-soft: rgba(41, 151, 255, 0.16);
-  --blue-wash: rgba(41, 151, 255, 0.07);
-  --blue-line: #2d4b6e;
-  --blue-muted-ink: #9cc0e6;
-  --focus-ring: rgba(41, 151, 255, 0.25);
+  --tone-prep: #6f7787;
+  --tone-prep-ink: #b3bac6;
+  --tone-camp: #2fbf7c;
+  --tone-camp-ink: #5ad39b;
+  --tone-pre: #f0b03a;
+  --tone-pre-ink: #f5c56a;
+  --tone-tm: #5b8cff;
+  --tone-tm-ink: #8aadff;
+
+  --blue: #5b8cff;
+  --blue-ink: #8aadff;
+  --blue-ink-strong: #b4cbff;
+  --blue-hover: #7a9fff;
+  --blue-soft: rgba(91, 140, 255, 0.18);
+  --blue-wash: rgba(91, 140, 255, 0.08);
+  --blue-line: #2e4170;
+  --blue-muted-ink: #a9bfea;
+  --focus-ring: rgba(91, 140, 255, 0.25);
 
   --purple: #a48cf5;
   --purple-soft: rgba(164, 140, 245, 0.16);
 
-  --gradient-accent: linear-gradient(135deg, #2997ff 0%, #a48cf5 100%);
-  --gradient-accent-soft: linear-gradient(135deg, rgba(41, 151, 255, 0.18) 0%, rgba(164, 140, 245, 0.18) 100%);
+  --gradient-accent: linear-gradient(135deg, #5b8cff 0%, #2fbf7c 100%);
+  --gradient-accent-soft: linear-gradient(135deg, rgba(91, 140, 255, 0.18) 0%, rgba(47, 191, 124, 0.18) 100%);
+
+  --bg-dark-gradient: #181b21;
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 36px -12px rgba(0, 0, 0, 0.8);
@@ -185,7 +206,7 @@ html[data-theme-switch]::view-transition-new(root) {
   color: var(--ink);
 }
 :root[data-theme="dark"] ::selection {
-  background: rgba(41, 151, 255, 0.35);
+  background: rgba(91, 140, 255, 0.35);
 }
 
 /* —— Reset —— */
@@ -202,6 +223,7 @@ html[data-theme-switch]::view-transition-new(root) {
 }
 
 html {
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 20px);
   -webkit-text-size-adjust: 100%;
@@ -252,6 +274,23 @@ h4 {
 ul {
   list-style: none;
   padding: 0;
+}
+
+/* 段落和标题最后一行不留单独一两个字 */
+p,
+li,
+dd,
+h1,
+h2,
+h3,
+summary {
+  text-wrap: pretty;
+}
+
+/* 大标题：加粗、收紧字距 */
+.display {
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 :focus-visible {
@@ -327,8 +366,10 @@ ul {
   flex: none;
   transition: transform 0.25s var(--ease-quart);
 }
-.btn:hover svg:last-child:not(:first-child) {
-  transform: translateX(2px);
+@media (hover: hover) {
+  .btn:hover svg:last-child:not(:first-child) {
+    transform: translateX(2px);
+  }
 }
 .btn:active {
   transform: scale(0.97);
@@ -338,18 +379,22 @@ ul {
   border-color: var(--ink);
   color: var(--on-ink);
 }
-.btn--primary:hover {
-  background: var(--ink-hover);
-  border-color: var(--ink-hover);
+@media (hover: hover) {
+  .btn--primary:hover {
+    background: var(--ink-hover);
+    border-color: var(--ink-hover);
+  }
 }
 .btn--secondary {
   background: var(--surface);
   border-color: var(--line);
   color: var(--ink);
 }
-.btn--secondary:hover {
-  background: var(--bg-grey);
-  border-color: var(--line-strong);
+@media (hover: hover) {
+  .btn--secondary:hover {
+    background: var(--bg-grey);
+    border-color: var(--line-strong);
+  }
 }
 .btn--small {
   min-height: 36px;
@@ -358,27 +403,33 @@ ul {
   font-size: 13px;
 }
 
-/* —— 箭头文字链接 —— */
+/* —— 箭头文字链接：上下各加 10px 点击区域，用负外边距抵消，不影响排版 —— */
 .link-arrow {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   flex: none;
+  padding-block: 10px;
+  margin-block: -10px;
   color: var(--blue-ink);
   font-size: 15px;
   white-space: nowrap;
 }
-.link-arrow:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+@media (hover: hover) {
+  .link-arrow:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 }
 .link-arrow svg {
   width: 15px;
   height: 15px;
   transition: transform 0.2s ease;
 }
-.link-arrow:hover svg {
-  transform: translateX(2px);
+@media (hover: hover) {
+  .link-arrow:hover svg {
+    transform: translateX(2px);
+  }
 }
 
 /* —— 标签 —— */
@@ -398,31 +449,15 @@ ul {
   color: var(--blue-ink);
 }
 
-/* —— 卡片：悬停微微浮起，光斑跟随指针（坐标由 BaseLayout 中的脚本写入）—— */
+/* —— 卡片：悬停时描边加深、微微浮起 —— */
 .lift {
-  position: relative;
-  isolation: isolate;
   transition: border-color 0.25s ease, background-color 0.25s ease,
     box-shadow 0.35s var(--ease-quart), transform 0.35s var(--ease-quart);
-}
-.lift::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--blue-wash), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
 }
 @media (hover: hover) {
   .lift:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lift);
-  }
-  .lift:hover::before {
-    opacity: 1;
   }
 }
 .lift:active {
@@ -477,25 +512,34 @@ summary,
 .deck__bar,
 .deck__thumbs,
 .pagination,
-.talk-card__badge,
-.tool-card__go,
-.exp-card__read,
-.entry__count,
+.cal__tabs,
+.cal__now,
+.chart__today,
+.chart__axis,
+.steps__num,
+.talk__avatars,
+.talk__play,
+.exp__avatar,
+.feature__cover,
 .comments__github,
 .join__btn,
 .join__guide,
-.join-guide__actions,
-.join-guide__faq,
+.join-hero__actions,
+.talk__chapters,
 .faq__nav,
 .page-header__action,
 .article-back,
 .back-link,
-.hero__stage,
-.talk-card__cover,
-.entry__icon,
 img {
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* —— 触屏：去掉系统的灰色点击高亮，改为按下时轻微变淡，松开即恢复 —— */
+@media (hover: none) {
+  :where(a[href], button, summary, [role="tab"]):active {
+    opacity: 0.6;
+  }
 }
 
 /* —— 快捷键提示：按系统显示 ⌘ 或 Ctrl（由 BaseLayout 的首屏脚本标记）—— */

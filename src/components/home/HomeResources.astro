@@ -1,0 +1,154 @@
+---
+import { getCollection } from "astro:content";
+import { activitiesForTags, activitySpans, phaseSpans, phasesForTags } from "../../data/calendar";
+
+const tools = await getCollection("tools", ({ data }) => !data.draft);
+const featured = tools.filter((tool) => tool.data.featured).slice(0, 3);
+// 按标签找出资源用得上的阶段，卡片顶部的小日历条点亮这些阶段
+const spans = phaseSpans();
+const phasesFor = (tags: string[]) => phasesForTags(tags, spans);
+const lanes = activitySpans();
+---
+
+{featured.length > 0 && (
+  <section class="resources" aria-labelledby="resources-title">
+    <div class="container">
+      <header class="resources__head">
+        <div>
+          <h2 class="resources__title display" id="resources-title">保研资源</h2>
+          <p class="resources__lead">查信息、备材料时用得上的网站和工具</p>
+        </div>
+        <a class="link-arrow" href="/resources">
+          全部 {tools.length} 个
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </header>
+      <ul class="resources__list">
+        {featured.map((tool) => (
+          <li>
+            <a class="resource" href={`/resources/${tool.id}`}>
+              <span class="resource__year" aria-hidden="true">
+                {spans.map((phase) => (
+                  <span data-tone={phasesFor(tool.data.tags).includes(phase) ? phase.tone : undefined}
+                    style={`--s: ${phase.s.toFixed(4)}; --w: ${phase.w.toFixed(4)}`}></span>
+                ))}
+                {activitiesForTags(tool.data.tags, lanes).map((lane) => (
+                  <span class="resource__lane" style={`--s: ${lane.s.toFixed(4)}; --w: ${lane.w.toFixed(4)}`}></span>
+                ))}
+              </span>
+              <span class="resource__when">
+                {activitiesForTags(tool.data.tags, lanes).map((lane) => <span data-tone="prep">{lane.name}（{lane.range}）</span>)}
+                {phasesFor(tool.data.tags).map((phase) => <span data-tone={phase.tone}>{phase.name}</span>)}
+                {phasesFor(tool.data.tags).length + activitiesForTags(tool.data.tags, lanes).length === 0 && <span>{tool.data.category}</span>}
+              </span>
+              <span class="resource__name">{tool.data.name}</span>
+              <span class="resource__desc">{tool.data.description}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .resources {
+    padding-block: var(--section-space);
+    border-top: 1px solid var(--line-soft);
+  }
+  .resources__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 32px;
+    margin-bottom: clamp(24px, 3vw, 36px);
+  }
+  .resources__title {
+    font-size: clamp(2rem, 3.4vw, 2.5rem);
+    line-height: 1.1;
+  }
+  .resources__lead {
+    margin-top: 10px;
+    color: var(--ink-2);
+    font-size: 16px;
+  }
+  .resources__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 clamp(24px, 3vw, 40px);
+  }
+  [data-tone="prep"] { --tone: var(--tone-prep); --tone-ink: var(--tone-prep-ink); }
+  [data-tone="camp"] { --tone: var(--tone-camp); --tone-ink: var(--tone-camp-ink); }
+  [data-tone="pre"] { --tone: var(--tone-pre); --tone-ink: var(--tone-pre-ink); }
+  [data-tone="tm"] { --tone: var(--tone-tm); --tone-ink: var(--tone-tm-ink); }
+  .resource {
+    display: grid;
+    gap: 6px;
+  }
+  /* 一年的缩略日历：资源用得上的阶段亮起阶段色 */
+  .resource__year {
+    position: relative;
+    height: 6px;
+    margin-bottom: 14px;
+  }
+  .resource__year span {
+    position: absolute;
+    top: 0;
+    left: calc(var(--s) * 100%);
+    width: calc(var(--w) * 100% - 3px);
+    height: 100%;
+    border-radius: 2px;
+    background: var(--line-soft);
+    transition: transform 0.3s var(--ease-out);
+  }
+  .resource__year span[data-tone] {
+    background: var(--tone);
+  }
+  .resource__year .resource__lane {
+    background: var(--tone-prep);
+  }
+  @media (hover: hover) {
+    .resource:hover .resource__year :is(span[data-tone], .resource__lane) {
+      transform: scaleY(1.6);
+    }
+  }
+  .resource__when {
+    display: flex;
+    gap: 12px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .resource__when span[data-tone] {
+    color: var(--tone-ink);
+    font-weight: 600;
+  }
+  .resource__name {
+    font-size: 19px;
+    font-weight: 650;
+    line-height: 1.4;
+  }
+  .resource__desc {
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  @media (hover: hover) {
+    .resource:hover .resource__name {
+      color: var(--blue-ink);
+    }
+  }
+  .resource:focus-visible {
+    outline-offset: 6px;
+    border-radius: 4px;
+  }
+  @media (max-width: 760px) {
+    .resources__head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .resources__list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+  }
+</style>

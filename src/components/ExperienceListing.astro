@@ -3,7 +3,6 @@ import type { CollectionEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ExperienceCard from "./ExperienceCard.astro";
 import PageHeader from "./PageHeader.astro";
-import CollectionSection from "./CollectionSection.astro";
 import Pagination from "./Pagination.astro";
 
 interface Props {
@@ -22,42 +21,47 @@ const { experiences, total, currentPage, totalPages } = Astro.props;
   <div class="container">
     <PageHeader
       title="保研经验"
-      lead="群友的准备过程、院校选择与面试经历"
+      lead="群友投稿的保研经历，从本科院校走到录取去向"
       action={{ label: "分享经验", href: "https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" }}
-    />
+      art="path"
+    >
+      <span slot="meta">共 {total} 篇{totalPages > 1 && `，第 ${currentPage} / ${totalPages} 页`}</span>
+    </PageHeader>
 
-    <CollectionSection title="全部经验贴" summary={totalPages > 1 ? `共 ${total} 篇 · 第 ${currentPage} / ${totalPages} 页` : `共 ${total} 篇`}>
-      <div class="experience-list">
-        {
-          experiences.map((e) => (
-            <ExperienceCard
-              title={e.data.title}
-              author={e.data.author}
-              date={e.data.date}
-              school={e.data.school}
-              target={e.data.target}
-              excerpt={e.data.excerpt}
-              tags={e.data.tags}
-              slug={e.id}
-            />
-          ))
-        }
-      </div>
-      {total === 0 && <p class="experience-empty">还没有经验贴</p>}
+    <div class="experiences">
+      {experiences.length > 0 ? (
+        <ol class="experience-grid">
+          {experiences.map((entry) => <li><ExperienceCard entry={entry} /></li>)}
+        </ol>
+      ) : (
+        <p class="experience-empty">还没有经验贴，欢迎成为第一个分享的人</p>
+      )}
       <Pagination currentPage={currentPage} totalPages={totalPages} />
-    </CollectionSection>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
+  .experiences {
+    padding-top: clamp(28px, 3.5vw, 40px);
+    padding-bottom: clamp(56px, 7vw, 96px);
+    border-top: 1px solid var(--line);
+  }
+  .experience-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 1.8vw, 24px);
+    padding: 0;
+    list-style: none;
+  }
   .experience-empty {
     padding: 32px 0;
     color: var(--ink-2);
     font-size: 15px;
   }
-  .experience-list {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(14px, 1.6vw, 20px);
+  @media (max-width: 760px) {
+    .experience-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>

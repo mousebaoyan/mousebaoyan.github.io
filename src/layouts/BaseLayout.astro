@@ -34,6 +34,8 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
         if (!internal) document.documentElement.dataset.entrance = "";
         // 快捷键提示在首次绘制前按系统确定，避免脚本运行后文字变化引起按钮跳动
         if (/Mac|iPhone|iPad/.test(navigator.platform)) document.documentElement.dataset.mac = "";
+        // iOS Safari 只有页面监听了 touchstart 才会应用 :active 样式（按下时的反馈）
+        document.addEventListener("touchstart", () => {}, { passive: true });
       })();
     </script>
     <noscript><style>[data-search-open] { display: none !important; }</style></noscript>
@@ -48,7 +50,7 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     <meta property="og:image" content={new URL("/logo.jpg", site.url)} />
     {!isNotFound && <link rel="canonical" href={new URL(Astro.url.pathname, site.url)} />}
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0d0d0f" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)" />
     <slot name="head" />
   </head>
   <body>
@@ -58,29 +60,5 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     </main>
     <Footer />
     <SiteSearch />
-    <script>
-      // 卡片光斑：一个委托监听，按帧写入指针坐标
-      if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        let card: HTMLElement | null = null;
-        let x = 0;
-        let y = 0;
-        let queued = false;
-        document.addEventListener("pointermove", (event) => {
-          card = (event.target as Element).closest?.<HTMLElement>(".lift") ?? null;
-          if (!card) return;
-          x = event.clientX;
-          y = event.clientY;
-          if (queued) return;
-          queued = true;
-          requestAnimationFrame(() => {
-            queued = false;
-            if (!card) return;
-            const rect = card.getBoundingClientRect();
-            card.style.setProperty("--mx", `${x - rect.left}px`);
-            card.style.setProperty("--my", `${y - rect.top}px`);
-          });
-        }, { passive: true });
-      }
-    </script>
   </body>
 </html>

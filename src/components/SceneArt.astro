@@ -1,0 +1,149 @@
+---
+// 页面头部的小插画：沿用鼠群标志里的元素（朝阳、圆点、粗描边、水平线），
+// 每个栏目画一个和内容有关的物件
+interface Props {
+  name: "path" | "screen" | "calendar" | "bubbles" | "sunset";
+  class?: string;
+}
+const { name, class: className } = Astro.props;
+---
+
+<svg class:list={["art", className]} viewBox="0 0 240 200" aria-hidden="true" data-art={name}>
+  {name === "path" && (
+    <>
+      <circle class="art__sun" cx="166" cy="72" r="46" />
+      <path class="art__line" d="M24 156H216M50 170H190M80 184H160" />
+      <path class="art__route" d="M44 140C84 140 92 106 126 106S166 98 172 74" />
+      <circle class="art__paper" cx="44" cy="140" r="8" />
+      <path class="art__line" d="M172 76V30" />
+      <path class="art__paper" d="M172 31l32 10-32 10z" />
+      <circle class="art__dot" cx="38" cy="48" r="6" />
+      <circle class="art__dot art__dot--sun" cx="70" cy="28" r="4" />
+      <circle class="art__dot" cx="220" cy="122" r="4" />
+    </>
+  )}
+  {name === "screen" && (
+    <>
+      <circle class="art__sun" cx="174" cy="58" r="44" />
+      <path class="art__line" d="M28 176H212M58 190H182" />
+      <rect class="art__paper" x="34" y="58" width="150" height="98" rx="18" />
+      <path class="art__ink" d="M100 86v42l34-21z" />
+      <circle class="art__dot" cx="30" cy="34" r="6" />
+      <circle class="art__dot art__dot--sun" cx="60" cy="22" r="4" />
+      <circle class="art__dot" cx="216" cy="132" r="5" />
+    </>
+  )}
+  {name === "calendar" && (
+    <>
+      <circle class="art__sun" cx="178" cy="54" r="42" />
+      <rect class="art__paper" x="30" y="54" width="162" height="118" rx="16" />
+      <path class="art__line" d="M30 86H192M72 40V64M150 40V64" />
+      <path class="art__bar art__bar--camp" d="M52 110H104" />
+      <path class="art__bar art__bar--pre" d="M94 132H146" />
+      <path class="art__bar art__bar--tm" d="M126 154H170" />
+      <circle class="art__dot" cx="216" cy="140" r="5" />
+      <circle class="art__dot art__dot--sun" cx="24" cy="30" r="4" />
+      <circle class="art__dot" cx="214" cy="164" r="3" />
+    </>
+  )}
+  {name === "bubbles" && (
+    <>
+      <circle class="art__sun" cx="172" cy="60" r="42" />
+      <path class="art__paper" d="M54 50h86a24 24 0 0 1 24 24v22a24 24 0 0 1-24 24H86l-24 20v-20h-8a24 24 0 0 1-24-24V74a24 24 0 0 1 24-24z" />
+      <circle class="art__ink" cx="76" cy="86" r="5" />
+      <circle class="art__ink" cx="98" cy="86" r="5" />
+      <circle class="art__ink" cx="120" cy="86" r="5" />
+      <path class="art__ink" d="M144 116h42a20 20 0 0 1 20 20v8a20 20 0 0 1-20 20h-2v16l-20-16h-20a20 20 0 0 1-20-20v-8a20 20 0 0 1 20-20z" />
+      <path class="art__ink-line" d="M144 136H184M144 148H170" />
+      <circle class="art__dot" cx="30" cy="166" r="5" />
+      <circle class="art__dot art__dot--sun" cx="40" cy="26" r="4" />
+    </>
+  )}
+  {name === "sunset" && (
+    <>
+      <clipPath id="art-sunset-clip"><rect x="0" y="0" width="240" height="126" /></clipPath>
+      <circle class="art__sun" cx="120" cy="126" r="58" clip-path="url(#art-sunset-clip)" />
+      <path class="art__line" d="M20 126H220M46 142H194M76 158H164M100 174H140" />
+      <circle class="art__dot" cx="44" cy="54" r="6" />
+      <circle class="art__dot art__dot--sun" cx="76" cy="30" r="4" />
+      <circle class="art__dot" cx="196" cy="44" r="5" />
+    </>
+  )}
+</svg>
+
+<style>
+  .art {
+    --art-ink: #344242;
+    --art-sun: #f4be92;
+    --art-paper: #f6f1e5;
+    --art-dot: #a6aca8;
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  :global(:root[data-theme="dark"]) .art {
+    --art-ink: #b4bdb9;
+    --art-sun: #b8785a;
+    --art-paper: #1d2125;
+    --art-dot: #5f6866;
+  }
+  .art :is(.art__line, .art__paper, .art__route, .art__ink, .art__ink-line, .art__bar) {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .art__sun {
+    fill: var(--art-sun);
+  }
+  .art__line {
+    fill: none;
+    stroke: var(--art-ink);
+    stroke-width: 5;
+  }
+  .art__paper {
+    fill: var(--art-paper);
+    stroke: var(--art-ink);
+    stroke-width: 5;
+  }
+  .art__ink {
+    fill: var(--art-ink);
+    stroke: var(--art-ink);
+    stroke-width: 4;
+  }
+  .art__ink-line {
+    fill: none;
+    stroke: var(--art-paper);
+    stroke-width: 5;
+  }
+  /* 虚线小路：从起点走到旗子 */
+  .art__route {
+    fill: none;
+    stroke: var(--art-ink);
+    stroke-width: 5;
+    stroke-dasharray: 0.5 11;
+  }
+  .art__bar {
+    fill: none;
+    stroke-width: 10;
+  }
+  .art__bar--camp { stroke: var(--tone-camp); }
+  .art__bar--pre { stroke: var(--tone-pre); }
+  .art__bar--tm { stroke: var(--tone-tm); }
+  .art__dot {
+    fill: var(--art-dot);
+  }
+  .art__dot--sun {
+    fill: var(--art-sun);
+  }
+
+  /* 从站外打开时，太阳缓缓升起 */
+  :global(:root[data-entrance]) .art__sun {
+    animation: art-rise 1.3s var(--ease-out) 0.1s both;
+  }
+  @keyframes art-rise {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+    }
+  }
+</style>

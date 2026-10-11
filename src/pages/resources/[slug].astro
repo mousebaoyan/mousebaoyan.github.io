@@ -5,6 +5,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import ImageLightbox from "../../components/ImageLightbox.astro";
 import Comments from "../../components/Comments.astro";
 import { site } from "../../site.config";
+import { activitiesForTags, activitySpans, phaseSpans, phasesForTags } from "../../data/calendar";
 
 export async function getStaticPaths() {
   const tools = await getCollection("tools", ({ data }) => !data.draft);
@@ -16,6 +17,14 @@ export async function getStaticPaths() {
 
 const { tool } = Astro.props;
 const { Content } = await render(tool);
+const spans = phaseSpans();
+const phases = phasesForTags(tool.data.tags, spans);
+const lanes = activitiesForTags(tool.data.tags, activitySpans());
+const when = [
+  ...lanes.map((lane) => `${lane.name}（${lane.range}，贯穿多个阶段）`),
+  ...phases.map((phase) => `${phase.name}（${phase.range}）`),
+];
+const months = Array.from({ length: 12 }, (_, index) => ({ month: index + 1, s: index / 12 }));
 ---
 
 <BaseLayout title={`${tool.data.name} — 保研资源`} description={tool.data.description}>
@@ -29,9 +38,33 @@ const { Content } = await render(tool);
 
     <article class="tool-detail">
       <header class="tool-detail__header">
-        <span class="tool-detail__cat">{tool.data.category}</span>
-        <h1 class="tool-detail__title">{tool.data.name}</h1>
+        <p class="tool-detail__cat">
+          <span>{tool.data.category}</span>
+          {lanes.map((lane) => <span data-tone="prep">{lane.name}（{lane.range}）</span>)}
+          {phases.map((phase) => <span data-tone={phase.tone}>{phase.name}</span>)}
+        </p>
+        <h1 class="tool-detail__title display">{tool.data.name}</h1>
         <p class="tool-detail__desc">{tool.data.description}</p>
+        {when.length > 0 && (
+          <div class="year" aria-label={`用得上的时间：${when.join("、")}`} role="img">
+            <span class="year__months" aria-hidden="true">
+              {months.map(({ month, s }) => <span style={`--s: ${s.toFixed(4)}`}>{month}<i> 月</i></span>)}
+            </span>
+            <span class="year__track" aria-hidden="true">
+              {spans.map((phase) => (
+                <span data-tone={phases.includes(phase) ? phase.tone : undefined}
+                  style={`--s: ${phase.s.toFixed(4)}; --w: ${phase.w.toFixed(4)}`}></span>
+              ))}
+              {lanes.map((lane) => (
+                <span class="year__lane" style={`--s: ${lane.s.toFixed(4)}; --w: ${lane.w.toFixed(4)}`}>
+                  {lane.peakSpans.map((peak) => (
+                    <i style={`--ps: ${((peak.s - lane.s) / lane.w).toFixed(4)}; --pw: ${(peak.w / lane.w).toFixed(4)}`}></i>
+                  ))}
+                </span>
+              ))}
+            </span>
+          </div>
+        )}
         <div class="tool-detail__meta">
           <div class="tool-detail__tags">
             {tool.data.tags.map((t) => (
@@ -63,15 +96,95 @@ const { Content } = await render(tool);
     overflow-wrap: anywhere;
     padding: clamp(32px, 5vw, 56px) 0;
   }
+  [data-tone="prep"] { --tone: var(--tone-prep); --tone-ink: var(--tone-prep-ink); }
+  [data-tone="camp"] { --tone: var(--tone-camp); --tone-ink: var(--tone-camp-ink); }
+  [data-tone="pre"] { --tone: var(--tone-pre); --tone-ink: var(--tone-pre-ink); }
+  [data-tone="tm"] { --tone: var(--tone-tm); --tone-ink: var(--tone-tm-ink); }
   .tool-detail__cat {
-    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    color: var(--ink-3);
+    font-size: 14px;
+  }
+  .tool-detail__cat [data-tone] {
+    color: var(--tone-ink);
     font-weight: 600;
-    color: var(--blue-ink);
   }
   .tool-detail__title {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    letter-spacing: -0.03em;
-    margin: 10px 0 12px;
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.15;
+    margin: 12px 0 14px;
+  }
+  /* 一年的时间条：资源用得上的阶段亮起阶段色 */
+  .year {
+    display: grid;
+    gap: 8px;
+    margin: 4px 0 28px;
+  }
+  .year__months,
+  .year__track {
+    position: relative;
+    display: block;
+  }
+  .year__months {
+    height: 16px;
+  }
+  .year__months span,
+  .year__track span {
+    position: absolute;
+    left: calc(var(--s) * 100%);
+  }
+  .year__months i {
+    font-style: normal;
+  }
+  .year__months span {
+    padding-left: 5px;
+    border-left: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .year__track {
+    height: 12px;
+  }
+  .year__track span {
+    top: 4px;
+    width: calc(var(--w) * 100% - 3px);
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line-soft);
+  }
+  .year__track span[data-tone] {
+    top: 0;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--tone);
+  }
+  /* 持续进行的活动：细线贯穿，最集中的时段加粗 */
+  .year__track .year__lane {
+    top: 4px;
+    height: 4px;
+    background: var(--tone-prep);
+  }
+  .year__lane i {
+    position: absolute;
+    top: -4px;
+    left: calc(var(--ps) * 100%);
+    width: calc(var(--pw) * 100%);
+    height: 12px;
+    border-radius: 4px;
+    background: var(--tone-prep);
+  }
+  @media (max-width: 600px) {
+    .year__months span {
+      padding-left: 3px;
+    }
+    .year__months i {
+      display: none;
+    }
   }
   .tool-detail__desc {
     font-size: 1.1rem;
@@ -161,8 +274,10 @@ const { Content } = await render(tool);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-  .prose :global(a:hover) {
-    opacity: 0.75;
+  @media (hover: hover) {
+    .prose :global(a:hover) {
+      opacity: 0.75;
+    }
   }
   .prose :global(blockquote) {
     border-left: 3px solid var(--line-soft);
@@ -193,12 +308,16 @@ const { Content } = await render(tool);
   }
   .back-link {
     display: inline-block;
+    padding-block: 11px;
+    margin-top: -11px;
     color: var(--ink-3);
     font-size: 0.9rem;
-    margin-bottom: 48px;
+    margin-bottom: 37px;
     transition: color 0.2s;
   }
-  .back-link:hover {
-    color: var(--ink);
+  @media (hover: hover) {
+    .back-link:hover {
+      color: var(--ink);
+    }
   }
 </style>

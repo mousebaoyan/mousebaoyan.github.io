@@ -91,7 +91,22 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     margin-bottom: 14px;
     padding-bottom: 2px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
+  }
+  .deck__chapters a {
+    scroll-snap-align: start;
+  }
+  /* 章节按钮放不下时右侧渐隐，提示可以横向滑动 */
+  .deck__chapters[data-overflow="end"] {
+    mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+  }
+  .deck__chapters[data-overflow="both"] {
+    mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  }
+  .deck__chapters[data-overflow="start"] {
+    mask-image: linear-gradient(to right, transparent, #000 48px);
   }
   .deck__chapters::-webkit-scrollbar {
     display: none;
@@ -110,18 +125,24 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     white-space: nowrap;
     transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
   }
-  .deck__chapters a:hover {
-    border-color: var(--blue-line);
-    color: var(--blue-ink);
+  @media (hover: hover) {
+    .deck__chapters a:hover {
+      border-color: var(--line-strong);
+      color: var(--ink);
+    }
   }
   .deck__chapters a[aria-current="true"] {
-    border-color: transparent;
-    background: var(--blue-soft);
-    color: var(--blue-ink);
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+  .deck__chapters a[aria-current="true"] .deck__chapter-page {
+    color: inherit;
+    opacity: 0.7;
   }
   .deck__chapter-page {
     color: var(--ink-3);
-    font-size: 11px;
+    font-size: 12px;
     font-variant-numeric: tabular-nums;
   }
   .deck__chapters a[aria-current="true"] .deck__chapter-page {
@@ -212,12 +233,16 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
   .deck__arrow--next {
     right: 14px;
   }
-  .deck__stage:hover .deck__arrow:not(:disabled),
   .deck__stage:focus-within .deck__arrow:not(:disabled) {
     opacity: 1;
   }
-  .deck__arrow:hover {
-    background: var(--surface);
+  @media (hover: hover) {
+    .deck__stage:hover .deck__arrow:not(:disabled) {
+      opacity: 1;
+    }
+    .deck__arrow:hover {
+      background: var(--surface);
+    }
   }
   .deck__arrow:disabled {
     cursor: default;
@@ -234,7 +259,7 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
   .deck__progress span {
     display: block;
     height: 100%;
-    background: var(--blue);
+    background: var(--ink);
     transform-origin: left;
     transition: transform 0.25s ease;
   }
@@ -263,8 +288,10 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     cursor: pointer;
     transition: background-color 0.18s ease;
   }
-  .deck__step:hover:not(:disabled) {
-    background: var(--bg-grey);
+  @media (hover: hover) {
+    .deck__step:hover:not(:disabled) {
+      background: var(--bg-grey);
+    }
   }
   .deck__step:disabled {
     color: var(--ink-4);
@@ -300,14 +327,16 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     cursor: pointer;
     transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   }
-  .deck__tool:hover {
-    background: var(--bg-grey);
-    color: var(--ink);
+  @media (hover: hover) {
+    .deck__tool:hover {
+      background: var(--bg-grey);
+      color: var(--ink);
+    }
   }
   .deck__tool[aria-expanded="true"] {
-    border-color: transparent;
-    background: var(--blue-soft);
-    color: var(--blue-ink);
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--on-ink);
   }
 
   .deck__thumbs:not([hidden]) {
@@ -351,17 +380,19 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     background: #fff;
     transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.3s var(--ease-out);
   }
-  .deck__thumb:hover img {
-    border-color: var(--blue-line);
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    .deck__thumb:hover img {
+      border-color: var(--line-strong);
+      transform: translateY(-2px);
+    }
   }
   .deck__thumb[aria-current="true"] {
-    color: var(--blue-ink);
+    color: var(--ink);
     font-weight: 600;
   }
   .deck__thumb[aria-current="true"] img {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 1px var(--blue);
+    border-color: var(--ink);
+    box-shadow: 0 0 0 1px var(--ink);
   }
 
   /* 深色模式下白底课件略降亮度，避免刺眼 */
@@ -464,6 +495,20 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
     const thumbs = deck.querySelector<HTMLElement>(".deck__thumbs")!;
     const thumbButtons = [...thumbs.querySelectorAll<HTMLButtonElement>("[data-deck-goto]")];
     const chapters = [...deck.querySelectorAll<HTMLAnchorElement>(".deck__chapters [data-deck-goto]")];
+    // 章节栏可以横向滑动时，在放不下的一侧显示渐隐
+    const chapterBar = deck.querySelector<HTMLElement>(".deck__chapters");
+    if (chapterBar) {
+      const markOverflow = () => {
+        const start = chapterBar.scrollLeft > 2;
+        const end = chapterBar.scrollLeft + chapterBar.clientWidth < chapterBar.scrollWidth - 2;
+        if (start && end) chapterBar.dataset.overflow = "both";
+        else if (start) chapterBar.dataset.overflow = "start";
+        else if (end) chapterBar.dataset.overflow = "end";
+        else delete chapterBar.dataset.overflow;
+      };
+      chapterBar.addEventListener("scroll", markOverflow, { passive: true });
+      new ResizeObserver(markOverflow).observe(chapterBar);
+    }
     const fullscreen = deck.querySelector<HTMLButtonElement>("[data-deck-fullscreen]")!;
     const fullscreenLabel = deck.querySelector<HTMLElement>("[data-deck-fullscreen-label]")!;
     let page = 0;

@@ -1,314 +1,302 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHeader from "../components/PageHeader.astro";
+import LogoArt from "../components/LogoArt.astro";
 import { site } from "../site.config";
 
+const grouped = site.qqGroup.replace(/(\d{3})(?=\d)/g, "$1 ");
 const steps = [
-  { title: "搜索 QQ 群", text: `在 QQ 中搜索群号 ${site.qqGroup}，确认群名为“${site.name}”` },
-  { title: "填写申请信息", text: "申请时请写明年级和本科院校" },
-  { title: "提交入群申请", text: "留意 QQ 里的审核结果，通过后即可参与交流" },
+  { title: "搜索群号", text: `在 QQ 中搜索 ${site.qqGroup}，确认群名是“${site.name}”` },
+  { title: "填写申请", text: "申请信息里写明年级和本科院校" },
+  { title: "等待审核", text: "管理员通过后就能参与交流" },
+];
+const rules = [
+  "友好交流，尊重其他群友，有分歧时就事论事",
+  "禁止广告与无关链接",
+  "欢迎分享经验和资料，招生要求以官方通知为准",
 ];
 ---
 
 <BaseLayout title="加入鼠群 — 四非保研鼠群" description="四非保研鼠群的入群条件、QQ 群号、入群步骤与交流规则">
   <div class="container">
-    <PageHeader
-      title="入群指南"
-      lead="面向四非院校计算机相关专业同学的 QQ 交流群"
-    />
+    <section class="join-hero" aria-labelledby="join-title">
+      <div class="join-hero__copy">
+        <h1 class="join-hero__title display" id="join-title">加入鼠群</h1>
+        <p class="join-hero__lead">面向四非院校计算机相关专业同学，不限年级，上岸了也欢迎</p>
 
-    <div class="join-guide">
-      <div class="join-guide__content">
-        <section class="join-guide__section" aria-labelledby="eligibility-title">
-          <h2 id="eligibility-title">入群条件</h2>
-          <p>面向四非院校计算机相关专业的同学，不限年级，已经保研的同学也欢迎加入</p>
-          <div class="join-guide__note">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v2"/></svg>
-            <span>申请时请提供：<strong>年级、本科院校</strong></span>
+        <div class="join-hero__qq">
+          <span class="join-hero__label">QQ 群号</span>
+          <strong class="join-hero__number" aria-label={site.qqGroup}>{grouped}</strong>
+          <div class="join-hero__actions">
+            <button class="btn btn--primary" type="button" data-copy-group={site.qqGroup}>
+              <svg class="copy-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              <span data-copy-label>复制群号</span>
+            </button>
+            <a class="btn btn--secondary" href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer">
+              打开 QQ 加群<span class="visually-hidden">（新窗口打开）</span>
+            </a>
           </div>
-        </section>
-
-        <section class="join-guide__section" aria-labelledby="steps-title">
-          <h2 id="steps-title">入群步骤</h2>
-          <ol class="join-guide__steps">
-            {steps.map((step, index) => (
-              <li>
-                <span class="join-guide__step-number" aria-hidden="true">{index + 1}</span>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section class="join-guide__section" aria-labelledby="rules-title">
-          <h2 id="rules-title">交流规则</h2>
-          <p>友好交流，尊重其他群友，禁止广告与无关链接。欢迎分享保研经验与参考资料，招生要求和时间安排以院校官方通知为准。</p>
-          <a class="join-guide__faq" href="/faq">查看入群常见问题 <span aria-hidden="true">→</span></a>
-        </section>
+          <p class="join-hero__status" role="status" aria-live="polite">链接打不开时，在 QQ 中搜索群号即可</p>
+        </div>
       </div>
+      <div class="join-hero__art">
+        <LogoArt priority />
+      </div>
+    </section>
 
-      <aside class="join-guide__card" aria-label="QQ 入群方式">
-        <div class="join-guide__identity">
-          <img src="/logo.jpg" alt="" width="44" height="44" />
-          <div>
-            <h2>{site.name}</h2>
-            <p>计算机保研信息与经验交流</p>
-          </div>
-        </div>
-        <div class="join-guide__number">
-          <span>QQ 群号</span>
-          <strong id="join-group-number">{site.qqGroup}</strong>
-        </div>
-        <div class="join-guide__actions">
-          <button type="button" data-copy-group={site.qqGroup}><svg class="copy-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><span data-copy-label>复制群号</span></button>
-          <a href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer" aria-label="打开 QQ 加群（新窗口打开）">打开 QQ 加群 <span aria-hidden="true">↗</span></a>
-        </div>
-        <p class="join-guide__copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
-        <p class="join-guide__help">链接打不开时，可在 QQ 中搜索上方群号</p>
-        <div class="join-guide__service">
-          <strong>入群与交流免费</strong>
-          <p>鼠群不提供付费辅导。群友以个人名义提供的付费服务与鼠群无关。</p>
-        </div>
-      </aside>
-    </div>
+    <section class="steps" aria-labelledby="steps-title">
+      <h2 class="section-title" id="steps-title">三步入群</h2>
+      <ol class="steps__list">
+        {steps.map((step, index) => (
+          <li>
+            <span class="steps__num" aria-hidden="true">{index + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="notes" aria-label="入群须知">
+      <div class="notes__item">
+        <h2 class="section-title">交流规则</h2>
+        <ul class="notes__rules">
+          {rules.map((rule) => <li>{rule}</li>)}
+        </ul>
+      </div>
+      <div class="notes__item">
+        <h2 class="section-title">入群免费</h2>
+        <p>入群和日常交流都免费，鼠群不提供付费辅导。群友以个人名义提供的付费服务与鼠群无关</p>
+        <a class="link-arrow" href="/faq">
+          更多常见问题
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </section>
   </div>
 </BaseLayout>
 
 <style>
-  .join-guide {
+  .join-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    align-items: start;
-    gap: clamp(40px, 6vw, 88px);
-    margin-top: 12px;
-    margin-bottom: clamp(48px, 6vw, 80px);
-    padding-top: 32px;
-    border-top: 1px solid var(--line-soft);
-  }
-  .join-guide__section + .join-guide__section {
-    margin-top: 28px;
-    padding-top: 28px;
-    border-top: 1px solid var(--line-soft);
-  }
-  .join-guide__section h2 {
-    font-size: 18px;
-    line-height: 1.5;
-    margin-bottom: 12px;
-  }
-  .join-guide__section p {
-    color: var(--ink-2);
-    font-size: 15px;
-    line-height: 1.85;
-  }
-  .join-guide__note {
-    display: flex;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
     align-items: center;
-    gap: 10px;
-    margin-top: 18px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    background: var(--blue-wash);
-    color: var(--blue-muted-ink);
-    font-size: 14px;
+    gap: clamp(32px, 6vw, 96px);
+    padding: clamp(36px, 5vw, 64px) 0 clamp(48px, 6vw, 80px);
+  }
+  .join-hero__title {
+    font-size: clamp(2.25rem, 4.6vw, 3.25rem);
+    line-height: 1.1;
+  }
+  .join-hero__lead {
+    max-width: 30em;
+    margin-top: 14px;
+    color: var(--ink-2);
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
     line-height: 1.7;
+    text-wrap: pretty;
   }
-  .join-guide__note svg {
-    flex: none;
-  }
-  .join-guide__note strong {
-    font-weight: 600;
-  }
-  .join-guide__steps {
+  .join-hero__qq {
     display: grid;
-    gap: 20px;
-    padding: 4px 0 0;
+    justify-items: start;
+    margin-top: clamp(32px, 4vw, 48px);
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .join-hero__label {
+    color: var(--ink-3);
+    font-size: 14px;
+  }
+  .join-hero__number {
+    margin-top: 2px;
+    font-size: clamp(3rem, 7vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .join-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .join-hero__status {
+    min-height: 1.6em;
+    margin-top: 12px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  /* 三步入群：编号圆点之间用一条线连起来 */
+  .steps {
+    padding: clamp(32px, 4vw, 48px) 0;
+    border-top: 1px solid var(--line);
+  }
+  .steps__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px clamp(24px, 4vw, 56px);
+    margin-top: 28px;
+    padding: 0;
     list-style: none;
   }
-  .join-guide__steps li {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
+  .steps__list li {
+    position: relative;
   }
-  .join-guide__step-number {
+  .steps__list li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 19px;
+    left: 52px;
+    right: calc(clamp(24px, 4vw, 56px) * -1 + 12px);
+    border-top: 2px dotted var(--line-strong);
+  }
+  .steps__num {
     display: grid;
     place-items: center;
-    flex: none;
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--line-soft);
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    color: var(--ink-2);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-  }
-  .join-guide__steps h3 {
-    font-size: 15px;
-    line-height: 1.8;
-    margin-bottom: 3px;
-  }
-  .join-guide__faq {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 14px;
-    color: var(--blue-ink);
-    font-size: 14px;
-  }
-  .join-guide__faq:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-  .join-guide__card {
-    padding: 28px;
-    border: 1px solid var(--line-soft);
-    border-radius: 16px;
-    background: var(--bg-alt);
-  }
-  .join-guide__identity {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .join-guide__identity img {
-    flex: none;
-    border-radius: 12px;
-  }
-  .join-guide__identity h2 {
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  .join-guide__identity p {
-    margin-top: 3px;
-    color: var(--ink-2);
-    font-size: 12px;
-  }
-  .join-guide__number {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    margin: 28px 0 22px;
-  }
-  .join-guide__number span {
-    color: var(--ink-2);
-    font-size: 13px;
-  }
-  .join-guide__number strong {
-    font-family: var(--font-mono);
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    line-height: 1.3;
-    user-select: all;
-  }
-  .join-guide__actions {
-    display: grid;
-    gap: 10px;
-  }
-  .join-guide__actions button,
-  .join-guide__actions a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 44px;
-    padding: 10px 14px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--surface);
-    color: var(--ink-1);
-    font: inherit;
-    font-size: 14px;
-    line-height: 1.5;
-    cursor: pointer;
-    transition: background-color 0.18s ease, border-color 0.18s ease;
-  }
-  .join-guide__actions button {
-    border-color: var(--ink);
     background: var(--ink);
     color: var(--on-ink);
+    font-size: 17px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
-  .join-guide__actions button:hover {
-    border-color: var(--ink-hover);
-    background: var(--ink-hover);
+  .steps__list h3 {
+    margin-top: 18px;
+    font-size: 18px;
+    line-height: 1.4;
   }
-  .join-guide__actions a:hover {
-    background: var(--bg-grey);
-    border-color: var(--line-strong);
-  }
-  .join-guide a:focus-visible,
-  .join-guide button:focus-visible {
-    outline: 2px solid var(--blue);
-    outline-offset: 4px;
-  }
-  .join-guide__copy-status {
-    min-height: 22px;
-    margin-top: 8px;
-    color: var(--blue-muted-ink);
-    font-size: 12px;
-    line-height: 1.8;
-  }
-  .join-guide__help {
-    color: var(--ink-2);
-    font-size: 12px;
-    line-height: 1.8;
-  }
-  .join-guide__service {
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 1px solid var(--line-soft);
-  }
-  .join-guide__service strong {
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .join-guide__service p {
+  .steps__list p {
     margin-top: 6px;
     color: var(--ink-2);
-    font-size: 12px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px clamp(24px, 4vw, 56px);
+    padding: clamp(32px, 4vw, 48px) 0 clamp(56px, 7vw, 96px);
+    border-top: 1px solid var(--line);
+  }
+  .notes__item p {
+    margin-top: 14px;
+    color: var(--ink-2);
+    font-size: 15px;
     line-height: 1.8;
   }
-  @media (max-width: 800px) {
-    .join-guide {
-      grid-template-columns: minmax(0, 1fr);
+  .notes__item .link-arrow {
+    margin-top: 6px;
+  }
+  .notes__rules {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .notes__rules li {
+    position: relative;
+    padding-left: 20px;
+    color: var(--ink-1);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .notes__rules li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.75em;
+    width: 8px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--ink-3);
+  }
+
+  @media (max-width: 860px) {
+    .join-hero {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.5fr);
       gap: 28px;
-      padding-top: 24px;
-      margin-top: 4px;
     }
-    .join-guide__card {
-      grid-row: 1;
-      padding: 24px;
+    .steps__list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
     }
-    .join-guide__number {
-      margin-block: 20px;
+    .steps__list li {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      column-gap: 16px;
+      padding-bottom: 24px;
+    }
+    .steps__num {
+      grid-row: 1 / 3;
+    }
+    .steps__list h3 {
+      margin-top: 8px;
+    }
+    .steps__list li:not(:last-child)::after {
+      top: 48px;
+      bottom: 6px;
+      left: 19px;
+      right: auto;
+      border-top: 0;
+      border-left: 2px dotted var(--line-strong);
+    }
+    .notes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  /* 竖屏手机：插画在标题上方 */
+  @media (max-width: 600px) {
+    .join-hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+      padding-top: 28px;
+    }
+    .join-hero__art {
+      order: -1;
+      width: min(52%, 220px);
+    }
+  }
+  @media (max-width: 400px) {
+    .join-hero__actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
     }
   }
 </style>
 
 <script>
   const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-group]");
-  const copyStatus = document.querySelector<HTMLElement>(".join-guide__copy-status");
+  const copyStatus = document.querySelector<HTMLElement>(".join-hero__status");
   if (copyButton && copyStatus) {
+    const hint = copyStatus.textContent;
+    let timer: ReturnType<typeof setTimeout>;
     copyButton.addEventListener("click", async () => {
-      copyButton.disabled = true;
+      clearTimeout(timer);
       const label = copyButton.querySelector<HTMLElement>("[data-copy-label]")!;
       try {
         await navigator.clipboard.writeText(copyButton.dataset.copyGroup ?? "");
         copyButton.dataset.copied = "";
         label.textContent = "已复制";
-        copyStatus.textContent = "群号已复制，可在 QQ 中粘贴搜索";
-        setTimeout(() => {
-          delete copyButton.dataset.copied;
-          label.textContent = "复制群号";
-        }, 1800);
+        copyStatus.textContent = "群号已复制，可以在 QQ 中粘贴搜索";
       } catch {
         copyStatus.textContent = "复制失败，请手动选中上方群号";
-      } finally {
-        copyButton.disabled = false;
       }
+      timer = setTimeout(() => {
+        delete copyButton.dataset.copied;
+        label.textContent = "复制群号";
+        copyStatus.textContent = hint;
+      }, 2400);
     });
   }
 </script>

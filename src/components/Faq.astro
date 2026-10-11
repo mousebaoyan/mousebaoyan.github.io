@@ -1,23 +1,27 @@
 ---
 import { site } from "../site.config";
-
+import logo from "../assets/logo-96.webp?inline";
 import { groups } from "../data/faq";
 ---
 
 <div class="faq" id="faq">
   <aside class="faq__sidebar">
     <nav class="faq__nav" aria-label="常见问题分类">
-      <p class="faq__nav-title">问题分类</p>
       {groups.map((group) => (
-        <a href={`#${group.id}`}>
-          {group.title}
+        <a href={`#${group.id}`} data-faq-nav={group.id}>
+          <span>{group.title}</span>
+          <span class="faq__nav-count">{group.questions.length}</span>
         </a>
       ))}
     </nav>
     <div class="faq__contact">
-      <span class="faq__contact-label">四非保研鼠群 · QQ 群</span>
+      <div class="faq__contact-head">
+        <img src={logo} alt="" width="36" height="36" />
+        <span>没找到答案？进群问问</span>
+      </div>
+      <span class="faq__contact-label">QQ 群号</span>
       <strong>{site.qqGroup}</strong>
-      <a href="/join">查看入群指南 <span aria-hidden="true">→</span></a>
+      <a href="/join">入群指南</a>
     </div>
   </aside>
 
@@ -33,14 +37,21 @@ import { groups } from "../data/faq";
             <details class="faq__item" id={`${group.id}-${index + 1}`} open={groupIndex === 0 && index === 0}>
               <summary>
                 <span>{item.question}</span>
-                <svg class="faq__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
-                  <path d="M5 12h14" />
-                  <path class="faq__icon-vertical" d="M12 5v14" />
-                </svg>
+                <span class="faq__icon" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M5 12h14" />
+                    <path class="faq__icon-vertical" d="M12 5v14" />
+                  </svg>
+                </span>
               </summary>
               <div class="faq__answer">
                 <p>{item.answer}</p>
-                {item.link && <a href={item.link.href}>{item.link.label} <span aria-hidden="true">→</span></a>}
+                {item.link && (
+                  <a href={item.link.href}>
+                    {item.link.label}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                  </a>
+                )}
               </div>
             </details>
           ))}
@@ -53,134 +64,160 @@ import { groups } from "../data/faq";
 <style>
   .faq {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-columns: 240px minmax(0, 1fr);
     align-items: start;
-    gap: clamp(32px, 5vw, 72px);
-    margin-top: 12px;
-    margin-bottom: clamp(48px, 6vw, 80px);
-    padding-top: 32px;
-    border-top: 1px solid var(--line-soft);
+    gap: clamp(32px, 6vw, 96px);
+    margin-bottom: clamp(56px, 7vw, 96px);
+    padding-top: clamp(28px, 3.5vw, 40px);
+    border-top: 1px solid var(--line);
+    interpolate-size: allow-keywords;
   }
   .faq__sidebar {
     position: sticky;
     top: calc(var(--nav-h) + 28px);
   }
-  .faq__nav-title {
-    margin-bottom: 12px;
-    color: var(--ink-3);
-    font-size: 12px;
+  /* 分类导航：当前阅读到的分类左侧有一条墨色竖线 */
+  .faq__nav {
+    display: grid;
+    border-left: 2px solid var(--line-soft);
   }
   .faq__nav a {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 9px;
-    color: var(--ink-1);
-    font-size: 14px;
-    transition: color 0.18s ease, background-color 0.18s ease;
+    margin-left: -2px;
+    padding: 8px 4px 8px 16px;
+    border-left: 2px solid transparent;
+    color: var(--ink-2);
+    font-size: 15px;
+    transition: color 0.2s ease, border-color 0.2s ease;
   }
-  .faq__nav a:hover {
-    background: var(--blue-soft);
-    color: var(--blue-ink);
+  @media (hover: hover) {
+    .faq__nav a:hover {
+      color: var(--ink);
+    }
+  }
+  .faq__nav a[aria-current="true"] {
+    border-left-color: var(--ink);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .faq__nav-count {
+    color: var(--ink-3);
+    font-size: 12px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
   }
   .faq__contact {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 28px;
+    display: grid;
+    justify-items: start;
+    margin-top: 32px;
     padding: 20px;
-    border: 1px solid var(--line-soft);
-    border-radius: 12px;
-    background: var(--bg-alt);
+    border-radius: 16px;
+    background: var(--bg-grey);
+  }
+  .faq__contact-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink-1);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .faq__contact-head img {
+    border-radius: 10px;
   }
   .faq__contact-label {
-    color: var(--ink-2);
+    margin-top: 18px;
+    color: var(--ink-3);
     font-size: 12px;
   }
   .faq__contact strong {
-    margin-top: 8px;
-    font-family: var(--font-mono);
-    font-size: 21px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    margin-top: 2px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
   }
-  .faq__contact a,
-  .faq__answer a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
+  .faq__contact a {
+    margin-top: 10px;
     color: var(--blue-ink);
     font-size: 14px;
   }
-  .faq__contact a:hover,
-  .faq__answer a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  @media (hover: hover) {
+    .faq__contact a:hover,
+    .faq__answer a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
   }
+
   .faq__group {
-    scroll-margin-top: 20px;
+    scroll-margin-top: calc(var(--nav-h) + 24px);
   }
   .faq__group + .faq__group {
-    margin-top: 32px;
+    margin-top: clamp(40px, 5vw, 56px);
   }
   .faq__group-header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 14px;
+    gap: 16px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
   }
   .faq__group-header h2 {
-    font-size: 18px;
-    line-height: 1.5;
+    font-size: 22px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
   }
   .faq__group-header > span {
     color: var(--ink-3);
-    font-size: 12px;
+    font-size: 13px;
     font-variant-numeric: tabular-nums;
   }
-  .faq__list {
-    border: 1px solid var(--line-soft);
-    border-radius: 14px;
-    overflow: clip;
-  }
-  .faq__item + .faq__item {
-    border-top: 1px solid var(--line-soft);
+  .faq__item {
+    border-bottom: 1px solid var(--line-soft);
+    scroll-margin-top: calc(var(--nav-h) + 24px);
   }
   .faq__item summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 20px 24px;
+    padding: 20px 0;
     cursor: pointer;
     list-style: none;
     color: var(--ink);
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 500;
     line-height: 1.6;
-    transition: background-color 0.18s ease;
   }
   .faq__item summary::-webkit-details-marker {
     display: none;
   }
-  .faq__item summary:hover {
-    background: var(--bg-alt);
-  }
-  .faq__item {
-    transition: background-color 0.3s ease;
-  }
-  .faq__item[open] {
-    background: var(--bg-alt);
+  @media (hover: hover) {
+    .faq__item summary:hover {
+      color: var(--blue-ink);
+    }
   }
   .faq__icon {
+    display: grid;
+    place-items: center;
     flex: none;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
     color: var(--ink-2);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   }
   .faq__item[open] .faq__icon {
-    color: var(--blue);
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--on-ink);
   }
   .faq__icon path {
     transform-origin: center;
@@ -198,34 +235,37 @@ import { groups } from "../data/faq";
   .faq__item[open]::details-content {
     block-size: auto;
   }
-  .faq {
-    interpolate-size: allow-keywords;
-  }
   .faq__answer {
+    padding: 0 56px 24px 0;
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
     transition: opacity 0.3s ease;
   }
   .faq__item:not([open]) .faq__answer {
     opacity: 0;
   }
-  .faq__answer {
-    padding: 0 60px 22px 24px;
-    color: var(--ink-2);
-    font-size: 15px;
-    line-height: 1.85;
-    overflow-wrap: anywhere;
+  .faq__answer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    margin-bottom: -8px;
+    padding-block: 8px;
+    color: var(--blue-ink);
+    font-size: 14px;
   }
   .faq a:focus-visible,
   .faq summary:focus-visible {
     outline: 2px solid var(--blue);
-    outline-offset: -3px;
-    border-radius: 8px;
+    outline-offset: 2px;
+    border-radius: 6px;
   }
   @media (max-width: 760px) {
     .faq {
       grid-template-columns: minmax(0, 1fr);
-      gap: 24px;
-      padding-top: 20px;
-      margin-top: 4px;
+      gap: 28px;
     }
     .faq__sidebar {
       position: static;
@@ -234,24 +274,34 @@ import { groups } from "../data/faq";
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      border-left: 0;
     }
-    .faq__nav-title,
+    .faq__nav a {
+      gap: 8px;
+      min-height: 40px;
+      margin-left: 0;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .faq__nav a[aria-current="true"] {
+      border-color: var(--line);
+      font-weight: 500;
+    }
     .faq__contact {
       display: none;
     }
-    .faq__nav a {
-      padding: 10px 12px;
-      background: var(--bg-grey);
-      font-size: 13px;
+    .faq__group-header h2 {
+      font-size: 20px;
     }
     .faq__item summary {
-      padding: 17px 18px;
-      gap: 16px;
-      font-size: 15px;
+      padding: 18px 0;
+      font-size: 16px;
     }
     .faq__answer {
-      padding: 0 18px 20px;
-      font-size: 14px;
+      padding-right: 0;
+      font-size: 15px;
     }
   }
 </style>
@@ -268,4 +318,24 @@ import { groups } from "../data/faq";
   }
   openLinkedQuestion();
   window.addEventListener("hashchange", openLinkedQuestion);
+
+  // 分类导航跟随阅读位置高亮
+  const navLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-faq-nav]")];
+  const sections = navLinks.map((link) => document.getElementById(link.dataset.faqNav!)).filter(Boolean) as HTMLElement[];
+  if (sections.length) {
+    const update = () => {
+      const offset = innerHeight * 0.35;
+      let current = sections[0];
+      for (const section of sections) if (section.getBoundingClientRect().top <= offset) current = section;
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) current = sections.at(-1)!;
+      navLinks.forEach((link) => link.setAttribute("aria-current", String(link.dataset.faqNav === current.id)));
+    };
+    let queued = false;
+    addEventListener("scroll", () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; update(); });
+    }, { passive: true });
+    update();
+  }
 </script>

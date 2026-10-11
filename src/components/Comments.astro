@@ -143,13 +143,17 @@ const discussionUrl = `https://github.com/${comments.repo}/discussions/categorie
   .comments__header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
   .comments h2 { font-size: 22px; line-height: 1.4; letter-spacing: -0.02em; }
   .comments__header p { margin-top: 8px; color: var(--ink-2); font-size: 14px; line-height: 1.7; }
-  .comments__github { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; color: var(--ink-2); font-size: 12px; padding-block: 6px; }
-  .comments__github:hover { color: var(--blue); }
+  .comments__github { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; color: var(--ink-2); font-size: 13px; padding-block: 13px; margin-block: -7px; }
+  @media (hover: hover) {
+    .comments__github:hover { color: var(--blue); }
+  }
   .comments__note { margin: 16px 0 24px; color: var(--ink-2); font-size: 12px; line-height: 1.8; }
   .comments__status { padding: 24px; border: 1px solid var(--line-soft); border-radius: 12px; background: var(--bg-alt); color: var(--ink-2); font-size: 14px; line-height: 1.8; }
   .comments__status:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
   .comments__status button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
-  .comments__status button:hover { border-color: var(--blue); color: var(--blue); }
+  @media (hover: hover) {
+    .comments__status button:hover { border-color: var(--blue); color: var(--blue); }
+  }
   .comments :is(a, button):focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 4px; }
   .comments__noscript { font-size: 14px; color: var(--ink-2); }
   .giscus { width: 100%; }

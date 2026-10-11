@@ -23,12 +23,12 @@
 
 | 页面 | 内容 |
 | --- | --- |
-| [首页](https://mousebaoyan.github.io/) | 鼠群介绍、栏目入口、近期经验贴、直播回放、精选资源与入群入口 |
-| [保研资源](https://mousebaoyan.github.io/resources/) | 按类别整理保研相关网站、工具与参考资料 |
+| [首页](https://mousebaoyan.github.io/) | 保研日历（按访问当天标出所处阶段、该做的事和关键日期）、群友去向路线图、直播回放、精选资源与入群入口 |
+| [保研资源](https://mousebaoyan.github.io/resources/) | 按一年里用得上的时间排列的资源时间表，标出今天的位置 |
 | [保研经验](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览保研经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
-| [直播回放](https://mousebaoyan.github.io/talks/) | 往期经验分享直播的录屏；课件可在网页上逐页翻阅（键盘、滑动翻页，章节跳转，缩略图，全屏），也可下载原 PDF |
+| [直播回放](https://mousebaoyan.github.io/talks/) | 按时间线排列的往期直播，可从章节缩略图直接跳到课件对应页；课件可在网页上逐页翻阅，也可下载原 PDF |
 | [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
-| [加入鼠群](https://mousebaoyan.github.io/join/) | 入群条件、入群步骤、群号复制与 QQ 入群链接 |
+| [加入鼠群](https://mousebaoyan.github.io/join/) | 群号复制、QQ 入群链接、入群步骤与交流规则 |
 
 网站适配桌面和手机，支持浅色与深色模式（默认跟随系统，导航栏按钮可手动切换；与系统一致时恢复跟随），使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
@@ -94,7 +94,7 @@ npm run build
 npm run test:site
 ```
 
-颜色请使用 [`src/styles/global.css`](src/styles/global.css) 中的配色变量（如 `--ink-2`、`--surface`、`--blue-ink`），不要直接写颜色值，否则深色模式下可能看不清。
+颜色请使用 [`src/styles/global.css`](src/styles/global.css) 中的配色变量（如 `--ink-2`、`--surface`、`--blue-ink`），不要直接写颜色值，否则深色模式下可能看不清。彩色只用来区分保研阶段：`--tone-prep`（备战）、`--tone-camp`（夏令营）、`--tone-pre`（预推免）、`--tone-tm`（推免与录取），文字用对应的 `-ink` 变量。
 
 ## 项目结构
 
@@ -106,6 +106,7 @@ src/
 │   ├── resources/           # 保研资源 Markdown
 │   └── talks/               # 直播回放 Markdown（录屏与课件信息）
 ├── data/
+│   ├── calendar.ts          # 保研日历：阶段划分、每阶段待办与链接、当年推免系统关键日期
 │   ├── faq.ts               # 常见问题
 │   └── slides/              # 课件每页文字（脚本生成，用于替代文本和搜索）
 ├── layouts/                 # 页面基础布局
@@ -149,7 +150,7 @@ public/                     # Logo、课件图片与 PDF 等静态文件
 | `featured` | 布尔，可选 | 是否在首页优先展示，默认 `false` |
 | `draft` | 布尔，可选 | 是否为草稿；不展示且不生成详情页，默认 `false` |
 
-首页最多展示 3 篇非草稿经验贴，优先展示 `featured: true` 的文章，再按日期倒序补足。列表每页 6 篇，可在 [`src/lib/experiences.ts`](src/lib/experiences.ts) 中调整；第二页起使用 `/experiences/page/2/` 等独立地址。
+首页「大家去了哪」路线图最多展示 8 篇非草稿经验贴（优先 `featured: true`，再按日期补足），按 `school` 中的院校类型（四非、双非、双一流）分组。`school` 请写作「学校 · 专业」，页面会拆开显示。列表每页 6 篇，可在 [`src/lib/experiences.ts`](src/lib/experiences.ts) 中调整；第二页起使用 `/experiences/page/2/` 等独立地址。
 
 </details>
 
@@ -169,6 +170,8 @@ public/                     # Logo、课件图片与 PDF 等静态文件
 | `draft` | 布尔，可选 | 是否为草稿；不展示且不生成详情页，默认 `false` |
 
 首页最多展示 3 项 `featured: true` 且非草稿的资源，资源列表展示全部非草稿内容。frontmatter 下方可用 Markdown 补充详细介绍和使用建议。
+
+资源在一年中的哪些时候用得上，由 `tags` 自动判断：标签包含 [`src/data/calendar.ts`](src/data/calendar.ts) 中某阶段或持续活动的关键词（如 `夏令营`、`预推免`、`套磁`）时，对应的时段在资源时间表上亮起。没有匹配到的资源显示为全年可用。
 
 </details>
 
@@ -203,6 +206,16 @@ node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
 示例文件带有 `draft: true`，复制后请改为 `draft: false` 才会出现在列表中。草稿不会生成详情页；但本仓库公开，草稿源文件仍可在 GitHub 上查看，请勿写入私人信息。
 
 通过 Issue 自动发布的内容使用 `submission-<Issue 编号>.md` 命名。后续修改应以原 Issue 为来源，重新审核会更新同一文件和页面；直接修改生成文件的内容可能被后续审核覆盖。
+
+## 保研日历
+
+首页的保研日历和资源时间表都读取 [`src/data/calendar.ts`](src/data/calendar.ts)：
+
+- `phases`：六个阶段的开始日期、待办事项和相关链接，每年基本不用改
+- `activities`：贯穿多个阶段的持续活动（目前是套磁，3–10 月），日历上画成一条细线，最集中的时段加粗
+- `milestones`：当年推免服务系统的官方关键日期，每年 9 月按教育部和学信网通知补上新一年的日期；跨年后旧日期自动隐藏
+
+「今天」的位置、当前阶段和倒计时都按访问者打开网页的日期计算，不需要重新部署。
 
 ## 全文搜索
 

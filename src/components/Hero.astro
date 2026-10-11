@@ -1,238 +1,105 @@
 ---
 import { site } from "../site.config";
+import LogoArt from "./LogoArt.astro";
+import YearCalendar from "./home/YearCalendar.astro";
 ---
 
 <section class="hero">
   <div class="container hero__inner">
     <div class="hero__copy">
-      <p class="hero__name">{site.name}</p>
-      <h1 class="hero__title">计算机保研交流</h1>
-      <p class="hero__sub">
-        <span>面向四非院校同学，</span><span>分享保研信息、资源与经验</span>
-      </p>
+      <h1 class="hero__title display">
+        <span class="visually-hidden">{site.name}：</span>
+        <span class="hero__from">四非鼠鼠</span>
+        <span class="hero__to">一起上岸</span>
+      </h1>
+      <p class="hero__lead"><span>四非院校计算机同学的保研互助群，</span><span>一千多名群友在这里交流</span></p>
       <div class="hero__actions">
-        <a class="btn btn--primary hero__btn" href="/join">
-          加入鼠群
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
-        </a>
-        <a class="btn btn--secondary hero__btn" href="/experiences">阅读经验贴</a>
+        <a class="btn btn--primary" href="/join">加入鼠群</a>
+        <a class="btn btn--secondary" href="#routes">看看大家去了哪</a>
       </div>
-      <p class="hero__trust">1,000+ 名群友在这里交流 · QQ 群 {site.qqGroup}</p>
     </div>
 
-    <div class="hero__stage" aria-hidden="true">
-      <div class="hero__tilt">
-        <img class="hero__logo" src="/logo.jpg" alt="" width="320" height="320" fetchpriority="high" />
-        <span class="hero__sheen"></span>
-      </div>
+    <div class="hero__art">
+      <LogoArt priority />
     </div>
   </div>
+  <YearCalendar />
 </section>
 
 <style>
-  :global(:root[data-theme="dark"]) .hero {
-    --hero-glow: 0.16;
-    --hero-glow-2: 0.12;
-    --logo-shadow: 0.7;
-  }
   .hero {
-    background:
-      radial-gradient(ellipse 90% 60% at 75% 15%, rgb(0 113 227 / var(--hero-glow, 0.08)) 0%, transparent 50%),
-      radial-gradient(ellipse 70% 50% at 20% 80%, rgb(110 86 207 / var(--hero-glow-2, 0.06)) 0%, transparent 50%),
-      var(--bg);
-    overflow: hidden;
+    padding-bottom: clamp(40px, 5vw, 72px);
   }
   .hero__inner {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
     align-items: center;
-    gap: clamp(32px, 6vw, 72px);
-    min-height: min(640px, calc(100svh - var(--nav-h) - 120px));
-    padding-block: clamp(56px, 8vw, 96px) clamp(40px, 6vw, 72px);
+    gap: clamp(32px, 5vw, 72px);
+    padding-block: clamp(32px, 5vw, 64px) clamp(36px, 4.5vw, 60px);
   }
-  .hero__name {
-    color: var(--ink-2);
-    font-size: clamp(1rem, 1.8vw, 1.2rem);
-    font-weight: 600;
-  }
+  /* 标题两行错开，第二行向右缩进 */
   .hero__title {
-    margin-top: 8px;
-    font-size: clamp(2.8rem, 6.6vw, 5rem);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.04;
-    background: linear-gradient(135deg, var(--ink) 40%, var(--blue) 80%, var(--purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    display: grid;
+    font-size: clamp(3rem, 6vw, 4.75rem);
+    line-height: 1.08;
   }
-  /* 渐变文字本身是透明的，选中时改用实色，否则选中后看不到字 */
-  .hero__title::selection {
-    color: var(--ink);
-    -webkit-text-fill-color: var(--ink);
+  .hero__to {
+    padding-left: 1.6em;
   }
-  .hero__sub {
-    margin-top: 20px;
-    max-width: 22em;
+  .hero__lead {
+    margin-top: 28px;
     color: var(--ink-2);
-    font-size: clamp(1.15rem, 2.2vw, 1.45rem);
-    font-weight: 500;
-    line-height: 1.5;
-    letter-spacing: -0.015em;
+    font-size: 17px;
+    line-height: 1.75;
   }
-  /* 按逗号分成两段，窄屏时整段换行，不会把词拆开 */
-  .hero__sub span {
+  .hero__lead span {
     display: inline-block;
   }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: clamp(28px, 4vw, 36px);
-  }
-  .hero__btn {
-    min-height: 48px;
-    padding-inline: 22px;
-    font-size: 16px;
-  }
-  .hero__trust {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 22px;
-    color: var(--ink-3);
-    font-size: 14px;
-  }
-  .hero__trust::before {
-    content: "";
-    flex: none;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #34c759;
+    gap: 10px;
+    margin-top: 26px;
   }
 
-  .hero__stage {
-    position: relative;
-    display: grid;
-    place-items: center;
-  }
-  .hero__stage::before {
-    content: "";
-    position: absolute;
-    width: clamp(320px, 42vw, 500px);
-    aspect-ratio: 1;
-    background:
-      radial-gradient(closest-side, rgba(0, 113, 227, 0.14), transparent 50%),
-      radial-gradient(closest-side at 60% 60%, rgba(110, 86, 207, 0.1), transparent 60%);
-    filter: blur(20px);
-  }
-  .hero__logo {
-    position: relative;
-    width: clamp(200px, 30vw, 320px);
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 50%;
-    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, var(--logo-shadow, 0.28));
+  .hero__art {
+    justify-self: end;
+    width: min(100%, 440px);
   }
 
-  /* 首屏只有这一段编排好的入场：文字依次浮现，标志随后落定 */
-  :global(:root[data-entrance]) .hero__copy > * {
-    animation: hero-rise 0.9s var(--ease-out) both;
-  }
-  .hero__name { animation-delay: 0.05s; }
-  .hero__title { animation-delay: 0.12s; }
-  .hero__sub { animation-delay: 0.2s; }
-  .hero__actions { animation-delay: 0.28s; }
-  .hero__trust { animation-delay: 0.36s; }
-  :global(:root[data-entrance]) .hero__stage {
-    animation: hero-settle 1.2s var(--ease-out) 0.1s both;
-  }
-  @keyframes hero-rise {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-  }
-  @keyframes hero-settle {
-    from {
-      opacity: 0;
-      transform: scale(0.94);
-      filter: blur(6px);
-    }
-  }
-
-  /* 指针移动时标志轻微倾斜，高光随之移动（由下方脚本写入角度）*/
-  .hero__tilt {
-    position: relative;
-    border-radius: 50%;
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-    transition: transform 0.6s var(--ease-out);
-    will-change: transform;
-  }
-  .hero__sheen {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at var(--sx, 30%) var(--sy, 25%), rgba(255, 255, 255, 0.35), transparent 55%);
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-  }
-
-  @media (max-width: 820px) {
+  /* 平板和横屏手机：插画缩小，仍放在右侧 */
+  @media (max-width: 860px) {
     .hero__inner {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr);
       gap: 28px;
-      min-height: 0;
-      padding-block: 40px 48px;
-      text-align: center;
-    }
-    .hero__sub {
-      margin-inline: auto;
-    }
-    .hero__actions,
-    .hero__trust {
-      justify-content: center;
-    }
-    .hero__stage {
-      order: -1;
-    }
-    .hero__logo {
-      width: clamp(160px, 44vw, 220px);
     }
   }
-  @media (max-width: 420px) {
+  /* 竖屏手机：插画在标题上方 */
+  @media (max-width: 600px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 36px;
+    }
+    .hero__art {
+      order: -1;
+      justify-self: center;
+      width: min(58%, 250px);
+    }
+  }
+  @media (max-width: 720px) {
+    .hero__title {
+      font-size: clamp(2.5rem, 12vw, 3.5rem);
+    }
+    .hero__to {
+      padding-left: 0.9em;
+    }
+    .hero__lead {
+      margin-top: 20px;
+      font-size: 16px;
+    }
     .hero__actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
     }
-    .hero__btn {
-      padding-inline: 12px;
-    }
   }
 </style>
-
-<script>
-  const tilt = document.querySelector<HTMLElement>(".hero__tilt");
-  const hero = document.querySelector<HTMLElement>(".hero");
-  if (tilt && hero && matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches) {
-    let frame = 0;
-    hero.addEventListener("pointermove", (event) => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const rect = tilt.getBoundingClientRect();
-        const dx = (event.clientX - (rect.left + rect.width / 2)) / innerWidth;
-        const dy = (event.clientY - (rect.top + rect.height / 2)) / innerHeight;
-        tilt.style.setProperty("--ry", `${(dx * 14).toFixed(2)}deg`);
-        tilt.style.setProperty("--rx", `${(-dy * 14).toFixed(2)}deg`);
-        tilt.style.setProperty("--sx", `${50 + dx * 60}%`);
-        tilt.style.setProperty("--sy", `${40 + dy * 60}%`);
-      });
-    });
-    hero.addEventListener("pointerleave", () => {
-      cancelAnimationFrame(frame);
-      ["--rx", "--ry", "--sx", "--sy"].forEach((name) => tilt.style.removeProperty(name));
-    });
-  }
-</script>

@@ -1,0 +1,261 @@
+---
+import { getTalks, isAvailable, slideImage, slidesFor, talkDate, formatDuration } from "../../lib/talks";
+
+const talks = await getTalks();
+const latest = talks.find(isAvailable);
+const deck = latest?.data.decks[0];
+const cover = latest && deck ? { src: slideImage(latest, deck, 1), ratio: slidesFor(latest, deck).aspectRatio } : undefined;
+const others = talks.filter((talk) => talk !== latest);
+---
+
+{latest && (
+  <section class="talks" aria-labelledby="talks-title">
+    <div class="container">
+      <header class="talks__head">
+        <h2 class="talks__title display" id="talks-title">直播回放</h2>
+        <p class="talks__lead">往期保研经验分享的录屏与课件</p>
+      </header>
+
+      <div class="talks__grid">
+        <a class="feature" href={`/talks/${latest.id}`}>
+          {cover && (
+            <span class="feature__cover">
+              <img src={cover.src} alt="" width="1600" height="900" loading="lazy" decoding="async" style={`aspect-ratio: ${cover.ratio}`} />
+              <span class="feature__play" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></svg>
+              </span>
+            </span>
+          )}
+          <span class="feature__body">
+            <span class="feature__meta">
+              {talkDate(latest)}
+              {latest.data.duration && <span>{formatDuration(latest.data.duration)}</span>}
+            </span>
+            <span class="feature__title display">{latest.data.title}</span>
+            <span class="feature__speakers">{latest.data.speakers.join("、")}</span>
+            <span class="feature__summary">{latest.data.summary}</span>
+          </span>
+        </a>
+
+        <ol class="talks__list">
+          {others.map((talk) => (
+            <li>
+              {isAvailable(talk) ? (
+                <a class="past" href={`/talks/${talk.id}`}>
+                  {talk.data.decks[0] && (
+                    <img class="past__thumb" src={slideImage(talk, talk.data.decks[0], 1, true)} alt="" width="320" height="180" loading="lazy" decoding="async" />
+                  )}
+                  <span class="past__date">{talkDate(talk)}</span>
+                  <span class="past__title">{talk.data.title}</span>
+                  <span class="past__note">{talk.data.speakers.join("、")}</span>
+                </a>
+              ) : (
+                <div class="past past--pending">
+                  <span class="past__thumb past__thumb--empty" aria-hidden="true"></span>
+                  {!talk.data.title.startsWith(String(talk.data.date.getFullYear())) && <span class="past__date">{talkDate(talk)}</span>}
+                  <span class="past__title">{talk.data.title}</span>
+                  <span class="past__note">录屏待后续完善</span>
+                </div>
+              )}
+            </li>
+          ))}
+          <li>
+            <a class="talks__all link-arrow" href="/talks">
+              全部 {talks.length} 场
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .talks {
+    padding-block: var(--section-space);
+    border-top: 1px solid var(--line-soft);
+  }
+  .talks__head {
+    margin-bottom: clamp(24px, 3vw, 36px);
+  }
+  .talks__title {
+    font-size: clamp(2rem, 3.4vw, 2.5rem);
+    line-height: 1.1;
+  }
+  .talks__lead {
+    margin-top: 10px;
+    color: var(--ink-2);
+    font-size: 16px;
+  }
+  .talks__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 56px);
+    align-items: start;
+  }
+
+  .feature {
+    display: grid;
+    gap: 20px;
+  }
+  .feature__cover {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    background: #fff;
+  }
+  .feature__cover img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.6s var(--ease-out);
+  }
+  :global(:root[data-theme="dark"]) .feature__cover img {
+    filter: brightness(0.9);
+  }
+  .feature__play {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-ink);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transition: transform 0.3s var(--ease-quart);
+  }
+  .feature__play svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+    fill: currentColor;
+  }
+  @media (hover: hover) {
+    .feature:hover .feature__cover img {
+      transform: scale(1.015);
+    }
+    .feature:hover .feature__play {
+      transform: scale(1.06);
+    }
+  }
+  .feature__body {
+    display: grid;
+    gap: 8px;
+  }
+  .feature__meta {
+    display: flex;
+    gap: 14px;
+    color: var(--ink-3);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .feature__title {
+    font-size: clamp(1.4rem, 2vw, 1.625rem);
+    line-height: 1.2;
+  }
+  @media (hover: hover) {
+    .feature:hover .feature__title {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 6px;
+    }
+  }
+  .feature__speakers {
+    color: var(--ink-1);
+    font-size: 15px;
+  }
+  .feature__summary {
+    max-width: 40em;
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .feature:focus-visible {
+    outline-offset: 6px;
+    border-radius: 14px;
+  }
+
+  .talks__list {
+    padding: 0;
+    list-style: none;
+  }
+  .talks__list li {
+    border-top: 1px solid var(--line);
+  }
+  /* 左侧缩略图，右侧日期、标题与说明 */
+  .past {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 16px;
+    row-gap: 3px;
+    align-content: start;
+    padding: 16px 0;
+  }
+  .past > :not(.past__thumb) {
+    grid-column: 2;
+  }
+  .past__thumb {
+    grid-row: 1 / 4;
+    width: 112px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    object-fit: cover;
+    background: #fff;
+  }
+  :global(:root[data-theme="dark"]) img.past__thumb {
+    filter: brightness(0.9);
+  }
+  /* 没有录屏的场次：斜线占位 */
+  .past__thumb--empty {
+    background: repeating-linear-gradient(-45deg, var(--bg-grey) 0 6px, var(--bg) 6px 12px);
+  }
+  .past__date {
+    color: var(--ink-3);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .past__title {
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .past__note {
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+  @media (hover: hover) {
+    a.past:hover .past__title {
+      color: var(--blue-ink);
+    }
+  }
+  .past--pending .past__title {
+    color: var(--ink-2);
+  }
+  .past--pending .past__note {
+    color: var(--ink-3);
+  }
+  .talks__all {
+    padding-top: 28px;
+  }
+
+  @media (max-width: 860px) {
+    .talks__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .feature__play {
+      top: 12px;
+      right: 12px;
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>

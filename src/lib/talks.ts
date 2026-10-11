@@ -27,9 +27,8 @@ export const deckPdf = (talk: Talk, deck: Deck) => `/talks/${talk.id}/${deck.id}
 
 export function talkDate(talk: Talk) {
   const { date, exactDate } = talk.data;
-  return date.toLocaleDateString("zh-CN", exactDate
-    ? { year: "numeric", month: "long", day: "numeric" }
-    : { year: "numeric", month: "long" });
+  const month = `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`;
+  return exactDate ? `${month} ${date.getDate()} 日` : month;
 }
 
 export function formatDuration(seconds: number) {

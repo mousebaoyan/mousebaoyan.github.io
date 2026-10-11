@@ -1,64 +1,342 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ToolCard from "../../components/ToolCard.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import CollectionSection from "../../components/CollectionSection.astro";
+import { activitiesForTags, activitySpans, phaseSpans, phasesForTags } from "../../data/calendar";
 
-const tools = await getCollection("tools");
-const sorted = tools.filter((t) => !t.data.draft).sort((a, b) =>
-  a.data.name.localeCompare(b.data.name, "zh"),
-);
-const categories = [...new Set(sorted.map((t) => t.data.category))];
+const tools = await getCollection("tools", ({ data }) => !data.draft);
+const spans = phaseSpans();
+const lanes = activitySpans();
+// 按用得上的时间先后排列；和阶段、活动都无关的资源放在最后
+const rows = tools
+  .map((tool) => ({
+    tool,
+    phases: phasesForTags(tool.data.tags, spans),
+    activities: activitiesForTags(tool.data.tags, lanes),
+  }))
+  .map((row) => ({ ...row, first: Math.min(2, ...row.phases.map((phase) => phase.s), ...row.activities.map((lane) => lane.s)) }))
+  .sort((a, b) => a.first - b.first || a.tool.data.name.localeCompare(b.tool.data.name, "zh"));
+const months = Array.from({ length: 12 }, (_, index) => ({ month: index + 1, s: index / 12 }));
+const now = new Date();
+const today = (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 1))
+  / (Date.UTC(now.getFullYear() + 1, 0, 1) - Date.UTC(now.getFullYear(), 0, 1));
 ---
 
-<BaseLayout
-  title="保研资源 — 四非保研鼠群"
-  description="保研相关的网站、工具和参考资料"
->
+<BaseLayout title="保研资源 — 四非保研鼠群" description="保研相关的网站、工具和参考资料，按用得上的时间排列">
   <div class="container">
     <PageHeader
       title="保研资源"
-      lead="查信息、备材料、排时间用得上的网站、工具和资料"
+      lead="查信息、备材料用得上的网站和工具，按使用时间排列"
       action={{ label: "推荐资源", href: "https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml" }}
-    />
+      art="calendar"
+    >
+      <span slot="meta">共 {rows.length} 个</span>
+    </PageHeader>
 
-    {
-      categories.map((cat) => (
-        <CollectionSection title={cat}>
-          <div class="tools-grid">
-            {sorted
-              .filter((t) => t.data.category === cat)
-              .map((t) => (
-                <ToolCard
-                  name={t.data.name}
-                  description={t.data.description}
-                  category={t.data.category}
-                  tags={t.data.tags}
-                  slug={t.id}
-                />
-              ))}
-          </div>
-        </CollectionSection>
-      ))
-    }
+    <section class="chart" data-chart style={`--today: ${today.toFixed(4)}`} aria-label="资源列表">
+      <div class="chart__axis" aria-hidden="true">
+        <span class="chart__axis-title">资源</span>
+        <span class="chart__scale">
+          {months.map(({ month, s }) => <span class="chart__month" style={`--s: ${s.toFixed(4)}`}>{month}<span>月</span></span>)}
+          {spans.filter((phase, index) => index === 0 || phase.name !== spans[index - 1].name).map((phase) => (
+            <span class="chart__phase" data-tone={phase.tone} style={`--s: ${phase.s.toFixed(4)}`}>{phase.name}</span>
+          ))}
+        </span>
+      </div>
+
+      <ol class="chart__rows">
+        {rows.map(({ tool, phases, activities }) => (
+          <li>
+            <a class="row" href={`/resources/${tool.id}`}>
+              <span class="row__info">
+                <span class="row__name">{tool.data.name}</span>
+                <span class="row__desc">{tool.data.description}</span>
+                <span class="row__meta">
+                  <span>{tool.data.category}</span>
+                  {activities.map((lane) => <span class="row__when" data-tone="prep">{lane.name}（{lane.range}）</span>)}
+                  {phases.map((phase) => <span class="row__when" data-tone={phase.tone}>{phase.name}</span>)}
+                </span>
+              </span>
+              <span class="row__track" aria-hidden="true">
+                {phases.length + activities.length > 0 ? spans.map((phase) => (
+                  <span class="row__seg" data-tone={phases.includes(phase) ? phase.tone : undefined}
+                    style={`--s: ${phase.s.toFixed(4)}; --w: ${phase.w.toFixed(4)}`}></span>
+                )) : <span class="row__all">全年可用</span>}
+                {activities.map((lane) => (
+                  <span class="row__lane" style={`--s: ${lane.s.toFixed(4)}; --w: ${lane.w.toFixed(4)}`}>
+                    {lane.peakSpans.map((peak) => (
+                      <span style={`--ps: ${((peak.s - lane.s) / lane.w).toFixed(4)}; --pw: ${(peak.w / lane.w).toFixed(4)}`}></span>
+                    ))}
+                  </span>
+                ))}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <span class="chart__today" aria-hidden="true"><span>今天</span></span>
+    </section>
   </div>
 </BaseLayout>
 
+<script is:inline>
+  // 按访问者的日期放置「今天」的竖线
+  (() => {
+    const chart = document.querySelector("[data-chart]");
+    if (!chart) return;
+    const now = new Date();
+    const y = now.getFullYear();
+    const t0 = Date.UTC(y, 0, 1);
+    const position = (Date.UTC(y, now.getMonth(), now.getDate()) - t0) / (Date.UTC(y + 1, 0, 1) - t0);
+    chart.style.setProperty("--today", position.toFixed(4));
+  })();
+</script>
+
 <style>
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(14px, 1.6vw, 20px);
+  [data-tone="prep"] { --tone: var(--tone-prep); --tone-ink: var(--tone-prep-ink); }
+  [data-tone="camp"] { --tone: var(--tone-camp); --tone-ink: var(--tone-camp-ink); }
+  [data-tone="pre"] { --tone: var(--tone-pre); --tone-ink: var(--tone-pre-ink); }
+  [data-tone="tm"] { --tone: var(--tone-tm); --tone-ink: var(--tone-tm-ink); }
+
+  /* —— 甘特图：左列资源，右列一年的时间轴 —— */
+  .chart {
+    --info: minmax(0, 340px);
+    --info-w: 340px;
+    --gap: 56px;
+    --axis-h: 77px;
+    position: relative;
+    margin-bottom: clamp(56px, 7vw, 96px);
+    border-top: 1px solid var(--line);
   }
-  @media (max-width: 860px) {
-    .tools-grid {
-      grid-template-columns: 1fr 1fr;
+  .chart__axis,
+  .row {
+    display: grid;
+    grid-template-columns: var(--info-w) minmax(0, 1fr);
+    column-gap: var(--gap);
+  }
+  .chart__axis {
+    height: var(--axis-h);
+    padding: 18px 0 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .chart__axis-title {
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .chart__scale {
+    position: relative;
+    height: 44px;
+  }
+  .chart__month,
+  .chart__phase,
+  .row__seg {
+    position: absolute;
+    left: calc(var(--s) * 100%);
+  }
+  .chart__month {
+    top: 0;
+    padding-left: 5px;
+    border-left: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: 12px;
+    line-height: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .chart__phase {
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--tone-ink);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chart__phase::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--tone);
+  }
+
+  .chart__rows {
+    padding: 0;
+    list-style: none;
+  }
+  .chart__rows li {
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .row {
+    align-items: center;
+    padding: 24px 0;
+    transition: background-color 0.2s ease;
+  }
+  .row__info {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+  }
+  .row__name {
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  .row__desc {
+    color: var(--ink-2);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 2px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .row__when {
+    color: var(--tone-ink);
+    font-weight: 600;
+  }
+  .row__track {
+    position: relative;
+    height: 14px;
+  }
+  /* 用不上的阶段是一条细线，用得上的阶段加粗并上色 */
+  .row__seg {
+    top: 5px;
+    width: calc(var(--w) * 100% - 3px);
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line-soft);
+    transition: transform 0.35s var(--ease-out);
+  }
+  .row__seg[data-tone] {
+    top: 0;
+    height: 14px;
+    border-radius: 4px;
+    background: var(--tone);
+  }
+  @media (hover: hover) {
+    .row:hover .row__seg[data-tone] {
+      transform: scaleY(1.25);
     }
   }
-  @media (max-width: 540px) {
-    .tools-grid {
-      grid-template-columns: 1fr;
+  /* 持续进行的活动（如套磁）：细线贯穿，最集中的时段加粗 */
+  .row__lane {
+    position: absolute;
+    top: 0;
+    left: calc(var(--s) * 100%);
+    width: calc(var(--w) * 100%);
+    height: 14px;
+  }
+  .row__lane::before,
+  .row__lane span {
+    content: "";
+    position: absolute;
+    border-radius: 4px;
+    background: var(--tone-prep);
+  }
+  .row__lane::before {
+    inset: 5px 0;
+  }
+  .row__lane span {
+    top: 0;
+    left: calc(var(--ps) * 100%);
+    width: calc(var(--pw) * 100%);
+    height: 14px;
+  }
+  .row__all {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-block: 2px dashed var(--line);
+    border-inline: 0;
+    color: var(--ink-3);
+    font-size: 12px;
+    background: var(--bg);
+  }
+  @media (hover: hover) {
+    .row:hover .row__name {
+      color: var(--blue-ink);
+    }
+  }
+  .row:focus-visible {
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+
+  /* 「今天」竖线贯穿所有资源，看得出现在该用哪些 */
+  .chart__today {
+    position: absolute;
+    top: var(--axis-h);
+    bottom: 0;
+    left: calc(var(--info-w) + var(--gap) + (100% - var(--info-w) - var(--gap)) * var(--today));
+    width: 0;
+    border-left: 1.5px dashed var(--ink);
+    pointer-events: none;
+  }
+  .chart__today span {
+    position: absolute;
+    top: -9px;
+    left: 0;
+    translate: -50% 0;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--on-ink);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1000px) {
+    .chart {
+      --info-w: 260px;
+      --gap: 36px;
+    }
+  }
+  /* 手机：资源信息在上，时间条在下，「今天」改为每条时间条上的短刻度 */
+  @media (max-width: 720px) {
+    .chart {
+      --info-w: 0px;
+      --gap: 0px;
+    }
+    .chart__axis,
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .chart__axis-title,
+    .chart__phase,
+    .chart__month span {
+      display: none;
+    }
+    .chart__scale {
+      height: 16px;
+    }
+    .chart__month {
+      padding-left: 3px;
+      font-size: 12px;
+    }
+    .row {
+      gap: 14px;
+      padding: 20px 0;
+    }
+    .chart__today {
+      display: none;
+    }
+    .row__track::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      bottom: -4px;
+      left: calc(var(--today) * 100%);
+      border-left: 1.5px solid var(--ink);
     }
   }
 </style>

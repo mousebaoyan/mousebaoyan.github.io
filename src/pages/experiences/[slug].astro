@@ -7,6 +7,7 @@ import ImageLightbox from "../../components/ImageLightbox.astro";
 import ArticleTables from "../../components/ArticleTables.astro";
 import Comments from "../../components/Comments.astro";
 import { site } from "../../site.config";
+import { readingStats, shortDate, splitSchool } from "../../lib/experiences";
 import "../../styles/article.css";
 
 export async function getStaticPaths() {
@@ -22,13 +23,9 @@ const hasDuplicateTitle = headings[0]?.depth === 1
   && normalizeTitle(headings[0].text) === normalizeTitle(exp.data.title);
 const hasSourceNote = hasDuplicateTitle
   && /^# [^\n]+\n+(?:作者|原文链接)[：:]/u.test((exp.body ?? "").trim());
-const readingText = (exp.body ?? "")
-  .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-  .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-  .replace(/https?:\/\/\S+/g, "");
-const wordCount = readingText.match(/\p{Script=Han}|[a-zA-Z0-9]+/gu)?.length ?? 0;
-const readingMinutes = Math.max(1, Math.ceil(wordCount / 400));
-const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
+const { words: wordCount, minutes: readingMinutes } = readingStats(exp.body);
+const dateStr = shortDate(exp.data.date);
+const { from, major: subject } = splitSchool(exp.data.school);
 ---
 
 <BaseLayout title={`${exp.data.title} — 保研经验`} description={exp.data.excerpt}>
@@ -44,10 +41,20 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     <div class="reading-layout" data-experience-reader>
       <article class="experience-article" aria-labelledby="article-title">
         <header class="article-header" id="article-start">
-          <div class="article-tags">
-            <span class="article-category">保研经验</span>
-            {exp.data.tags.map((tag) => <span class="article-tag">{tag}</span>)}
-          </div>
+          <!-- 从本科院校到录取去向的一段路线 -->
+          <dl class="article-route">
+            <div class="article-route__from">
+              <dt>本科</dt>
+              <dd>{from}</dd>
+              {subject && <dd class="article-route__sub">{subject}</dd>}
+            </div>
+            <span class="article-route__line" aria-hidden="true"><span></span></span>
+            <div class="article-route__to">
+              <dt>录取去向</dt>
+              <dd class="article-route__target">{exp.data.target}</dd>
+              {exp.data.major && <dd class="article-route__sub">方向：{exp.data.major}</dd>}
+            </div>
+          </dl>
           <h1 class="article-title" id="article-title">{exp.data.title}</h1>
           <p class="article-excerpt">{exp.data.excerpt}</p>
           <div class="article-byline">
@@ -61,11 +68,11 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
               </div>
             </div>
           </div>
-          <dl class="article-background">
-            <div><dt>本科背景</dt><dd>{exp.data.school}</dd></div>
-            <div class="article-target"><dt>录取去向</dt><dd>{exp.data.target}</dd></div>
-            {exp.data.major && <div class="article-major"><dt>研究方向</dt><dd>{exp.data.major}</dd></div>}
-          </dl>
+          {exp.data.tags.length > 0 && (
+            <div class="article-tags">
+              {exp.data.tags.map((tag) => <span class="article-tag">{tag}</span>)}
+            </div>
+          )}
         </header>
 
         <div class="experience-prose" data-duplicate-title={hasDuplicateTitle || undefined} data-source-note={hasSourceNote || undefined}>
@@ -96,6 +103,12 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     const syncOutline = () => { outline.open = !mobile.matches; };
     syncOutline();
     mobile.addEventListener("change", syncOutline);
+    // 手机上目录吸顶展开时会挡住正文：继续往下读就自动收起
+    let openedAt = 0;
+    outline.addEventListener("toggle", () => { openedAt = scrollY; });
+    window.addEventListener("scroll", () => {
+      if (mobile.matches && outline.open && Math.abs(scrollY - openedAt) > 160) outline.open = false;
+    }, { passive: true });
     const links = Array.from(outline.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"));
     const sections = links.flatMap((link) => {
       const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
@@ -197,24 +210,86 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     margin-bottom: 36px;
     scroll-margin-top: 28px;
   }
+  /* 路线：空心点是本科院校，实心点是录取去向，中间一条虚线 */
+  .article-route {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(48px, 0.5fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding: 22px 26px;
+    border-radius: 18px;
+    background: var(--bg-grey);
+  }
+  .article-route > div {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+  .article-route dt {
+    margin-bottom: 4px;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+  .article-route dd {
+    color: var(--ink-1);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .article-route .article-route__target {
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+  }
+  .article-route .article-route__sub {
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .article-route__line {
+    position: relative;
+    height: 12px;
+  }
+  .article-route__line::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 5px;
+    border-top: 2px dotted var(--ink-4);
+  }
+  .article-route__line::after,
+  .article-route__line span {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+  .article-route__line::after {
+    right: 0;
+    background: var(--ink);
+  }
+  .article-route__line span {
+    left: 0;
+    border: 2px solid var(--ink-4);
+    background: var(--bg-grey);
+  }
   .article-tags {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
-  }
-  .article-category {
-    color: var(--blue-ink);
-    font-size: 13px;
-    font-weight: 600;
-    margin-right: 6px;
+    gap: 6px;
+    margin-top: 20px;
   }
   .article-tag {
-    color: var(--ink-2);
+    color: var(--chip-ink);
     background: var(--chip-bg);
-    border-radius: 5px;
-    padding: 3px 8px;
+    border-radius: 6px;
+    padding: 3px 9px;
     font-size: 12px;
   }
   .article-title {
@@ -260,29 +335,6 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     font-size: 12px;
     color: var(--ink-3);
   }
-  .article-background {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-    align-items: stretch;
-    column-gap: 40px;
-    border-block: 1px solid var(--line-soft);
-    padding-block: 19px;
-  }
-  .article-background > div {
-    min-width: 0;
-  }
-  .article-background dt {
-    color: var(--ink-3);
-    font-size: 12px;
-    margin-bottom: 5px;
-  }
-  .article-background dd {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ink-1);
-    overflow-wrap: anywhere;
-  }
   .reader-sidebar {
     position: sticky;
     top: calc(var(--nav-h) + 40px);
@@ -325,9 +377,11 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
     font-size: 14px;
     padding-block: 8px;
   }
-  .article-back:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  @media (hover: hover) {
+    .article-back:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
   }
   .article-back:focus-visible {
     outline: 2px solid var(--blue);
@@ -373,34 +427,53 @@ const dateStr = exp.data.date.toLocaleDateString("zh-CN", { year: "numeric", mon
       font-size: 15px;
       margin-top: 16px;
     }
-    .article-tags {
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-    .article-category {
-      font-size: 12px;
-    }
     .article-byline {
       margin-block: 22px;
     }
-    .article-background {
-      grid-auto-flow: row;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px 32px;
+    /* 手机上路线改为竖排 */
+    .article-route {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding: 18px 20px 18px 46px;
+      margin-bottom: 26px;
     }
-    .article-background .article-major {
-      grid-column: 1 / -1;
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      padding: 12px 0 0;
-      border-top: 1px solid var(--line-soft);
+    /* 圆点按「标签行高 + 首行半高」定位，对齐本科院校和录取去向 */
+    .article-route__line {
+      display: none;
     }
-    .article-major dt {
-      margin-bottom: 0;
+    .article-route > div::before {
+      content: "";
+      position: absolute;
+      left: -30px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-sizing: border-box;
     }
-    .article-background dd {
-      font-size: 13px;
+    .article-route__from::before {
+      top: 27px;
+      border: 2px solid var(--ink-4);
+    }
+    .article-route__to::before {
+      top: 28px;
+      background: var(--ink);
+    }
+    .article-route__from::after {
+      content: "";
+      position: absolute;
+      left: -25px;
+      top: 43px;
+      bottom: -42px;
+      border-left: 2px dotted var(--ink-4);
+    }
+    .article-route > div {
+      position: relative;
+    }
+    .article-route__to {
+      margin-top: 18px;
+    }
+    .article-route .article-route__target {
+      font-size: 18px;
     }
     .article-meta {
       column-gap: 6px;
