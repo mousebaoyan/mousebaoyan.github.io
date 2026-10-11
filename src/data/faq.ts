@@ -50,6 +50,10 @@ export const groups: Group[] = [
         answer: `在 QQ 中搜索群号 ${site.qqGroup}，找到“${site.name}”后申请加入，填写年级和本科院校。下方的入群指南提供群号复制和 QQ 加群链接。`,
         link: { label: "查看入群指南", href: "/join" },
       },
+      {
+        question: "为什么我被踢出群聊了？",
+        answer: "由于群容量有限，会不定期踢出太久没发言过的群友，重新申请即可。",
+      },
     ],
   },
   {
