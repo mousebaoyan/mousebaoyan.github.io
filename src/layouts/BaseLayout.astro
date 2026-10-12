@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import SiteSearch from "../components/SiteSearch.astro";
+import Notice from "../components/Notice.astro";
 import { site } from "../site.config";
 
 interface Props {
@@ -60,5 +61,6 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     </main>
     <Footer />
     <SiteSearch />
+    <Notice />
   </body>
 </html>
