@@ -14,7 +14,7 @@ const grouped = site.qqGroup.replace(/(\d{3})(?=\d)/g, "$1 ");
     </div>
 
     <div class="join__qq">
-      <span class="join__label">QQ 群号</span>
+      <span class="join__label">QQ 群号{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</span>
       <strong class="join__number display" aria-label={site.qqGroup}>{grouped}</strong>
       <div class="join__actions">
         <button class="join__btn join__btn--copy" type="button" data-copy={site.qqGroup}><svg class="copy-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><span data-copy-label>复制群号</span></button>
@@ -80,6 +80,10 @@ const grouped = site.qqGroup.replace(/(\d{3})(?=\d)/g, "$1 ");
   .join__label {
     color: var(--on-dark-2);
     font-size: 14px;
+  }
+  /* 横幅始终是深色，标注用亮色字 */
+  .join .chip--new {
+    color: #f5c56a;
   }
   .join__number {
     margin-top: 4px;

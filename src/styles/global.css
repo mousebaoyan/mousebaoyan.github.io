@@ -455,6 +455,15 @@ summary {
   background: var(--blue-soft);
   color: var(--blue-ink);
 }
+/* 群号旁的「新群」标注 */
+.chip--new {
+  margin-left: 8px;
+  padding-block: 0;
+  background: color-mix(in srgb, var(--tone-pre) 18%, transparent);
+  color: var(--tone-pre-ink);
+  font-weight: 600;
+  vertical-align: 1px;
+}
 
 /* —— 卡片：悬停时描边加深、微微浮起 —— */
 .lift {

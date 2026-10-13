@@ -15,7 +15,7 @@ sourceIssue: https://github.com/mousebaoyan/mousebaoyan.github.io/issues/8
 > 原文链接：[知乎文章](https://zhuanlan.zhihu.com/p/692328311)
 
 
-先推荐一下四非计算机保研交流群：742203503
+先推荐一下四非计算机保研交流群：832060453（新群）
 
 我们创建了一个鼠鼠保研交流论坛，旨在打破信息差，为大家提供一个交流分享的平台。欢迎大家前来交流，网站链接：https://mousebaoyan.online
 

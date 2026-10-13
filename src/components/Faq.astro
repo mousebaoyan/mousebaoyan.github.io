@@ -19,7 +19,7 @@ import { groups } from "../data/faq";
         <img src={logo} alt="" width="36" height="36" />
         <span>没找到答案？进群问问</span>
       </div>
-      <span class="faq__contact-label">QQ 群号</span>
+      <span class="faq__contact-label">QQ 群号{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</span>
       <strong>{site.qqGroup}</strong>
       <a href="/join">入群指南</a>
     </div>

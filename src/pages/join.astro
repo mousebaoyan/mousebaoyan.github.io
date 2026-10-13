@@ -5,7 +5,7 @@ import { site } from "../site.config";
 
 const grouped = site.qqGroup.replace(/(\d{3})(?=\d)/g, "$1 ");
 const steps = [
-  { title: "搜索群号", text: `在 QQ 中搜索 ${site.qqGroup}，确认群名是“${site.name}”` },
+  { title: "搜索群号", text: `在 QQ 中搜索 ${site.qqGroup}，确认群名是“${site.qqGroupName}”` },
   { title: "填写申请", text: "申请信息里写明年级和本科院校" },
   { title: "等待审核", text: "管理员通过后就能参与交流" },
 ];
@@ -24,7 +24,7 @@ const rules = [
         <p class="join-hero__lead">面向四非院校计算机相关专业同学，不限年级，上岸了也欢迎</p>
 
         <div class="join-hero__qq">
-          <span class="join-hero__label">QQ 群号</span>
+          <span class="join-hero__label">QQ 群号{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</span>
           <strong class="join-hero__number" aria-label={site.qqGroup}>{grouped}</strong>
           <div class="join-hero__actions">
             <button class="btn btn--primary" type="button" data-copy-group={site.qqGroup}>

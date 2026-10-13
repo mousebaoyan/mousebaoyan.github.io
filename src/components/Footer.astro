@@ -13,7 +13,7 @@ const year = new Date().getFullYear();
           <span>{site.name}</span>
         </a>
         <p class="footer__desc">{site.description}</p>
-        <p class="footer__qq">QQ 群 {site.qqGroup}</p>
+        <p class="footer__qq">QQ 群 {site.qqGroup}{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</p>
       </div>
 
       <nav class="footer__col" aria-label="页脚导航">

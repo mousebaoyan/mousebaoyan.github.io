@@ -38,7 +38,7 @@
 
 ## 加入鼠群
 
-**QQ 群号：`742203503`** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qm.qq.com/q/20geYjRZlq)
+**QQ 群号：`832060453`（新群）** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qun.qq.com/universal-share/share?ac=1&authKey=hLBR7ahTMLL7dYZ1c1wWuoyC7Ic%2FI9mCTgIm7gb2wOyyz3ytDUYifEd8mVMgKj2s&busi_data=eyJncm91cENvZGUiOiI4MzIwNjA0NTMiLCJ0b2tlbiI6Im1hTktnbjRYSjJqRzJ2blFzSWF0SnR0emFWS0hKZmZYWjRIUmN3YVVJQXB1aG5lbGdMOGtJWVdZbTM0VFJON0IiLCJ1aW4iOiIxMjQwODQwMDc2In0%3D&data=d3fE0eXph07S3dC9rQhZt1ShYIsMKtOUB0GKrHyS7nlAXgqll75UyJMcU6SRHonRDfdoK13LXznPXBd1l46ZQA&svctype=4&tempid=h5_group_info)
 
 - **入群范围**：面向四非院校的计算机相关专业同学，不限制年级，已保研的同学也可以加入。
 - **申请信息**：请提供年级和本科院校。
