@@ -102,7 +102,7 @@ function validateMarkdown(markdown) {
       throw new Error("正文请使用 Markdown，不支持原始 HTML；代码示例请放在代码块内。");
     }
     if (node.url) {
-      const url = new URL(node.url, "https://mousebaoyan.github.io/");
+      const url = new URL(node.url, "https://mousebaoyan.cn/");
       if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
         throw new Error("正文包含不支持的链接协议，请使用 HTTPS、HTTP 或邮件链接。");
       }

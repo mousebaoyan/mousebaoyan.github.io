@@ -1,6 +1,6 @@
 // 站点全局配置 —— 集中放置易变信息，后续维护只改这里
 export const site = {
-  url: "https://mousebaoyan.github.io",
+  url: "https://mousebaoyan.cn",
   name: "四非保研鼠群",
   shortName: "保研鼠群",
   tagline: "计算机保研信息与经验交流",

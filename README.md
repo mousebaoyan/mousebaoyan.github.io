@@ -4,11 +4,11 @@
   <p>计算机保研信息 · 保研资源 · 经验分享</p>
   <p>面向四非院校计算机相关专业同学的信息交流与互助网站。</p>
   <p>
-    <a href="https://mousebaoyan.github.io/">访问网站</a> ·
-    <a href="https://mousebaoyan.github.io/resources/">保研资源</a> ·
-    <a href="https://mousebaoyan.github.io/experiences/">保研经验</a> ·
-    <a href="https://mousebaoyan.github.io/talks/">直播回放</a> ·
-    <a href="https://mousebaoyan.github.io/join/">加入鼠群</a>
+    <a href="https://mousebaoyan.cn/">访问网站</a> ·
+    <a href="https://mousebaoyan.cn/resources/">保研资源</a> ·
+    <a href="https://mousebaoyan.cn/experiences/">保研经验</a> ·
+    <a href="https://mousebaoyan.cn/talks/">直播回放</a> ·
+    <a href="https://mousebaoyan.cn/join/">加入鼠群</a>
   </p>
   <p>
     <a href="https://github.com/mousebaoyan/mousebaoyan.github.io/actions/workflows/deploy.yml"><img src="https://github.com/mousebaoyan/mousebaoyan.github.io/actions/workflows/deploy.yml/badge.svg" alt="GitHub Pages 部署状态" /></a>
@@ -23,12 +23,12 @@
 
 | 页面 | 内容 |
 | --- | --- |
-| [首页](https://mousebaoyan.github.io/) | 保研日历（按访问当天标出所处阶段、该做的事和关键日期）、群友去向路线图、直播回放、精选资源与入群入口 |
-| [保研资源](https://mousebaoyan.github.io/resources/) | 按一年里用得上的时间排列的资源时间表，标出今天的位置 |
-| [保研经验](https://mousebaoyan.github.io/experiences/) | 按发布日期倒序浏览保研经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
-| [直播回放](https://mousebaoyan.github.io/talks/) | 按时间线排列的往期直播，可从章节缩略图直接跳到课件对应页；课件可在网页上逐页翻阅，也可下载原 PDF |
-| [常见问题](https://mousebaoyan.github.io/faq/) | 入群范围、收费说明、资料获取与交流规则 |
-| [加入鼠群](https://mousebaoyan.github.io/join/) | 群号复制、QQ 入群链接、入群步骤与交流规则 |
+| [首页](https://mousebaoyan.cn/) | 保研日历（按访问当天标出所处阶段、该做的事和关键日期）、群友去向路线图、直播回放、精选资源与入群入口 |
+| [保研资源](https://mousebaoyan.cn/resources/) | 按一年里用得上的时间排列的资源时间表，标出今天的位置 |
+| [保研经验](https://mousebaoyan.cn/experiences/) | 按发布日期倒序浏览保研经历，每页 6 篇；文章支持目录定位、阅读进度、字号切换与图片放大 |
+| [直播回放](https://mousebaoyan.cn/talks/) | 按时间线排列的往期直播，可从章节缩略图直接跳到课件对应页；课件可在网页上逐页翻阅，也可下载原 PDF |
+| [常见问题](https://mousebaoyan.cn/faq/) | 入群范围、收费说明、资料获取与交流规则 |
+| [加入鼠群](https://mousebaoyan.cn/join/) | 群号复制、QQ 入群链接、入群步骤与交流规则 |
 
 网站适配桌面和手机，支持浅色与深色模式（默认跟随系统，导航栏按钮可手动切换；与系统一致时恢复跟随），使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
@@ -38,7 +38,7 @@
 
 ## 加入鼠群
 
-**QQ 群号：`832060453`（新群）** · [查看入群指南](https://mousebaoyan.github.io/join/) · [打开 QQ 入群链接](https://qun.qq.com/universal-share/share?ac=1&authKey=hLBR7ahTMLL7dYZ1c1wWuoyC7Ic%2FI9mCTgIm7gb2wOyyz3ytDUYifEd8mVMgKj2s&busi_data=eyJncm91cENvZGUiOiI4MzIwNjA0NTMiLCJ0b2tlbiI6Im1hTktnbjRYSjJqRzJ2blFzSWF0SnR0emFWS0hKZmZYWjRIUmN3YVVJQXB1aG5lbGdMOGtJWVdZbTM0VFJON0IiLCJ1aW4iOiIxMjQwODQwMDc2In0%3D&data=d3fE0eXph07S3dC9rQhZt1ShYIsMKtOUB0GKrHyS7nlAXgqll75UyJMcU6SRHonRDfdoK13LXznPXBd1l46ZQA&svctype=4&tempid=h5_group_info)
+**QQ 群号：`832060453`（新群）** · [查看入群指南](https://mousebaoyan.cn/join/) · [打开 QQ 入群链接](https://qun.qq.com/universal-share/share?ac=1&authKey=hLBR7ahTMLL7dYZ1c1wWuoyC7Ic%2FI9mCTgIm7gb2wOyyz3ytDUYifEd8mVMgKj2s&busi_data=eyJncm91cENvZGUiOiI4MzIwNjA0NTMiLCJ0b2tlbiI6Im1hTktnbjRYSjJqRzJ2blFzSWF0SnR0emFWS0hKZmZYWjRIUmN3YVVJQXB1aG5lbGdMOGtJWVdZbTM0VFJON0IiLCJ1aW4iOiIxMjQwODQwMDc2In0%3D&data=d3fE0eXph07S3dC9rQhZt1ShYIsMKtOUB0GKrHyS7nlAXgqll75UyJMcU6SRHonRDfdoK13LXznPXBd1l46ZQA&svctype=4&tempid=h5_group_info)
 
 - **入群范围**：面向四非院校的计算机相关专业同学，不限制年级，已保研的同学也可以加入。
 - **申请信息**：请提供年级和本科院校。

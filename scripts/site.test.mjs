@@ -38,8 +38,8 @@ test("search index contains published content only, with real section targets", 
   assert.ok(documents.some((document) => document.kind === "常见问题"));
   for (const document of documents) {
     for (const target of [document.url, ...document.sections.map((section) => section.url)]) {
-      const url = new URL(target, "https://mousebaoyan.github.io");
-      assert.equal(url.origin, "https://mousebaoyan.github.io");
+      const url = new URL(target, "https://mousebaoyan.cn");
+      assert.equal(url.origin, "https://mousebaoyan.cn");
       const html = readFileSync(join(dist, decodeURIComponent(url.pathname), "index.html"), "utf8");
       if (url.hash) assert.ok(html.includes(`id="${decodeURIComponent(url.hash.slice(1))}"`), `Missing search target: ${target}`);
     }
@@ -93,7 +93,7 @@ test("generated pages have no broken local links or asset references", () => {
   const missing = [];
   for (const file of filesIn(dist).filter((path) => path.endsWith(".html"))) {
     const route = relative(dist, file).replace(/index\.html$/, "");
-    const base = new URL(route, "https://mousebaoyan.github.io/");
+    const base = new URL(route, "https://mousebaoyan.cn/");
     const html = readFileSync(file, "utf8");
     // Astro emits quoted href/src attributes; code examples are HTML-escaped.
     for (const [, attribute] of html.matchAll(/\b(?:href|src)="([^"]+)"/g)) {
@@ -120,7 +120,7 @@ test("detail pages have unique comment mappings and production backlinks", () =>
     assert.equal(term, route, `${route}: comments must use a stable, normalized route`);
     assert.ok(!mappings.has(term), `${route}: comment mapping reused by another page`);
     mappings.add(term);
-    assert.ok(html.includes(`name="giscus:backlink" content="https://mousebaoyan.github.io${route}"`));
+    assert.ok(html.includes(`name="giscus:backlink" content="https://mousebaoyan.cn${route}"`));
   }
   assert.ok(mappings.size > 0);
   assert.ok(isFile(join(dist, "giscus/mouse-light.css")));
