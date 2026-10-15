@@ -3,8 +3,10 @@ import { getPublishedExperiences, splitSchool } from "../../lib/experiences";
 
 const experiences = await getPublishedExperiences();
 // 按本科院校类型分组，画成从左侧出发、连到各自录取去向的路线图
-const GROUPS = ["四非", "双非", "双一流"];
-const groupOf = (school: string) => GROUPS.find((name) => school.includes(name)) ?? "其他";
+// 「双非」指非 985/211 的双一流院校，投稿里也常写作「双一流」；「四非」则不是双一流
+const GROUPS = ["四非", "双非"];
+const groupOf = (school: string) =>
+  /四非|非双一流/.test(school) ? "四非" : /双非|双一流/.test(school) ? "双非" : "其他";
 // 优先展示 featured 的文章，再按日期补足
 const picked = [...experiences]
   .sort((a, b) => Number(b.data.featured) - Number(a.data.featured))

@@ -150,7 +150,7 @@ public/                     # Logo、课件图片与 PDF 等静态文件
 | `featured` | 布尔，可选 | 是否在首页优先展示，默认 `false` |
 | `draft` | 布尔，可选 | 是否为草稿；不展示且不生成详情页，默认 `false` |
 
-首页「大家去了哪」路线图最多展示 8 篇非草稿经验贴（优先 `featured: true`，再按日期补足），按 `school` 中的院校类型（四非、双非、双一流）分组。`school` 请写作「学校 · 专业」，页面会拆开显示。列表每页 6 篇，可在 [`src/lib/experiences.ts`](src/lib/experiences.ts) 中调整；第二页起使用 `/experiences/page/2/` 等独立地址。
+首页「大家去了哪」路线图最多展示 8 篇非草稿经验贴（优先 `featured: true`，再按日期补足），按 `school` 中的院校类型分为四非和双非两组（双非即非 985/211 的双一流院校，写作「双一流」的也归入双非）。`school` 请写作「学校 · 专业」，页面会拆开显示。列表每页 6 篇，可在 [`src/lib/experiences.ts`](src/lib/experiences.ts) 中调整；第二页起使用 `/experiences/page/2/` 等独立地址。
 
 </details>
 
