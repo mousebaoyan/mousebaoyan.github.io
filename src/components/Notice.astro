@@ -19,7 +19,16 @@ import { notice } from "../site.config";
     </div>
     <footer class="notice__foot">
       <span class="notice__sign">—— {notice.signature}</span>
-      <button class="btn btn--primary btn--small" type="button" data-notice-close>我知道了</button>
+      <div class="notice__actions">
+        {notice.action ? (
+          <>
+            <button class="btn btn--secondary btn--small" type="button" data-notice-close>我知道了</button>
+            <a class="btn btn--primary btn--small" href={notice.action.href} data-notice-close>{notice.action.label}</a>
+          </>
+        ) : (
+          <button class="btn btn--primary btn--small" type="button" data-notice-close>我知道了</button>
+        )}
+      </div>
     </footer>
   </dialog>
 )}
@@ -48,7 +57,8 @@ import { notice } from "../site.config";
   .notice__body p + p { margin-top: 10px; }
   .notice__foot { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; padding: 16px 18px 18px 26px; border-top: 1px solid var(--line-soft); }
   .notice__sign { color: var(--ink-3); font-size: 13px; }
-  .notice button:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .notice__actions { display: flex; gap: 8px; }
+  .notice :is(a, button):focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
   @media (prefers-reduced-motion: no-preference) {
     .notice__dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: notice-pulse 1.8s ease-out infinite; }
     @keyframes notice-pulse { to { opacity: 0; transform: scale(2.6); } }

@@ -65,6 +65,11 @@
   --blue-muted-ink: #3f5a94;
   --focus-ring: rgba(37, 99, 235, 0.1);
 
+  /* —— 鼠洞论坛的主色：海青，与论坛页面一致 —— */
+  --forum: #2b7a6b;
+  --forum-ink: #23716a;
+  --forum-soft: #e3f0ec;
+
   --purple: #6e56cf;
   --purple-soft: #f3f0ff;
 
@@ -159,6 +164,10 @@
   --blue-line: #2e4170;
   --blue-muted-ink: #a9bfea;
   --focus-ring: rgba(91, 140, 255, 0.25);
+
+  --forum: #2e8070;
+  --forum-ink: #7cc4b8;
+  --forum-soft: rgba(46, 128, 112, 0.22);
 
   --purple: #a48cf5;
   --purple-soft: rgba(164, 140, 245, 0.16);
@@ -558,12 +567,6 @@ img {
   :where(a[href], button, summary, [role="tab"]):active {
     opacity: 0.6;
   }
-}
-
-/* —— 快捷键提示：按系统显示 ⌘ 或 Ctrl（由 BaseLayout 的首屏脚本标记）—— */
-:root[data-mac] .kbd-other,
-:root:not([data-mac]) .kbd-mac {
-  display: none;
 }
 
 /* —— 通用 —— */

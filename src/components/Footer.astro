@@ -1,5 +1,5 @@
 ---
-import { site, navLinks } from "../site.config";
+import { site, navLinks, forum } from "../site.config";
 import logo from "../assets/logo-96.webp?inline";
 const year = new Date().getFullYear();
 ---
@@ -26,14 +26,16 @@ const year = new Date().getFullYear();
               </li>
             ))
           }
+          <li><a href={forum.url}>{forum.name}论坛</a></li>
         </ul>
       </nav>
 
       <div class="footer__col">
-        <h3>内容投稿</h3>
+        <h3>投稿与反馈</h3>
         <ul>
           <li><a href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" target="_blank" rel="noopener">分享经验</a></li>
           <li><a href="https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml" target="_blank" rel="noopener">推荐资源</a></li>
+          <li><a href={forum.feedbackUrl}>意见反馈</a></li>
         </ul>
       </div>
     </div>

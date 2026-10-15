@@ -1,4 +1,4 @@
-import { site } from "../site.config";
+import { site, forum } from "../site.config";
 
 interface Question {
   question: string;
@@ -72,6 +72,16 @@ export const groups: Group[] = [
         question: "如何把自己的经验或实用资源分享到网站？",
         answer: "在“保研经验”页面点击“分享经验”，或在“保研资源”页面点击“推荐资源”，通过 GitHub 表单提交。管理员审核后会发布到网站；经验贴可以使用昵称署名。",
         link: { label: "查看经验贴与投稿方式", href: "/experiences" },
+      },
+      {
+        question: `${forum.name}论坛是什么？如何登录？`,
+        answer: `${forum.name}是鼠群的论坛，群里的问题和经验可以发在论坛上长期保存，方便查找。所有人都可以浏览；发帖和回复仅限鼠群成员，使用 QQ 号登录。`,
+        link: { label: `前往${forum.name}`, href: forum.url },
+      },
+      {
+        question: "对网站或论坛有意见建议，应该发到哪里？",
+        answer: `欢迎发到${forum.name}论坛的“反馈建议”版块，发帖需要先登录。`,
+        link: { label: "前往反馈建议版块", href: forum.feedbackUrl },
       },
       {
         question: "群内消息和经验贴里的信息都准确吗？",

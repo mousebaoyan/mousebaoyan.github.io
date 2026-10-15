@@ -33,8 +33,6 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
         let internal = false;
         try { internal = new URL(document.referrer).origin === location.origin; } catch {}
         if (!internal) document.documentElement.dataset.entrance = "";
-        // 快捷键提示在首次绘制前按系统确定，避免脚本运行后文字变化引起按钮跳动
-        if (/Mac|iPhone|iPad/.test(navigator.platform)) document.documentElement.dataset.mac = "";
         // iOS Safari 只有页面监听了 touchstart 才会应用 :active 样式（按下时的反馈）
         document.addEventListener("touchstart", () => {}, { passive: true });
       })();
