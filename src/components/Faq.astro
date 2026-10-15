@@ -1,5 +1,5 @@
 ---
-import { site } from "../site.config";
+import { qqGroups } from "../site.config";
 import logo from "../assets/logo-96.webp?inline";
 import { groups } from "../data/faq";
 ---
@@ -19,8 +19,12 @@ import { groups } from "../data/faq";
         <img src={logo} alt="" width="36" height="36" />
         <span>没找到答案？进群问问</span>
       </div>
-      <span class="faq__contact-label">QQ 群号{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</span>
-      <strong>{site.qqGroup}</strong>
+      {qqGroups.map((group) => (
+        <>
+          <span class="faq__contact-label">QQ {group.label}</span>
+          <strong>{group.number}</strong>
+        </>
+      ))}
       <a href="/join">入群指南</a>
     </div>
   </aside>

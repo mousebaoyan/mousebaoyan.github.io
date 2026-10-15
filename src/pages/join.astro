@@ -1,11 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import LogoArt from "../components/LogoArt.astro";
-import { site } from "../site.config";
+import { qqGroups } from "../site.config";
 
-const grouped = site.qqGroup.replace(/(\d{3})(?=\d)/g, "$1 ");
+const [first, second] = qqGroups;
+const spaced = (number: string) => number.replace(/(\d{3})(?=\d)/g, "$1 ");
 const steps = [
-  { title: "搜索群号", text: `在 QQ 中搜索 ${site.qqGroup}，确认群名是“${site.qqGroupName}”` },
+  { title: "搜索群号", text: `优先在 QQ 中搜索${first.label} ${first.number}，确认群名是“${first.name}”；${first.label}满了再加${second.label} ${second.number}` },
   { title: "填写申请", text: "申请信息里写明年级和本科院校" },
   { title: "等待审核", text: "管理员通过后就能参与交流" },
 ];
@@ -24,18 +25,24 @@ const rules = [
         <p class="join-hero__lead">面向四非院校计算机相关专业同学，不限年级，上岸了也欢迎</p>
 
         <div class="join-hero__qq">
-          <span class="join-hero__label">QQ 群号{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</span>
-          <strong class="join-hero__number" aria-label={site.qqGroup}>{grouped}</strong>
-          <div class="join-hero__actions">
-            <button class="btn btn--primary" type="button" data-copy-group={site.qqGroup}>
-              <svg class="copy-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-              <span data-copy-label>复制群号</span>
-            </button>
-            <a class="btn btn--secondary" href={site.qqJoinUrl} target="_blank" rel="noopener noreferrer">
-              打开 QQ 加群<span class="visually-hidden">（新窗口打开）</span>
-            </a>
+          <div class="join-hero__groups">
+            {qqGroups.map((group) => (
+              <div class="join-hero__group">
+                <span class="join-hero__label">QQ {group.label}</span>
+                <strong class="join-hero__number" aria-label={group.number}>{spaced(group.number)}</strong>
+                <div class="join-hero__actions">
+                  <button class="btn btn--primary" type="button" data-copy-group={group.number}>
+                    <svg class="copy-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                    <span data-copy-label>复制群号</span>
+                  </button>
+                  <a class="btn btn--secondary" href={group.joinUrl} target="_blank" rel="noopener noreferrer">
+                    打开 QQ 加群<span class="visually-hidden">（新窗口打开）</span>
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
-          <p class="join-hero__status" role="status" aria-live="polite">链接打不开时，在 QQ 中搜索群号即可</p>
+          <p class="join-hero__status" role="status" aria-live="polite">优先加{first.label}，{first.label}满了再加{second.label}；链接打不开时，在 QQ 中搜索群号即可</p>
         </div>
       </div>
       <div class="join-hero__art">
@@ -96,11 +103,18 @@ const rules = [
     text-wrap: pretty;
   }
   .join-hero__qq {
-    display: grid;
-    justify-items: start;
     margin-top: clamp(32px, 4vw, 48px);
     padding-top: 24px;
     border-top: 1px solid var(--line);
+  }
+  .join-hero__groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    gap: 28px clamp(32px, 4vw, 56px);
+  }
+  .join-hero__group {
+    display: grid;
+    justify-items: start;
   }
   .join-hero__label {
     color: var(--ink-3);
@@ -108,7 +122,7 @@ const rules = [
   }
   .join-hero__number {
     margin-top: 2px;
-    font-size: clamp(3rem, 7vw, 4.5rem);
+    font-size: clamp(2.25rem, 4.4vw, 3rem);
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.1;
@@ -266,6 +280,11 @@ const rules = [
       width: min(52%, 220px);
     }
   }
+  @media (max-width: 1000px) {
+    .join-hero__groups {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
   @media (max-width: 400px) {
     .join-hero__actions {
       display: grid;
@@ -276,27 +295,30 @@ const rules = [
 </style>
 
 <script>
-  const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-group]");
-  const copyStatus = document.querySelector<HTMLElement>(".join-hero__status");
-  if (copyButton && copyStatus) {
-    const hint = copyStatus.textContent;
-    let timer: ReturnType<typeof setTimeout>;
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>("[data-copy-group]");
+  const copyStatus = document.querySelector<HTMLElement>(".join-hero__status")!;
+  const hint = copyStatus.textContent;
+  let timer: ReturnType<typeof setTimeout>;
+  const reset = () => {
+    copyButtons.forEach((button) => {
+      delete button.dataset.copied;
+      button.querySelector<HTMLElement>("[data-copy-label]")!.textContent = "复制群号";
+    });
+    copyStatus.textContent = hint;
+  };
+  copyButtons.forEach((copyButton) => {
     copyButton.addEventListener("click", async () => {
       clearTimeout(timer);
-      const label = copyButton.querySelector<HTMLElement>("[data-copy-label]")!;
+      reset();
       try {
         await navigator.clipboard.writeText(copyButton.dataset.copyGroup ?? "");
         copyButton.dataset.copied = "";
-        label.textContent = "已复制";
+        copyButton.querySelector<HTMLElement>("[data-copy-label]")!.textContent = "已复制";
         copyStatus.textContent = "群号已复制，可以在 QQ 中粘贴搜索";
       } catch {
         copyStatus.textContent = "复制失败，请手动选中上方群号";
       }
-      timer = setTimeout(() => {
-        delete copyButton.dataset.copied;
-        label.textContent = "复制群号";
-        copyStatus.textContent = hint;
-      }, 2400);
+      timer = setTimeout(reset, 2400);
     });
-  }
+  });
 </script>

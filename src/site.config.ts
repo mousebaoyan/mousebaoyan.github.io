@@ -6,15 +6,26 @@ export const site = {
   tagline: "计算机保研信息与经验交流",
   description:
     "四非院校同学的计算机保研信息站：招生信息、实用资源、经验贴与直播回放",
-  qqGroup: "832060453",
-  qqGroupName: "四非计算机保研群（新）",
-  // 群号旁的标注，不需要时设为 null
-  qqGroupTag: "新群",
   // 首页展示的群人数，人数变化时改这里
   memberCount: "1000+",
-  qqJoinUrl:
-    "https://qun.qq.com/universal-share/share?ac=1&authKey=hLBR7ahTMLL7dYZ1c1wWuoyC7Ic%2FI9mCTgIm7gb2wOyyz3ytDUYifEd8mVMgKj2s&busi_data=eyJncm91cENvZGUiOiI4MzIwNjA0NTMiLCJ0b2tlbiI6Im1hTktnbjRYSjJqRzJ2blFzSWF0SnR0emFWS0hKZmZYWjRIUmN3YVVJQXB1aG5lbGdMOGtJWVdZbTM0VFJON0IiLCJ1aW4iOiIxMjQwODQwMDc2In0%3D&data=d3fE0eXph07S3dC9rQhZt1ShYIsMKtOUB0GKrHyS7nlAXgqll75UyJMcU6SRHonRDfdoK13LXznPXBd1l46ZQA&svctype=4&tempid=h5_group_info",
 };
+
+// 鼠群 QQ 群 —— 优先加一群，一群满了再加二群
+export const qqGroups = [
+  {
+    label: "一群",
+    number: "742203503",
+    name: "四非计算机保研群(一)",
+    joinUrl: "https://qm.qq.com/q/20geYjRZlq",
+  },
+  {
+    label: "二群",
+    number: "832060453",
+    name: "四非计算机保研群(二)",
+    joinUrl:
+      "https://qun.qq.com/universal-share/share?ac=1&authKey=hLBR7ahTMLL7dYZ1c1wWuoyC7Ic%2FI9mCTgIm7gb2wOyyz3ytDUYifEd8mVMgKj2s&busi_data=eyJncm91cENvZGUiOiI4MzIwNjA0NTMiLCJ0b2tlbiI6Im1hTktnbjRYSjJqRzJ2blFzSWF0SnR0emFWS0hKZmZYWjRIUmN3YVVJQXB1aG5lbGdMOGtJWVdZbTM0VFJON0IiLCJ1aW4iOiIxMjQwODQwMDc2In0%3D&data=d3fE0eXph07S3dC9rQhZt1ShYIsMKtOUB0GKrHyS7nlAXgqll75UyJMcU6SRHonRDfdoK13LXznPXBd1l46ZQA&svctype=4&tempid=h5_group_info",
+  },
+];
 
 // 鼠洞论坛 —— 导航、首页、页脚、评论区和公告共用
 export const forum = {

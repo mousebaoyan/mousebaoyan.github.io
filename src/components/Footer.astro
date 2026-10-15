@@ -1,5 +1,5 @@
 ---
-import { site, navLinks, forum } from "../site.config";
+import { site, navLinks, forum, qqGroups } from "../site.config";
 import logo from "../assets/logo-96.webp?inline";
 const year = new Date().getFullYear();
 ---
@@ -13,7 +13,7 @@ const year = new Date().getFullYear();
           <span>{site.name}</span>
         </a>
         <p class="footer__desc">{site.description}</p>
-        <p class="footer__qq">QQ 群 {site.qqGroup}{site.qqGroupTag && <span class="chip chip--new">{site.qqGroupTag}</span>}</p>
+        <p class="footer__qq">{qqGroups.map((group) => `QQ ${group.label} ${group.number}`).join(" · ")}</p>
       </div>
 
       <nav class="footer__col" aria-label="页脚导航">

@@ -1,4 +1,4 @@
-import { site, forum } from "../site.config";
+import { forum, qqGroups } from "../site.config";
 
 interface Question {
   question: string;
@@ -47,7 +47,7 @@ export const groups: Group[] = [
       },
       {
         question: "如何加入鼠群？",
-        answer: `在 QQ 中搜索群号 ${site.qqGroup}，找到“${site.qqGroupName}”后申请加入，填写年级和本科院校。下方的入群指南提供群号复制和 QQ 加群链接。`,
+        answer: `优先加${qqGroups[0].label}：在 QQ 中搜索群号 ${qqGroups[0].number}，找到“${qqGroups[0].name}”后申请加入，填写年级和本科院校。${qqGroups[0].label}满了再加${qqGroups[1].label} ${qqGroups[1].number}（“${qqGroups[1].name}”）。下方的入群指南提供群号复制和 QQ 加群链接。`,
         link: { label: "查看入群指南", href: "/join" },
       },
       {
