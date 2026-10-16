@@ -60,7 +60,7 @@ body:
     id: notes
     attributes:
       label: 推荐理由（选填）
-      description: 请说明推荐原因、使用方法或注意事项。支持 Markdown，不支持自定义 HTML 排版。图片可直接上传到 Issue，或用 Markdown 插入完整的 HTTPS 图片链接。
+      description: 请说明推荐原因、使用方法或注意事项。支持直接粘贴 Markdown，或拖入 UTF-8 编码的 .md / .markdown 文件（最多 2 MB，不另设字数限制）；使用附件时，此栏只保留一个附件链接。图片请使用完整的 HTTPS 地址，不支持本地图片路径或自定义 HTML 排版。
       placeholder: 详细说明使用场景或注意事项
 
   - type: input

@@ -49,6 +49,30 @@ function readForm(body) {
   return { type: form.type, values };
 }
 
+function attachmentUrl(markdown) {
+  const tree = fromMarkdown(markdown);
+  const paragraph = tree.children[0];
+  const link = paragraph?.children?.[0];
+  const isMarkdownFile = (url) => /\.(?:md|markdown)(?:[?#]|$)/i.test(url);
+  if (tree.children.length === 1 && paragraph.type === "paragraph" &&
+      paragraph.children.length === 1 && link.type === "link" && isMarkdownFile(link.url)) {
+    return link.url;
+  }
+  const visit = (node) => {
+    if (node.type === "link" && /^https:\/\/github\.com\/user-attachments\/files\//i.test(node.url) && isMarkdownFile(node.url)) {
+      throw new Error("使用 Markdown 附件投稿时，正文中请只保留一个附件链接；补充内容请写入附件后重新上传。");
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(tree);
+  return null;
+}
+
+export function getSubmissionAttachment(issue) {
+  const { values } = readForm((issue.body ?? "").replace(/\r\n/g, "\n"));
+  return attachmentUrl(values.body ?? values.notes);
+}
+
 // GitHub's image uploader emits HTML when it includes image dimensions.
 // Convert only plain image tags, rather than enabling HTML in published posts.
 function normalizeUploadedImages(markdown) {
@@ -116,11 +140,16 @@ function validateMarkdown(markdown) {
 }
 
 /** Convert the approved Issue snapshot to a deterministic, schema-compatible file. */
-export function createSubmission(issue) {
+export function createSubmission(issue, { attachmentBody } = {}) {
   if (!Number.isSafeInteger(issue.number) || issue.number < 1) throw new Error("无效的 Issue 编号。");
   const { type, values } = readForm((issue.body ?? "").replace(/\r\n/g, "\n"));
   const tags = [...new Set(values.tags.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean))];
-  const body = normalizeUploadedImages(values.body ?? values.notes);
+  const source = values.body ?? values.notes;
+  const attachment = attachmentUrl(source);
+  if (attachment && !attachmentBody?.trim()) {
+    throw new Error("Markdown 附件尚未读取或正文为空，已停止发布。");
+  }
+  const body = normalizeUploadedImages((attachment ? attachmentBody : source).replace(/\r\n/g, "\n"));
   validateMarkdown(body);
 
   let metadata;

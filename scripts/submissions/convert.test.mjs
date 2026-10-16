@@ -4,6 +4,7 @@ import test from "node:test";
 import { parse } from "yaml";
 import { createSubmission } from "./convert.mjs";
 import { fromMarkdown } from "mdast-util-from-markdown";
+import { createSubmissionFromIssue, MAX_ATTACHMENT_BYTES } from "./attachments.mjs";
 
 async function fixture(type, overrides = {}) {
   const template = parse(await readFile(new URL(`../../.github/ISSUE_TEMPLATE/${type}-submission.yml`, import.meta.url), "utf8"));
@@ -168,4 +169,105 @@ test("paths always come from a valid Issue number", async () => {
   for (const number of ["../other", 0, -1, 1.5]) {
     assert.throws(() => createSubmission({ ...issue, number }), /Issue 编号/);
   }
+});
+
+const attachmentUrl = "https://github.com/user-attachments/files/33529977/default.md";
+const attachmentLink = `[保研经验贴.md](${attachmentUrl})`;
+
+test("GitHub Markdown attachments become the complete body for both submission types", async () => {
+  const body = "# 原标题\r\n\r\n### 标签（选填）\r\n\r\n附件里的文章小节。\r\n\r\n## 经历\r\n\r\n" + "长文内容。".repeat(15_000);
+  for (const type of ["experience", "resource"]) {
+    const issue = await fixture(type, { body: attachmentLink, notes: attachmentLink });
+    const calls = [];
+    const submission = await createSubmissionFromIssue(issue, { fetch: async (url, options) => {
+      calls.push(url);
+      assert.equal(options.redirect, "manual");
+      assert.ok(options.signal instanceof AbortSignal);
+      return new Response(body);
+    } });
+    assert.deepEqual(calls, [attachmentUrl]);
+    assert.ok(submission.content.endsWith(body.replaceAll("\r\n", "\n") + "\n"));
+    assert.equal(metadata(submission).sourceIssue, issue.html_url);
+    assert.equal(metadata(submission).draft, false);
+    assert.ok(!submission.content.includes(attachmentLink));
+  }
+});
+
+test("pasted articles need no network access and retain their existing output", async () => {
+  for (const type of ["experience", "resource"]) {
+    const issue = await fixture(type);
+    assert.deepEqual(await createSubmissionFromIssue(issue, { fetch: () => assert.fail("unexpected download") }), createSubmission(issue));
+  }
+});
+
+test("attachments cannot silently publish just the download link or ambiguous mixed content", async () => {
+  const issue = await fixture("experience", { body: attachmentLink });
+  assert.throws(() => createSubmission(issue), /尚未读取/);
+  for (const body of [`说明文字\n\n${attachmentLink}`, `${attachmentLink}\n\n${attachmentLink}`]) {
+    await assert.rejects(createSubmissionFromIssue(await fixture("experience", { body })), /只保留一个/);
+  }
+});
+
+test("downloads follow GitHub storage redirects without forwarding credentials", async () => {
+  const issue = await fixture("experience", { body: attachmentLink });
+  const destination = "https://objects.githubusercontent.com/github-production-repository-file-123/file?signature=example";
+  const calls = [];
+  const submission = await createSubmissionFromIssue(issue, { fetch: async (url, options) => {
+    calls.push(url);
+    assert.equal(options.headers, undefined);
+    return calls.length === 1 ? new Response(null, { status: 302, headers: { location: destination } }) : new Response("## 经历\n\n全文。");
+  } });
+  assert.deepEqual(calls, [attachmentUrl, destination]);
+  assert.ok(submission.content.endsWith("## 经历\n\n全文。\n"));
+});
+
+test("only public HTTPS GitHub upload URLs and trusted download redirects are fetched", async () => {
+  for (const url of ["https://example.com/post.md", "http://github.com/user-attachments/files/1/post.md", "https://github.com:444/user-attachments/files/1/post.md", "https://user:pass@github.com/user-attachments/files/1/post.md", "https://github.com/owner/repo/post.md", "post.md"]) {
+    const issue = await fixture("experience", { body: `[文章](${url})` });
+    await assert.rejects(createSubmissionFromIssue(issue, { fetch: () => assert.fail("untrusted URL fetched") }), /直接上传/);
+  }
+  const issue = await fixture("experience", { body: attachmentLink });
+  for (const location of ["http://127.0.0.1/private", "https://example.com/post.md", "https://objects.githubusercontent.com.evil.test/post.md"]) {
+    let calls = 0;
+    await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => {
+      assert.equal(++calls, 1);
+      return new Response(null, { status: 302, headers: { location } });
+    } }), /直接上传/);
+  }
+});
+
+test("download errors, redirect loops and empty attachments stop publication", async () => {
+  const issue = await fixture("experience", { body: attachmentLink });
+  await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => new Response("", { status: 404 }) }), /HTTP 404/);
+  await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => { throw new TypeError("fetch failed"); } }), /下载失败/);
+  await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => new Response(null, { status: 302, headers: { location: attachmentUrl } }) }), /重定向次数/);
+  await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => new Response(" \n\t") }), /正文为空/);
+});
+
+test("attachment size is bounded using both headers and the actual byte stream", async () => {
+  const issue = await fixture("experience", { body: attachmentLink });
+  await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => new Response("small", { headers: { "content-length": MAX_ATTACHMENT_BYTES + 1 } }) }), /2 MB/);
+  // No content-length header: enforce the limit while reading, before parsing.
+  await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => new Response(new ReadableStream({
+    start(controller) {
+      controller.enqueue(new Uint8Array(MAX_ATTACHMENT_BYTES));
+      controller.enqueue(new Uint8Array(1));
+      controller.close();
+    },
+  })) }), /2 MB/);
+});
+
+test("attachments require UTF-8 text and use the existing Markdown safety checks", async () => {
+  const issue = await fixture("experience", { body: attachmentLink });
+  for (const [body, pattern] of [
+    [new Uint8Array([0xff, 0xfe, 0x80]), /UTF-8/],
+    ["text\0binary", /二进制/],
+    ["<script>alert(1)</script>", /HTML/],
+    ["![图片](./local.png)", /图片/],
+    ["[链接](javascript:alert%281%29)", /协议/],
+  ]) {
+    await assert.rejects(createSubmissionFromIssue(issue, { fetch: async () => new Response(body) }), pattern);
+  }
+  const submission = await createSubmissionFromIssue(issue, { fetch: async () => new Response('\ufeff## 正文\r\n\r\n<img src="https://example.com/photo.png" alt="图片">') });
+  assert.ok(submission.content.endsWith('## 正文\n\n![图片](<https://example.com/photo.png>)\n'));
 });

@@ -45,10 +45,10 @@ async function readOptional(path) {
 }
 
 export async function prepare({ github, context, core }) {
-  const { createSubmission } = await import("./convert.mjs");
+  const { createSubmissionFromIssue } = await import("./attachments.mjs");
   const { parse } = await import("yaml");
   assertApprovedSnapshot(context.payload.issue, await getIssue(github, context));
-  const submission = createSubmission(context.payload.issue);
+  const submission = await createSubmissionFromIssue(context.payload.issue);
   const originalContent = await readOptional(submission.path);
   if (originalContent !== null) {
     const metadata = parse(originalContent.split(/^---\s*$/m)[1] ?? "");

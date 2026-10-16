@@ -72,7 +72,7 @@ body:
     id: body
     attributes:
       label: 正文内容
-      description: 支持 Markdown，不支持自定义 HTML 排版。图片可直接上传到 Issue，或用 Markdown 插入完整的 HTTPS 图片链接。建议介绍个人背景、保研经历、经验总结和给学弟学妹的建议。
+      description: 支持直接粘贴 Markdown，或将 UTF-8 编码的 .md / .markdown 文件拖入此处（最多 2 MB，不另设字数限制）。使用附件时，此栏只保留一个附件链接，全文写在文件里。图片请使用完整的 HTTPS 地址；不支持本地图片路径或自定义 HTML 排版。
       placeholder: |
         ## 我的背景
 
