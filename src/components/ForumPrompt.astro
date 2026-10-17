@@ -1,0 +1,33 @@
+---
+// 详情页底部的交流入口：网站只做展示，提问和讨论都到论坛
+import ForumMark from "./ForumMark.astro";
+import { forum } from "../site.config";
+---
+
+<aside class="forum-prompt" aria-label="交流讨论">
+  <ForumMark size={36} />
+  <div class="forum-prompt__text">
+    <h2>有问题或想交流？</h2>
+    <p>网站只做内容展示，提问、补充信息和交流讨论请到{forum.name}论坛发帖</p>
+  </div>
+  <a class="forum-prompt__link" href={forum.qaUrl}>到保研问答发帖 <span aria-hidden="true">→</span></a>
+</aside>
+
+<style>
+  .forum-prompt { display: flex; align-items: center; gap: 16px; margin-top: 48px; padding: 20px 24px; border-radius: 12px; background: var(--forum-soft); min-width: 0; }
+  .forum-prompt :global(.forum-mark) { flex-shrink: 0; }
+  .forum-prompt__text { flex: 1; min-width: 0; }
+  .forum-prompt h2 { font-size: 16px; line-height: 1.5; }
+  .forum-prompt p { margin-top: 4px; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+  .forum-prompt__link { flex-shrink: 0; color: var(--forum-ink); font-size: 14px; font-weight: 600; padding-block: 12px; margin-block: -12px; }
+  @media (hover: hover) {
+    .forum-prompt__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .forum-prompt__link:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 4px; }
+  @media (max-width: 600px) {
+    .forum-prompt { flex-wrap: wrap; margin-top: 36px; padding: 18px 20px; }
+    .forum-prompt__text { flex-basis: calc(100% - 52px); }
+    .forum-prompt__link { margin-left: 52px; }
+  }
+  @media print { .forum-prompt { display: none; } }
+</style>

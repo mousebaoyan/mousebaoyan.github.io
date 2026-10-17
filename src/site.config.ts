@@ -27,22 +27,15 @@ export const qqGroups = [
   },
 ];
 
-// 鼠洞论坛 —— 导航、首页、页脚、评论区和公告共用
+// 鼠洞论坛 —— 网站只做展示，提问和讨论都到论坛；导航、首页、页脚、详情页和公告共用
 export const forum = {
   name: "鼠洞",
   url: "https://bbs.mousebaoyan.cn",
+  qaUrl: "https://bbs.mousebaoyan.cn/b/qa",
   feedbackUrl: "https://bbs.mousebaoyan.cn/b/feedback",
   // 网站不再收录新投稿，经验和资源都发到论坛对应版块
   experienceUrl: "https://bbs.mousebaoyan.cn/b/experience",
   toolsUrl: "https://bbs.mousebaoyan.cn/b/tools",
-};
-
-// Giscus uses public repository identifiers, never a GitHub token.
-export const comments = {
-  repo: "mousebaoyan/mousebaoyan.github.io",
-  repoId: "R_kgDOTD-m_A",
-  category: "Announcements",
-  categoryId: "DIC_kwDOTD-m_M4DGadi",
 };
 
 // 导航链接 —— Nav 与页脚共用

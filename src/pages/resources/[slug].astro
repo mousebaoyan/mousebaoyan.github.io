@@ -3,8 +3,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ImageLightbox from "../../components/ImageLightbox.astro";
-import Comments from "../../components/Comments.astro";
-import { site } from "../../site.config";
+import ForumPrompt from "../../components/ForumPrompt.astro";
 import { activitiesForTags, activitySpans, phaseSpans, phasesForTags } from "../../data/calendar";
 
 export async function getStaticPaths() {
@@ -28,7 +27,6 @@ const months = Array.from({ length: 12 }, (_, index) => ({ month: index + 1, s: 
 ---
 
 <BaseLayout title={`${tool.data.name} — 保研资源`} description={tool.data.description}>
-  <meta slot="head" name="giscus:backlink" content={`${site.url}/resources/${tool.id}/`} />
   <div class="container">
     <Breadcrumb crumbs={[
       { label: "首页", href: "/" },
@@ -81,7 +79,7 @@ const months = Array.from({ length: 12 }, (_, index) => ({ month: index + 1, s: 
       <div class="prose">
         <Content />
       </div>
-      <Comments path={`/resources/${tool.id}/`} />
+      <ForumPrompt />
     </article>
 
     <a class="back-link" href="/resources">← 返回资源列表</a>

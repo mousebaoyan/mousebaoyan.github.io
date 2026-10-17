@@ -32,7 +32,7 @@
 
 网站适配桌面和手机，支持浅色与深色模式（默认跟随系统，导航栏按钮可手动切换；与系统一致时恢复跟随），使用 Markdown 管理文章与资源，通过 GitHub Pages 发布。
 
-经验贴、资源与直播回放详情页下方提供 Giscus 评论区，使用 GitHub 账号参与讨论，评论存储在本仓库的 Discussions 中。
+网站只做内容展示，不提供评论、投稿等交互功能；提问、讨论和分享都在[鼠洞论坛](https://bbs.mousebaoyan.cn)进行。经验贴、资源与直播回放详情页底部的 [`ForumPrompt.astro`](src/components/ForumPrompt.astro) 指向论坛的「保研问答」版块。
 
 顶部搜索支持经验贴、资源介绍、直播课件（逐页）和常见问题的全文检索，可按内容类型筛选、查看关键词高亮摘要，并跳转到对应章节或展开具体问题。点击搜索按钮，或使用 `⌘ K` / `Ctrl K` 打开。
 
@@ -200,7 +200,7 @@ node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
 
 示例文件带有 `draft: true`，复制后请改为 `draft: false` 才会出现在列表中。草稿不会生成详情页；但本仓库公开，草稿源文件仍可在 GitHub 上查看，请勿写入私人信息。
 
-`submission-<Issue 编号>.md` 是早期通过 GitHub Issue 投稿发布的文章，文件名决定页面地址和评论区关联，请勿改名。需要修改时直接编辑这些 Markdown 文件。
+`submission-<Issue 编号>.md` 是早期通过 GitHub Issue 投稿发布的文章，文件名决定页面地址，请勿改名。需要修改时直接编辑这些 Markdown 文件。
 
 ## 保研日历
 
@@ -214,22 +214,11 @@ node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
 
 ## 全文搜索
 
-搜索索引由 [`src/pages/search-index.json.ts`](src/pages/search-index.json.ts) 生成，开发服务和静态构建均可使用。仅收录已发布的经验贴、资源及 [`src/data/faq.ts`](src/data/faq.ts) 中的常见问题；导航、评论和草稿不参与搜索。
+搜索索引由 [`src/pages/search-index.json.ts`](src/pages/search-index.json.ts) 生成，开发服务和静态构建均可使用。仅收录已发布的经验贴、资源及 [`src/data/faq.ts`](src/data/faq.ts) 中的常见问题；导航和草稿不参与搜索。
 
 索引在首次打开搜索时下载，检索在浏览器内完成，不依赖第三方搜索服务。支持中文子串、英文大小写及全角字符匹配；空格分隔的关键词需全部匹配，标题匹配优先。结果使用实际生成的章节锚点，更新内容后重新构建即可更新索引。
 
 [`SiteSearch.astro`](src/components/SiteSearch.astro) 负责弹窗与交互，[`src/lib/search.ts`](src/lib/search.ts) 负责排序和摘要。常见问题与搜索共用数据源，无需维护两份答案。
-
-## 评论区
-
-经验贴、资源与直播回放详情页共用 [`Comments.astro`](src/components/Comments.astro)。评论临近视口时加载，支持回复与 Markdown；阅读评论无需登录，发表评论需要 GitHub 账号。网络加载失败时保留重试和 GitHub 讨论入口。
-
-- **仓库设置**：开启 Discussions，并为本仓库安装 [Giscus App](https://github.com/apps/giscus/installations/new)。仅授权本仓库即可，无需个人访问令牌。
-- **讨论分类**：使用 `Announcements`（公告类型），由 Giscus 创建页面讨论，访客可在讨论下评论。公开仓库 ID、分类 ID 集中在 [`src/site.config.ts`](src/site.config.ts)；更换仓库或分类时应一并更新。
-- **页面关联**：使用带前后斜杠的固定路径（如 `/experiences/submission-1/`），开启严格匹配。改标题不会改变关联；更换文章文件名或路径会产生新关联，请先安排旧讨论迁移。首次评论时才创建对应 Discussion。
-- **样式**：[`public/giscus/mouse-light.css`](public/giscus/mouse-light.css) 与 [`mouse-dark.css`](public/giscus/mouse-dark.css) 是 iframe 内的浅色、深色主题，包含本站字体、底色、蓝紫按钮和圆角，随网站主题切换。正式站点通过 HTTPS 加载主题；本地 HTTP 预览由页面读取同一 CSS，再通过 Giscus 的主题更新接口传入，避免 HTTPS iframe 无法读取本地 HTTP 样式的问题。无需安装额外服务。
-- **来源限制**：根目录 [`giscus.json`](giscus.json) 允许正式域名和本地调试地址，推送到默认分支后生效。更换域名时同时更新该文件及 `site.url`，后者用于讨论的正式页面回链。
-- **管理评论**：在 GitHub Discussions 中处理评论、锁定讨论或限制用户。评论和 GitHub 身份公开可见，请勿提交个人隐私信息。
 
 ## 部署
 

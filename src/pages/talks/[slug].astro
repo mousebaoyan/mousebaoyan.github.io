@@ -2,8 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import SlideDeck from "../../components/SlideDeck.astro";
-import Comments from "../../components/Comments.astro";
-import { site } from "../../site.config";
+import ForumPrompt from "../../components/ForumPrompt.astro";
 import { deckPdf, deckPptx, formatDuration, getTalks, isAvailable, slidesFor, talkDate } from "../../lib/talks";
 import { statSync } from "node:fs";
 import { join } from "node:path";
@@ -23,7 +22,6 @@ const fileSize = (href: string) => {
 ---
 
 <BaseLayout title={`${title} — 直播回放`} description={summary}>
-  <meta slot="head" name="giscus:backlink" content={`${site.url}/talks/${talk.id}/`} />
   <div class="container talk">
     <Breadcrumb crumbs={[
       { label: "首页", href: "/" },
@@ -97,7 +95,7 @@ const fileSize = (href: string) => {
       </section>
     )}
 
-    <Comments path={`/talks/${talk.id}/`} />
+    <ForumPrompt />
   </div>
 </BaseLayout>
 
