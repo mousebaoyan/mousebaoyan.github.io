@@ -32,6 +32,9 @@ export const forum = {
   name: "鼠洞",
   url: "https://bbs.mousebaoyan.cn",
   feedbackUrl: "https://bbs.mousebaoyan.cn/b/feedback",
+  // 网站不再收录新投稿，经验和资源都发到论坛对应版块
+  experienceUrl: "https://bbs.mousebaoyan.cn/b/experience",
+  toolsUrl: "https://bbs.mousebaoyan.cn/b/tools",
 };
 
 // Giscus uses public repository identifiers, never a GitHub token.

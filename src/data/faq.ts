@@ -70,8 +70,8 @@ export const groups: Group[] = [
       },
       {
         question: "如何把自己的经验或实用资源分享到网站？",
-        answer: "在“保研经验”页面点击“分享经验”，或在“保研资源”页面点击“推荐资源”，通过 GitHub 表单提交。管理员审核后会发布到网站；经验贴可以使用昵称署名。",
-        link: { label: "查看经验贴与投稿方式", href: "/experiences" },
+        answer: `网站已不再收录新的投稿。保研经验请发到${forum.name}论坛的“经验分享”版块，工具和资料请发到“工具推荐”版块；网站上已发布的经验贴和资源会继续保留。`,
+        link: { label: "前往经验分享版块", href: forum.experienceUrl },
       },
       {
         question: `${forum.name}论坛是什么？如何登录？`,

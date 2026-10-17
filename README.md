@@ -49,24 +49,14 @@
 - **交流规则**：友好交流、尊重他人，禁止广告与无关链接。
 - **费用说明**：入群和日常交流免费。鼠群不提供付费辅导。群友以个人名义提供的付费服务与鼠群无关。
 
-## 投稿与资源推荐
+## 分享经验与推荐资源
 
-无需搭建开发环境，使用 GitHub 表单即可提交：
+网站已不再收录新的投稿，已发布的经验贴和资源会继续保留。分享经验或推荐资源请发到鼠群论坛「鼠洞」：
 
-| 投稿类型 | 提交入口 | 建议内容 |
-| --- | --- | --- |
-| 经验贴 | [分享经验](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml) | 保研年份与背景、准备过程、面试经历、录取去向和经验总结 |
-| 资源 | [推荐资源](https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml) | 资源用途、适用场景、有效链接，以及付费或注册等使用条件 |
-
-**提交表单 → 管理员审核 → 发布到网站 → 在 Issue 评论中查看文章或资源链接**
-
-经验贴和资源推荐均支持审核后自动发布。提交后如需补充或修改，请编辑原 Issue；已发布内容也需重新审核后同步到网站。经验贴正文支持 Markdown，可直接向 Issue 上传图片。
-
-长文也可将 UTF-8 编码的 `.md` / `.markdown` 文件拖入正文栏（资源推荐为推荐理由），仅保留一个附件链接。文件最多 2 MB，正文不另设字数限制；审核后会将附件全文发布为网页。图片须使用完整网络地址，本地图片不会随文件上传。
-
-> **公开信息提示**：Issue 及其附件公开可见。经验贴可用昵称或“匿名”署名，本科院校可不填写，但这不会隐藏 GitHub 账号。提交前请检查正文、截图和链接中的个人信息。
-
-熟悉 Git 的贡献者也可以提交 Markdown 文件和 Pull Request，字段说明见下方“内容维护”。
+| 内容 | 论坛版块 |
+| --- | --- |
+| 保研经验 | [经验分享](https://bbs.mousebaoyan.cn/b/experience) |
+| 网站、工具和资料 | [工具推荐](https://bbs.mousebaoyan.cn/b/tools) |
 
 ## 本地开发
 
@@ -87,7 +77,7 @@ npm run dev -- --background
 | `npm run astro -- dev status` | 查看后台服务状态 |
 | `npm run astro -- dev logs` | 查看开发日志 |
 | `npm run astro -- dev stop` | 停止后台服务 |
-| `npm test` | 运行投稿流程与全文搜索测试 |
+| `npm test` | 运行全文搜索测试 |
 | `npm run test:site` | 构建后检查草稿隔离、搜索索引及章节链接、直播课件、站内链接与静态资源 |
 | `npm run build` | 构建静态网站，输出到 `dist/` |
 | `npm run preview` | 本地预览已构建的网站 |
@@ -122,13 +112,11 @@ src/
 ├── content.config.ts        # 内容字段校验
 └── site.config.ts           # 网站名称、群号、入群链接与导航
 .github/
-├── ISSUE_TEMPLATE/          # 经验贴与资源投稿表单
-└── workflows/               # 审核发布和 GitHub Pages 部署
+├── ISSUE_TEMPLATE/          # 新建 Issue 时指向论坛版块和 QQ 群
+└── workflows/               # GitHub Pages 部署
 scripts/
-├── submissions/            # 投稿解析、发布逻辑与测试
 ├── talks/build-slides.mjs  # 把课件 PDF 转成网页幻灯片
 └── site.test.mjs            # 构建产物、草稿隔离与站内链接检查
-docs/submission-review.md    # 管理员审核与维护指南
 public/                     # Logo、课件图片与 PDF 等静态文件
 ```
 
@@ -212,7 +200,7 @@ node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
 
 示例文件带有 `draft: true`，复制后请改为 `draft: false` 才会出现在列表中。草稿不会生成详情页；但本仓库公开，草稿源文件仍可在 GitHub 上查看，请勿写入私人信息。
 
-通过 Issue 自动发布的内容使用 `submission-<Issue 编号>.md` 命名。后续修改应以原 Issue 为来源，重新审核会更新同一文件和页面；直接修改生成文件的内容可能被后续审核覆盖。
+`submission-<Issue 编号>.md` 是早期通过 GitHub Issue 投稿发布的文章，文件名决定页面地址和评论区关联，请勿改名。需要修改时直接编辑这些 Markdown 文件。
 
 ## 保研日历
 
@@ -243,18 +231,9 @@ node scripts/talks/build-slides.mjs <课件.pdf> <直播文件名> <课件 id>
 - **来源限制**：根目录 [`giscus.json`](giscus.json) 允许正式域名和本地调试地址，推送到默认分支后生效。更换域名时同时更新该文件及 `site.url`，后者用于讨论的正式页面回链。
 - **管理评论**：在 GitHub Discussions 中处理评论、锁定讨论或限制用户。评论和 GitHub 身份公开可见，请勿提交个人隐私信息。
 
-## 审核与部署
+## 部署
 
-有仓库 **Write / Maintain / Admin** 权限的审核者检查投稿后，添加 **`审核通过`** 标签即可触发发布。首次使用需在默认分支启用工作流、创建该标签，并将 **Settings → Pages → Source** 设置为 **GitHub Actions**。
-
-| 工作流 | 触发方式 | 执行内容 |
-| --- | --- | --- |
-| [审核发布](.github/workflows/publish-submission.yml) | Issue 新增 `审核通过` 标签 | 校验权限与投稿内容、生成 Markdown、构建检查、提交内容、调用部署并反馈结果 |
-| [网站部署](.github/workflows/deploy.yml) | 推送到 `main`、手动触发或审核流程调用 | 安装依赖、运行测试、构建网站并部署到 GitHub Pages |
-
-发布流程使用 GitHub 提供的 `GITHUB_TOKEN`，无需额外配置个人访问令牌。部署成功后，系统会在投稿 Issue 下回复页面链接并自动关闭 Issue；失败时保留 Issue 并说明原因。
-
-首次配置、发布后修改、下架及失败重试，请参阅 **[投稿审核与自动发布指南](docs/submission-review.md)**。
+推送到 `main` 或手动触发 [网站部署](.github/workflows/deploy.yml) 工作流后，会安装依赖、运行测试、构建网站并部署到 GitHub Pages。首次使用需将 **Settings → Pages → Source** 设置为 **GitHub Actions**。
 
 ---
 

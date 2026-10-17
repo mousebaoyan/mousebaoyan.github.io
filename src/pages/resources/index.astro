@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
 import { activitiesForTags, activitySpans, phaseSpans, phasesForTags } from "../../data/calendar";
+import { forum } from "../../site.config";
 
 const tools = await getCollection("tools", ({ data }) => !data.draft);
 const spans = phaseSpans();
@@ -27,7 +28,7 @@ const today = (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date
     <PageHeader
       title="保研资源"
       lead="查信息、备材料用得上的网站和工具，按使用时间排列"
-      action={{ label: "推荐资源", href: "https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=resource-submission.yml" }}
+      action={{ label: `到${forum.name}推荐资源`, href: forum.toolsUrl }}
       art="calendar"
     >
       <span slot="meta">共 {rows.length} 个</span>

@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: 分享保研经验
+    url: https://bbs.mousebaoyan.cn/b/experience
+    about: 网站已不再收录新投稿，经验贴请发到鼠洞论坛的「经验分享」版块
+  - name: 推荐保研资源
+    url: https://bbs.mousebaoyan.cn/b/tools
+    about: 好用的网站、工具和资料请发到鼠洞论坛的「工具推荐」版块
   - name: 加入 QQ 一群交流
     url: https://qm.qq.com/q/20geYjRZlq
     about: 搜索群号 742203503 加入「四非计算机保研群(一)」

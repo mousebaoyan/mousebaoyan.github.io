@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ExperienceCard from "./ExperienceCard.astro";
 import PageHeader from "./PageHeader.astro";
 import Pagination from "./Pagination.astro";
+import { forum } from "../site.config";
 
 interface Props {
   experiences: CollectionEntry<"experiences">[];
@@ -22,7 +23,7 @@ const { experiences, total, currentPage, totalPages } = Astro.props;
     <PageHeader
       title="保研经验"
       lead="群友投稿的保研经历，从本科院校走到录取去向"
-      action={{ label: "分享经验", href: "https://github.com/mousebaoyan/mousebaoyan.github.io/issues/new?template=experience-submission.yml" }}
+      action={{ label: `到${forum.name}分享经验`, href: forum.experienceUrl }}
       art="path"
     >
       <span slot="meta">共 {total} 篇{totalPages > 1 && `，第 ${currentPage} / ${totalPages} 页`}</span>
