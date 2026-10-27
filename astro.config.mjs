@@ -3,6 +3,9 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
+  // GitHub Pages 会把不带结尾斜杠的目录地址 301 到带斜杠的版本，多一次往返；
+  // 开发时也要求带斜杠，漏写会直接看到提示页
+  trailingSlash: 'always',
   markdown: {
     // 代码高亮同时生成浅色与深色配色，由页面主题决定使用哪一套
     shikiConfig: {

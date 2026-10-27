@@ -41,10 +41,10 @@ export const forum = {
 // 导航链接 —— Nav 与页脚共用
 export const navLinks = [
   { href: "/", label: "首页" },
-  { href: "/resources", label: "保研资源" },
-  { href: "/experiences", label: "保研经验" },
-  { href: "/talks", label: "直播回放" },
-  { href: "/faq", label: "常见问题" },
+  { href: "/resources/", label: "保研资源" },
+  { href: "/experiences/", label: "保研经验" },
+  { href: "/talks/", label: "直播回放" },
+  { href: "/faq/", label: "常见问题" },
 ];
 
 // 站点公告 —— 首次访问时弹出，读过后只在导航栏铃铛里查看

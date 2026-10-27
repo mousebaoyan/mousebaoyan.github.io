@@ -36,7 +36,7 @@ const placed = groups.map((group) => {
       <header class="routes__head">
         <h2 class="routes__title display" id="routes-title">大家去了哪</h2>
         <p class="routes__lead">群友投稿的保研经历，从本科院校到录取去向</p>
-        <a class="link-arrow" href="/experiences">
+        <a class="link-arrow" href="/experiences/">
           全部 {experiences.length} 篇
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
@@ -52,7 +52,7 @@ const placed = groups.map((group) => {
               <span class="map__group-count">{group.routes.length} 人</span>
             </div>
             {group.routes.map((route, index) => (
-              <a class="map__route" href={`/experiences/${route.id}`} data-from={group.name}
+              <a class="map__route" href={`/experiences/${route.id}/`} data-from={group.name}
                 style={`grid-row: ${group.start + index}`}>
                 <span class="map__top">
                   <span class="map__target">{route.target}</span>

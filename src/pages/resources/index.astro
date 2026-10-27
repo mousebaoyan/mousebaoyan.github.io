@@ -48,7 +48,7 @@ const today = (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date
       <ol class="chart__rows">
         {rows.map(({ tool, phases, activities }) => (
           <li>
-            <a class="row" href={`/resources/${tool.id}`}>
+            <a class="row" href={`/resources/${tool.id}/`}>
               <span class="row__info">
                 <span class="row__name">{tool.data.name}</span>
                 <span class="row__desc">{tool.data.description}</span>

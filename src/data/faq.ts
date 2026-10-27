@@ -27,12 +27,12 @@ export const groups: Group[] = [
       {
         question: "在哪里查看群友分享的资料和经验？",
         answer: `“保研资源”页面整理了实用工具、网站和资料，“保研经验”页面收录群友的经验贴。可以根据自己的准备进度查阅，有具体问题可以在群里或${forum.name}论坛提问。`,
-        link: { label: "浏览保研资源", href: "/resources" },
+        link: { label: "浏览保研资源", href: "/resources/" },
       },
       {
         question: "往期直播分享在哪里看？课件可以下载吗？",
         answer: "“直播回放”页面收录鼠群往期保研经验分享直播的录屏。有课件的场次可以在网页上逐页翻阅，也可以下载原 PDF。课件版权归分享人所有，仅供个人学习参考。",
-        link: { label: "查看直播回放", href: "/talks" },
+        link: { label: "查看直播回放", href: "/talks/" },
       },
     ],
   },
@@ -48,7 +48,7 @@ export const groups: Group[] = [
       {
         question: "如何加入鼠群？",
         answer: `优先加${qqGroups[0].label}：在 QQ 中搜索群号 ${qqGroups[0].number}，找到“${qqGroups[0].name}”后申请加入，填写年级和本科院校。${qqGroups[0].label}满了再加${qqGroups[1].label} ${qqGroups[1].number}（“${qqGroups[1].name}”）。下方的入群指南提供群号复制和 QQ 加群链接。`,
-        link: { label: "查看入群指南", href: "/join" },
+        link: { label: "查看入群指南", href: "/join/" },
       },
       {
         question: "为什么我被踢出群聊了？",

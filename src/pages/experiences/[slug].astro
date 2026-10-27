@@ -32,7 +32,7 @@ const { from, major: subject } = splitSchool(exp.data.school);
   <div class="reading-page">
     <Breadcrumb crumbs={[
       { label: "首页", href: "/" },
-      { label: "保研经验", href: "/experiences" },
+      { label: "保研经验", href: "/experiences/" },
       { label: "正文" },
     ]} />
 
@@ -78,7 +78,7 @@ const { from, major: subject } = splitSchool(exp.data.school);
         </div>
         <footer class="article-footer">
           <span class="article-end">全文完</span>
-          <a class="article-back" href="/experiences"><span aria-hidden="true">←</span> 浏览更多经验贴</a>
+          <a class="article-back" href="/experiences/"><span aria-hidden="true">←</span> 浏览更多经验贴</a>
         </footer>
         <ForumPrompt />
       </article>

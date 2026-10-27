@@ -31,7 +31,7 @@ export const phases: Phase[] = [
     ],
     links: [
       { label: "星空的直播：保研时间线", href: "/talks/2024-05/#xingkong-5" },
-      { label: "读读大家的经验帖", href: "/experiences" },
+      { label: "读读大家的经验帖", href: "/experiences/" },
     ],
   },
   {
@@ -44,7 +44,7 @@ export const phases: Phase[] = [
       "开始联系导师，从最想去的组发起，别等“准备好了”再联系",
     ],
     links: [
-      { label: "AutoEmailSender 套磁邮件工具", href: "/resources/auto-email-sender" },
+      { label: "AutoEmailSender 套磁邮件工具", href: "/resources/auto-email-sender/" },
       { label: "Cyan 的课件：套磁与考核", href: "/talks/2026-05/#cyan-5" },
     ],
   },
@@ -59,8 +59,8 @@ export const phases: Phase[] = [
       "参营的同时继续联系导师，4–6 月是套磁最集中的时候",
     ],
     links: [
-      { label: "CS 保研 DDL", href: "/resources/cs-baoyan-ddl" },
-      { label: "夏令营报名自动填表助手", href: "/resources/summer-camp-autofill" },
+      { label: "CS 保研 DDL", href: "/resources/cs-baoyan-ddl/" },
+      { label: "夏令营报名自动填表助手", href: "/resources/summer-camp-autofill/" },
       { label: "星空的直播：面试准备", href: "/talks/2024-05/#xingkong-11" },
     ],
   },
@@ -75,7 +75,7 @@ export const phases: Phase[] = [
       "留意本校推免资格的最终评定",
     ],
     links: [
-      { label: "CS 保研 DDL", href: "/resources/cs-baoyan-ddl" },
+      { label: "CS 保研 DDL", href: "/resources/cs-baoyan-ddl/" },
       { label: "Cyan 的课件：夏令营与预推免", href: "/talks/2026-05/#cyan-6" },
     ],
   },
@@ -103,9 +103,9 @@ export const phases: Phase[] = [
       "进群向刚上岸的学长学姐提问",
     ],
     links: [
-      { label: "大家的经验帖", href: "/experiences" },
-      { label: "直播回放", href: "/talks" },
-      { label: "加入鼠群", href: "/join" },
+      { label: "大家的经验帖", href: "/experiences/" },
+      { label: "直播回放", href: "/talks/" },
+      { label: "加入鼠群", href: "/join/" },
     ],
   },
 ];

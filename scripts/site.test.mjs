@@ -89,8 +89,9 @@ test("talk pages offer every slide, PDF, and available PPTX source", () => {
   }
 });
 
-test("generated pages have no broken local links or asset references", () => {
+test("generated pages have no broken or redirected local links or asset references", () => {
   const missing = [];
+  const redirected = [];
   for (const file of filesIn(dist).filter((path) => path.endsWith(".html"))) {
     const route = relative(dist, file).replace(/index\.html$/, "");
     const base = new URL(route, "https://mousebaoyan.cn/");
@@ -100,12 +101,17 @@ test("generated pages have no broken local links or asset references", () => {
       const url = new URL(attribute.replaceAll("&amp;", "&"), base);
       if (url.origin !== base.origin) continue;
       const path = join(dist, decodeURIComponent(url.pathname));
-      if (!isFile(path) && !isFile(join(path, "index.html")) && !isFile(`${path}.html`)) {
-        missing.push(`${route || "/"} → ${attribute}`);
+      const link = `${route || "/"} → ${attribute}`;
+      // GitHub Pages redirects a directory URL without its trailing slash, costing a round trip.
+      if (isFile(join(path, "index.html"))) {
+        if (!url.pathname.endsWith("/")) redirected.push(link);
+      } else if (!isFile(path) && !isFile(`${path}.html`)) {
+        missing.push(link);
       }
     }
   }
   assert.deepEqual(missing, []);
+  assert.deepEqual(redirected, []);
 });
 
 test("detail pages point discussion to the forum", () => {

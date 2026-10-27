@@ -37,7 +37,7 @@ const isActive = (href: string) =>
         <ForumMark />
         <span>{forum.name}</span>
       </a>
-      <a class="nav__join" href="/join">
+      <a class="nav__join" href="/join/">
         加入鼠群
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
       </a>
@@ -57,7 +57,7 @@ const isActive = (href: string) =>
     {navLinks.map((l) => (
       <a href={l.href} class={isActive(l.href) ? "active" : ""} aria-current={isActive(l.href) ? "page" : undefined}>{l.label}</a>
     ))}
-    <a class="nav__mobile-join" href="/join">加入鼠群</a>
+    <a class="nav__mobile-join" href="/join/">加入鼠群</a>
   </nav>
 </header>
 

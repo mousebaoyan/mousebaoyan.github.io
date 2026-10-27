@@ -11,7 +11,7 @@ const { from, major: subject } = splitSchool(school);
 const { minutes } = readingStats(entry.body);
 ---
 
-<a class="exp lift" href={`/experiences/${entry.id}`}>
+<a class="exp lift" href={`/experiences/${entry.id}/`}>
   <!-- 一段竖向的路线：空心点是本科院校，实心点是录取去向 -->
   <span class="exp__route">
     <span class="exp__stop exp__stop--from">

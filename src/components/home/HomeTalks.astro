@@ -17,7 +17,7 @@ const others = talks.filter((talk) => talk !== latest);
       </header>
 
       <div class="talks__grid">
-        <a class="feature" href={`/talks/${latest.id}`}>
+        <a class="feature" href={`/talks/${latest.id}/`}>
           {cover && (
             <span class="feature__cover">
               <img src={cover.src} alt="" width="1600" height="900" loading="lazy" decoding="async" style={`aspect-ratio: ${cover.ratio}`} />
@@ -41,7 +41,7 @@ const others = talks.filter((talk) => talk !== latest);
           {others.map((talk) => (
             <li>
               {isAvailable(talk) ? (
-                <a class="past" href={`/talks/${talk.id}`}>
+                <a class="past" href={`/talks/${talk.id}/`}>
                   {talk.data.decks[0] && (
                     <img class="past__thumb" src={slideImage(talk, talk.data.decks[0], 1, true)} alt="" width="320" height="180" loading="lazy" decoding="async" />
                   )}
@@ -60,7 +60,7 @@ const others = talks.filter((talk) => talk !== latest);
             </li>
           ))}
           <li>
-            <a class="talks__all link-arrow" href="/talks">
+            <a class="talks__all link-arrow" href="/talks/">
               全部 {talks.length} 场
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
