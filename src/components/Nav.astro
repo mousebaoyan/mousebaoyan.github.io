@@ -8,9 +8,10 @@ const isActive = (href: string) =>
   href === "/" ? pathname === "/" : pathname.startsWith(href);
 ---
 
+<!-- 导航目标在页面加载后就预取：手机上没有悬停，等到点按时再取已经来不及 -->
 <header class="nav" id="top">
   <div class="nav__bar container">
-    <a class="nav__brand" href="/" aria-label={site.name}>
+    <a class="nav__brand" href="/" aria-label={site.name} data-astro-prefetch="load">
       <img class="nav__logo" src={logo} alt="" width="34" height="34" decoding="sync" />
       <span class="nav__brand-text">{site.name}</span>
     </a>
@@ -18,7 +19,7 @@ const isActive = (href: string) =>
     <nav class="nav__links" aria-label="主导航">
       <span class="nav__pill" aria-hidden="true"></span>
       {navLinks.map((l) => (
-        <a href={l.href} class={isActive(l.href) ? "active" : ""} aria-current={isActive(l.href) ? "page" : undefined}>{l.label}</a>
+        <a href={l.href} class={isActive(l.href) ? "active" : ""} aria-current={isActive(l.href) ? "page" : undefined} data-astro-prefetch="load">{l.label}</a>
       ))}
     </nav>
 
@@ -37,7 +38,7 @@ const isActive = (href: string) =>
         <ForumMark />
         <span>{forum.name}</span>
       </a>
-      <a class="nav__join" href="/join/">
+      <a class="nav__join" href="/join/" data-astro-prefetch="load">
         加入鼠群
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
       </a>
