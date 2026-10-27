@@ -482,8 +482,6 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
 
 
 <script>
-  import { onEveryPage } from "../lib/every-page";
-
   onEveryPage((signal) => {
     for (const deck of document.querySelectorAll<HTMLElement>("[data-deck]")) {
       const id = deck.dataset.deck!;
@@ -620,9 +618,10 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
           if (document.fullscreenElement === deck) void document.exitFullscreen();
           else void deck.requestFullscreen().then(() => stage.focus({ preventScroll: true }));
         });
-        document.addEventListener("fullscreenchange", () => {
+        // 全屏切换的事件派发到进入、退出全屏的元素本身
+        deck.addEventListener("fullscreenchange", () => {
           fullscreenLabel.textContent = document.fullscreenElement === deck ? "退出全屏" : "全屏";
-        }, { signal });
+        });
       }
 
       const fromHash = () => {

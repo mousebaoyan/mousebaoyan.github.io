@@ -42,6 +42,21 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
         });
       })();
     </script>
+    <script is:inline>
+      // 站内跳转由 ClientRouter 替换页面内容，打包的脚本只在第一次出现时运行。
+      // 页面脚本把初始化交给 onEveryPage：当前页面运行一次，之后每次换页后再运行一次；
+      // 挂在 window、document 上的监听器传入 signal，离开页面时自动移除。
+      // 定义成全局函数：页面脚本没有 import 才会内联进 HTML，换页时不用再下载
+      window.onEveryPage = (setup) => {
+        let controller = new AbortController();
+        setup(controller.signal);
+        document.addEventListener("astro:after-swap", () => {
+          controller.abort();
+          controller = new AbortController();
+          setup(controller.signal);
+        });
+      };
+    </script>
     <noscript><style>[data-search-open] { display: none !important; }</style></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/jpeg" href="/logo.jpg" />

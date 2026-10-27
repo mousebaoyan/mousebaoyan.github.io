@@ -168,8 +168,6 @@ const spaced = (number: string) => number.replace(/(\d{3})(?=\d)/g, "$1 ");
 </style>
 
 <script>
-  import { onEveryPage } from "../lib/every-page";
-
   onEveryPage(() => {
     document.querySelectorAll<HTMLButtonElement>(".join__btn--copy").forEach((btn) => {
       const label = btn.querySelector<HTMLElement>("[data-copy-label]")!;

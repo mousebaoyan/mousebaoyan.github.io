@@ -311,8 +311,6 @@ import { groups } from "../data/faq";
 </style>
 
 <script>
-  import { onEveryPage } from "../lib/every-page";
-
   onEveryPage((signal) => {
     if (!document.getElementById("faq")) return;
     function openLinkedQuestion() {

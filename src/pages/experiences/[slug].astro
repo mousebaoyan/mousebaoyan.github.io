@@ -92,8 +92,6 @@ const { from, major: subject } = splitSchool(exp.data.school);
 </BaseLayout>
 
 <script>
-  import { onEveryPage } from "../../lib/every-page";
-
   onEveryPage((signal) => {
     const reader = document.querySelector<HTMLElement>("[data-experience-reader]");
     const prose = reader?.querySelector<HTMLElement>(".experience-prose");

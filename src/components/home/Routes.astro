@@ -72,8 +72,6 @@ const placed = groups.map((group) => {
 )}
 
 <script>
-  import { onEveryPage } from "../../lib/every-page";
-
   onEveryPage(() => {
     // 路线：从本科类型的圆点画一条曲线到每条录取去向，随布局变化重画
     const map = document.querySelector<HTMLElement>("[data-route-map]");

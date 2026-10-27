@@ -295,8 +295,6 @@ const rules = [
 </style>
 
 <script>
-  import { onEveryPage } from "../lib/every-page";
-
   onEveryPage(() => {
     const copyStatus = document.querySelector<HTMLElement>(".join-hero__status");
     if (!copyStatus) return;

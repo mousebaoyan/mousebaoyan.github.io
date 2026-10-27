@@ -1,6 +1,4 @@
 <script>
-  import { onEveryPage } from "../lib/every-page";
-
   onEveryPage(() => {
     document.querySelectorAll<HTMLTableElement>(".experience-prose table").forEach((table, index) => {
       if (table.closest(".article-table")) return;
