@@ -92,96 +92,100 @@ const { from, major: subject } = splitSchool(exp.data.school);
 </BaseLayout>
 
 <script>
-  const reader = document.querySelector<HTMLElement>("[data-experience-reader]");
-  const prose = reader?.querySelector<HTMLElement>(".experience-prose");
-  const outline = reader?.querySelector<HTMLDetailsElement>(".article-outline");
+  import { onEveryPage } from "../../lib/every-page";
 
-  if (reader && prose && outline) {
-    const mobile = window.matchMedia("(max-width: 1050px)");
-    const syncOutline = () => { outline.open = !mobile.matches; };
-    syncOutline();
-    mobile.addEventListener("change", syncOutline);
-    // 手机上目录吸顶展开时会挡住正文：继续往下读就自动收起
-    let openedAt = 0;
-    outline.addEventListener("toggle", () => { openedAt = scrollY; });
-    window.addEventListener("scroll", () => {
-      if (mobile.matches && outline.open && Math.abs(scrollY - openedAt) > 160) outline.open = false;
-    }, { passive: true });
-    const links = Array.from(outline.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"));
-    const sections = links.flatMap((link) => {
-      const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
-      if (!heading) return [];
-      heading.tabIndex = -1;
-      return [{ link, heading }];
-    });
-    links.forEach((link) => link.addEventListener("click", () => {
-      if (mobile.matches) outline.open = false;
-    }));
+  onEveryPage((signal) => {
+    const reader = document.querySelector<HTMLElement>("[data-experience-reader]");
+    const prose = reader?.querySelector<HTMLElement>(".experience-prose");
+    const outline = reader?.querySelector<HTMLDetailsElement>(".article-outline");
 
-    const sizeButtons = Array.from(reader.querySelectorAll<HTMLButtonElement>("[data-reading-size]"));
-    const setReadingSize = (size: string) => {
-      reader.dataset.readingSize = size;
-      sizeButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.readingSize === size)));
-    };
-    try { setReadingSize(localStorage.getItem("experience-reading-size") === "large" ? "large" : "normal"); }
-    catch { setReadingSize("normal"); }
-    reader.querySelector<HTMLElement>(".reading-settings")?.removeAttribute("hidden");
-    sizeButtons.forEach((button) => button.addEventListener("click", () => {
-      const size = button.dataset.readingSize ?? "normal";
-      setReadingSize(size);
-      try { localStorage.setItem("experience-reading-size", size); } catch { /* Reading works without storage. */ }
-      scheduleUpdate();
-    }));
+    if (reader && prose && outline) {
+      const mobile = window.matchMedia("(max-width: 1050px)");
+      const syncOutline = () => { outline.open = !mobile.matches; };
+      syncOutline();
+      mobile.addEventListener("change", syncOutline, { signal });
+      // 手机上目录吸顶展开时会挡住正文：继续往下读就自动收起
+      let openedAt = 0;
+      outline.addEventListener("toggle", () => { openedAt = scrollY; });
+      window.addEventListener("scroll", () => {
+        if (mobile.matches && outline.open && Math.abs(scrollY - openedAt) > 160) outline.open = false;
+      }, { passive: true, signal });
+      const links = Array.from(outline.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"));
+      const sections = links.flatMap((link) => {
+        const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+        if (!heading) return [];
+        heading.tabIndex = -1;
+        return [{ link, heading }];
+      });
+      links.forEach((link) => link.addEventListener("click", () => {
+        if (mobile.matches) outline.open = false;
+      }));
 
-    const progress = document.querySelector<HTMLElement>(".reading-progress");
-    const bar = document.querySelector<HTMLElement>("[data-reading-bar]");
-    const progressText = reader.querySelector<HTMLElement>("[data-reading-percent]");
-    const tocNav = reader.querySelector<HTMLElement>(".outline-nav");
-    progress?.removeAttribute("hidden");
-    reader.querySelector<HTMLElement>(".reading-status")?.removeAttribute("hidden");
-    let currentLink: HTMLAnchorElement | undefined;
-    let framePending = false;
+      const sizeButtons = Array.from(reader.querySelectorAll<HTMLButtonElement>("[data-reading-size]"));
+      const setReadingSize = (size: string) => {
+        reader.dataset.readingSize = size;
+        sizeButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.readingSize === size)));
+      };
+      try { setReadingSize(localStorage.getItem("experience-reading-size") === "large" ? "large" : "normal"); }
+      catch { setReadingSize("normal"); }
+      reader.querySelector<HTMLElement>(".reading-settings")?.removeAttribute("hidden");
+      sizeButtons.forEach((button) => button.addEventListener("click", () => {
+        const size = button.dataset.readingSize ?? "normal";
+        setReadingSize(size);
+        try { localStorage.setItem("experience-reading-size", size); } catch { /* Reading works without storage. */ }
+        scheduleUpdate();
+      }));
 
-    function updateReadingPosition() {
-      framePending = false;
-      if (!prose) return;
-      const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h"));
-      const offset = navHeight + (mobile.matches ? 104 : 60);
-      const rect = prose.getBoundingClientRect();
-      const scrollable = Math.max(1, rect.height - window.innerHeight + offset);
-      const fraction = Math.min(1, Math.max(0, (offset - rect.top) / scrollable));
-      if (bar) bar.style.transform = `scaleX(${fraction})`;
-      if (progressText) progressText.textContent = `${Math.round(fraction * 100)}%`;
-      let active: (typeof sections)[number] | undefined = sections[0];
-      for (const section of sections) {
-        if (section.heading.getBoundingClientRect().top <= offset) active = section;
-        else break;
-      }
-      if (fraction === 1) active = sections.at(-1);
-      if (active?.link !== currentLink) {
-        currentLink?.removeAttribute("aria-current");
-        currentLink = active?.link;
-        currentLink?.setAttribute("aria-current", "location");
-        if (currentLink && tocNav && !mobile.matches) {
-          const linkRect = currentLink.getBoundingClientRect();
-          const navRect = tocNav.getBoundingClientRect();
-          if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
-            tocNav.scrollTop += linkRect.top - navRect.top - navRect.height / 2;
+      const progress = document.querySelector<HTMLElement>(".reading-progress");
+      const bar = document.querySelector<HTMLElement>("[data-reading-bar]");
+      const progressText = reader.querySelector<HTMLElement>("[data-reading-percent]");
+      const tocNav = reader.querySelector<HTMLElement>(".outline-nav");
+      progress?.removeAttribute("hidden");
+      reader.querySelector<HTMLElement>(".reading-status")?.removeAttribute("hidden");
+      let currentLink: HTMLAnchorElement | undefined;
+      let framePending = false;
+
+      function updateReadingPosition() {
+        framePending = false;
+        if (!prose) return;
+        const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h"));
+        const offset = navHeight + (mobile.matches ? 104 : 60);
+        const rect = prose.getBoundingClientRect();
+        const scrollable = Math.max(1, rect.height - window.innerHeight + offset);
+        const fraction = Math.min(1, Math.max(0, (offset - rect.top) / scrollable));
+        if (bar) bar.style.transform = `scaleX(${fraction})`;
+        if (progressText) progressText.textContent = `${Math.round(fraction * 100)}%`;
+        let active: (typeof sections)[number] | undefined = sections[0];
+        for (const section of sections) {
+          if (section.heading.getBoundingClientRect().top <= offset) active = section;
+          else break;
+        }
+        if (fraction === 1) active = sections.at(-1);
+        if (active?.link !== currentLink) {
+          currentLink?.removeAttribute("aria-current");
+          currentLink = active?.link;
+          currentLink?.setAttribute("aria-current", "location");
+          if (currentLink && tocNav && !mobile.matches) {
+            const linkRect = currentLink.getBoundingClientRect();
+            const navRect = tocNav.getBoundingClientRect();
+            if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
+              tocNav.scrollTop += linkRect.top - navRect.top - navRect.height / 2;
+            }
           }
         }
       }
+      function scheduleUpdate() {
+        if (framePending) return;
+        framePending = true;
+        requestAnimationFrame(updateReadingPosition);
+      }
+      window.addEventListener("scroll", scheduleUpdate, { passive: true, signal });
+      window.addEventListener("resize", scheduleUpdate, { signal });
+      // Images can change the length of a Markdown article after the first paint.
+      new ResizeObserver(scheduleUpdate).observe(prose);
+      updateReadingPosition();
     }
-    function scheduleUpdate() {
-      if (framePending) return;
-      framePending = true;
-      requestAnimationFrame(updateReadingPosition);
-    }
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
-    // Images can change the length of a Markdown article after the first paint.
-    new ResizeObserver(scheduleUpdate).observe(prose);
-    updateReadingPosition();
-  }
+  });
 </script>
 
 <style>

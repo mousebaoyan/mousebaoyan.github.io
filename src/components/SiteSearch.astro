@@ -1,4 +1,4 @@
-<dialog class="site-search" id="site-search" aria-labelledby="search-title">
+<dialog class="site-search" id="site-search" aria-labelledby="search-title" transition:persist="site-search">
   <div class="search-shell">
     <header class="search-head">
       <div><span class="search-eyebrow">站内搜索</span><h2 id="search-title">搜索</h2></div>
@@ -152,8 +152,9 @@
     dialog.close();
     releaseScroll();
   }
-  document.querySelectorAll<HTMLButtonElement>("[data-search-open]").forEach((button) => {
-    button.addEventListener("click", open);
+  // 搜索框跨页保留，打开按钮在页面内容里，换页后会换成新的
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("[data-search-open]")) open();
   });
   dialog.querySelector("[data-search-close]")!.addEventListener("click", close);
   dialog.addEventListener("click", (event) => { if (event.target === dialog) close(); });

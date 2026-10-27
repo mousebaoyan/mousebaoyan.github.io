@@ -295,30 +295,35 @@ const rules = [
 </style>
 
 <script>
-  const copyButtons = document.querySelectorAll<HTMLButtonElement>("[data-copy-group]");
-  const copyStatus = document.querySelector<HTMLElement>(".join-hero__status")!;
-  const hint = copyStatus.textContent;
-  let timer: ReturnType<typeof setTimeout>;
-  const reset = () => {
-    copyButtons.forEach((button) => {
-      delete button.dataset.copied;
-      button.querySelector<HTMLElement>("[data-copy-label]")!.textContent = "复制群号";
-    });
-    copyStatus.textContent = hint;
-  };
-  copyButtons.forEach((copyButton) => {
-    copyButton.addEventListener("click", async () => {
-      clearTimeout(timer);
-      reset();
-      try {
-        await navigator.clipboard.writeText(copyButton.dataset.copyGroup ?? "");
-        copyButton.dataset.copied = "";
-        copyButton.querySelector<HTMLElement>("[data-copy-label]")!.textContent = "已复制";
-        copyStatus.textContent = "群号已复制，可以在 QQ 中粘贴搜索";
-      } catch {
-        copyStatus.textContent = "复制失败，请手动选中上方群号";
-      }
-      timer = setTimeout(reset, 2400);
+  import { onEveryPage } from "../lib/every-page";
+
+  onEveryPage(() => {
+    const copyStatus = document.querySelector<HTMLElement>(".join-hero__status");
+    if (!copyStatus) return;
+    const copyButtons = document.querySelectorAll<HTMLButtonElement>("[data-copy-group]");
+    const hint = copyStatus.textContent;
+    let timer: ReturnType<typeof setTimeout>;
+    const reset = () => {
+      copyButtons.forEach((button) => {
+        delete button.dataset.copied;
+        button.querySelector<HTMLElement>("[data-copy-label]")!.textContent = "复制群号";
+      });
+      copyStatus.textContent = hint;
+    };
+    copyButtons.forEach((copyButton) => {
+      copyButton.addEventListener("click", async () => {
+        clearTimeout(timer);
+        reset();
+        try {
+          await navigator.clipboard.writeText(copyButton.dataset.copyGroup ?? "");
+          copyButton.dataset.copied = "";
+          copyButton.querySelector<HTMLElement>("[data-copy-label]")!.textContent = "已复制";
+          copyStatus.textContent = "群号已复制，可以在 QQ 中粘贴搜索";
+        } catch {
+          copyStatus.textContent = "复制失败，请手动选中上方群号";
+        }
+        timer = setTimeout(reset, 2400);
+      });
     });
   });
 </script>

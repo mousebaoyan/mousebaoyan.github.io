@@ -4,6 +4,7 @@ import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import SiteSearch from "../components/SiteSearch.astro";
 import Notice from "../components/Notice.astro";
+import { ClientRouter } from "astro:transitions";
 import { site } from "../site.config";
 
 interface Props {
@@ -35,6 +36,10 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
         if (!internal) document.documentElement.dataset.entrance = "";
         // iOS Safari 只有页面监听了 touchstart 才会应用 :active 样式（按下时的反馈）
         document.addEventListener("touchstart", () => {}, { passive: true });
+        // 站内换页时 <html> 的属性会换成新页面的：带上当前主题，入场动画标记随之去掉
+        document.addEventListener("astro:before-swap", (event) => {
+          event.newDocument.documentElement.dataset.theme = document.documentElement.dataset.theme;
+        });
       })();
     </script>
     <noscript><style>[data-search-open] { display: none !important; }</style></noscript>
@@ -51,6 +56,7 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)" />
     <slot name="head" />
+    <ClientRouter />
   </head>
   <body>
     <Nav />
