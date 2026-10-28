@@ -134,7 +134,7 @@ const lanes = activitySpans(year);
 </div>
 </section>
 
-<script is:inline data-astro-rerun define:vars={{ clientPhases }}>
+<script is:inline define:vars={{ clientPhases }}>
   // 首次绘制前按访问者的日期确定「今天」和当前阶段，避免构建日期过期
   (() => {
     const root = document.querySelector("[data-cal]");
@@ -209,51 +209,49 @@ const lanes = activitySpans(year);
 </script>
 
 <script>
-  onEveryPage(() => {
-    // 阶段切换：点击或用方向键在阶段之间移动
-    const root = document.querySelector<HTMLElement>("[data-cal]");
-    if (root) {
-      // 日历进入视野时再播放「今天」标记的入场动画
-      const track = root.querySelector<HTMLElement>(".cal__track")!;
-      if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver((entries) => {
-          if (!entries.some((entry) => entry.isIntersecting)) return;
-          observer.disconnect();
-          track.dataset.shown = "";
-        }, { threshold: 0.6 });
-        observer.observe(track);
-      } else {
+  // 阶段切换：点击或用方向键在阶段之间移动
+  const root = document.querySelector<HTMLElement>("[data-cal]");
+  if (root) {
+    // 日历进入视野时再播放「今天」标记的入场动画
+    const track = root.querySelector<HTMLElement>(".cal__track")!;
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
         track.dataset.shown = "";
-      }
-      const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
-      const panels = [...root.querySelectorAll<HTMLElement>("[role=tabpanel]")];
-      const bars = [...root.querySelectorAll<HTMLElement>(".cal__bar")];
-      const select = (index: number, focus = false) => {
-        tabs.forEach((tab, i) => {
-          const selected = i === index;
-          tab.setAttribute("aria-selected", String(selected));
-          tab.tabIndex = selected ? 0 : -1;
-          panels[i].hidden = !selected;
-          bars[i].toggleAttribute("data-selected", selected);
-        });
-        // 托盘顶端的小尖角移到选中阶段的正下方
-        const bar = bars[index];
-        root.querySelector<HTMLElement>(".cal__panels")!.style.setProperty("--caret",
-          (Number(bar.style.getPropertyValue("--s")) + Number(bar.style.getPropertyValue("--w")) / 2).toFixed(4));
-        if (focus) tabs[index].focus();
-      };
-      tabs.forEach((tab, index) => {
-        tab.addEventListener("click", () => select(index));
-        tab.addEventListener("keydown", (event) => {
-          const last = tabs.length - 1;
-          const target = { ArrowRight: index === last ? 0 : index + 1, ArrowLeft: index === 0 ? last : index - 1, Home: 0, End: last }[event.key];
-          if (target === undefined) return;
-          event.preventDefault();
-          select(target, true);
-        });
-      });
+      }, { threshold: 0.6 });
+      observer.observe(track);
+    } else {
+      track.dataset.shown = "";
     }
-  });
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    const panels = [...root.querySelectorAll<HTMLElement>("[role=tabpanel]")];
+    const bars = [...root.querySelectorAll<HTMLElement>(".cal__bar")];
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const selected = i === index;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        panels[i].hidden = !selected;
+        bars[i].toggleAttribute("data-selected", selected);
+      });
+      // 托盘顶端的小尖角移到选中阶段的正下方
+      const bar = bars[index];
+      root.querySelector<HTMLElement>(".cal__panels")!.style.setProperty("--caret",
+        (Number(bar.style.getPropertyValue("--s")) + Number(bar.style.getPropertyValue("--w")) / 2).toFixed(4));
+      if (focus) tabs[index].focus();
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(index));
+      tab.addEventListener("keydown", (event) => {
+        const last = tabs.length - 1;
+        const target = { ArrowRight: index === last ? 0 : index + 1, ArrowLeft: index === 0 ? last : index - 1, Home: 0, End: last }[event.key];
+        if (target === undefined) return;
+        event.preventDefault();
+        select(target, true);
+      });
+    });
+  }
 </script>
 
 <style>

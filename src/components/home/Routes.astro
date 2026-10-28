@@ -72,56 +72,54 @@ const placed = groups.map((group) => {
 )}
 
 <script>
-  onEveryPage(() => {
-    // 路线：从本科类型的圆点画一条曲线到每条录取去向，随布局变化重画
-    const map = document.querySelector<HTMLElement>("[data-route-map]");
-    const svg = map?.querySelector<SVGSVGElement>(".map__lines");
-    if (map && svg) {
-      const NS = "http://www.w3.org/2000/svg";
-      const routes = [...map.querySelectorAll<HTMLAnchorElement>(".map__route")];
-      const paths = routes.map(() => svg.appendChild(document.createElementNS(NS, "path")));
-      const ends = routes.map(() => svg.appendChild(document.createElementNS(NS, "circle")));
-      // 「四非」的路线用标志里的朝阳橙
+  // 路线：从本科类型的圆点画一条曲线到每条录取去向，随布局变化重画
+  const map = document.querySelector<HTMLElement>("[data-route-map]");
+  const svg = map?.querySelector<SVGSVGElement>(".map__lines");
+  if (map && svg) {
+    const NS = "http://www.w3.org/2000/svg";
+    const routes = [...map.querySelectorAll<HTMLAnchorElement>(".map__route")];
+    const paths = routes.map(() => svg.appendChild(document.createElementNS(NS, "path")));
+    const ends = routes.map(() => svg.appendChild(document.createElementNS(NS, "circle")));
+    // 「四非」的路线用标志里的朝阳橙
+    routes.forEach((route, index) => {
+      paths[index].dataset.from = route.dataset.from;
+      ends[index].dataset.from = route.dataset.from;
+    });
+    const draw = () => {
+      const box = svg.getBoundingClientRect();
+      if (!box.width) return;
+      svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
       routes.forEach((route, index) => {
-        paths[index].dataset.from = route.dataset.from;
-        ends[index].dataset.from = route.dataset.from;
+        const group = map.querySelector(`[data-group="${route.dataset.from}"]`)!;
+        const node = group.querySelector(".map__node")!.getBoundingClientRect();
+        const label = Math.max(...[...group.querySelectorAll(".map__group-name, .map__group-count")].map((el) => el.getBoundingClientRect().right));
+        const target = route.querySelector(".map__target")!.getBoundingClientRect();
+        // 曲线从组名右侧出发，不压住文字
+        const x1 = label - box.left + 12;
+        const y1 = node.top + node.height / 2 - box.top;
+        const y2 = target.top + target.height / 2 - box.top;
+        const x2 = box.width;
+        const bend = (x2 - x1) * 0.5;
+        paths[index].setAttribute("d", `M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}`);
+        ends[index].setAttribute("cx", String(x2));
+        ends[index].setAttribute("cy", String(y2));
+        ends[index].setAttribute("r", "4");
       });
-      const draw = () => {
-        const box = svg.getBoundingClientRect();
-        if (!box.width) return;
-        svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
-        routes.forEach((route, index) => {
-          const group = map.querySelector(`[data-group="${route.dataset.from}"]`)!;
-          const node = group.querySelector(".map__node")!.getBoundingClientRect();
-          const label = Math.max(...[...group.querySelectorAll(".map__group-name, .map__group-count")].map((el) => el.getBoundingClientRect().right));
-          const target = route.querySelector(".map__target")!.getBoundingClientRect();
-          // 曲线从组名右侧出发，不压住文字
-          const x1 = label - box.left + 12;
-          const y1 = node.top + node.height / 2 - box.top;
-          const y2 = target.top + target.height / 2 - box.top;
-          const x2 = box.width;
-          const bend = (x2 - x1) * 0.5;
-          paths[index].setAttribute("d", `M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}`);
-          ends[index].setAttribute("cx", String(x2));
-          ends[index].setAttribute("cy", String(y2));
-          ends[index].setAttribute("r", "4");
-        });
-      };
-      const highlight = (index: number | null) => {
-        map.toggleAttribute("data-focus", index !== null);
-        paths.forEach((path, i) => path.toggleAttribute("data-on", i === index));
-        ends.forEach((end, i) => end.toggleAttribute("data-on", i === index));
-      };
-      routes.forEach((route, index) => {
-        route.addEventListener("pointerenter", () => highlight(index));
-        route.addEventListener("focus", () => highlight(index));
-        route.addEventListener("pointerleave", () => highlight(null));
-        route.addEventListener("blur", () => highlight(null));
-      });
-      new ResizeObserver(draw).observe(map);
-      document.fonts?.ready.then(draw);
-    }
-  });
+    };
+    const highlight = (index: number | null) => {
+      map.toggleAttribute("data-focus", index !== null);
+      paths.forEach((path, i) => path.toggleAttribute("data-on", i === index));
+      ends.forEach((end, i) => end.toggleAttribute("data-on", i === index));
+    };
+    routes.forEach((route, index) => {
+      route.addEventListener("pointerenter", () => highlight(index));
+      route.addEventListener("focus", () => highlight(index));
+      route.addEventListener("pointerleave", () => highlight(null));
+      route.addEventListener("blur", () => highlight(null));
+    });
+    new ResizeObserver(draw).observe(map);
+    document.fonts?.ready.then(draw);
+  }
 </script>
 
 <style>

@@ -311,38 +311,35 @@ import { groups } from "../data/faq";
 </style>
 
 <script>
-  onEveryPage((signal) => {
-    if (!document.getElementById("faq")) return;
-    function openLinkedQuestion() {
-      let id: string;
-      try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
-      const target = document.getElementById(id);
-      if (target instanceof HTMLDetailsElement && target.classList.contains("faq__item")) {
-        target.open = true;
-        requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
-      }
+  function openLinkedQuestion() {
+    let id: string;
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+    const target = document.getElementById(id);
+    if (target instanceof HTMLDetailsElement && target.classList.contains("faq__item")) {
+      target.open = true;
+      requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
     }
-    openLinkedQuestion();
-    window.addEventListener("hashchange", openLinkedQuestion, { signal });
+  }
+  openLinkedQuestion();
+  window.addEventListener("hashchange", openLinkedQuestion);
 
-    // 分类导航跟随阅读位置高亮
-    const navLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-faq-nav]")];
-    const sections = navLinks.map((link) => document.getElementById(link.dataset.faqNav!)).filter(Boolean) as HTMLElement[];
-    if (sections.length) {
-      const update = () => {
-        const offset = innerHeight * 0.35;
-        let current = sections[0];
-        for (const section of sections) if (section.getBoundingClientRect().top <= offset) current = section;
-        if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) current = sections.at(-1)!;
-        navLinks.forEach((link) => link.setAttribute("aria-current", String(link.dataset.faqNav === current.id)));
-      };
-      let queued = false;
-      addEventListener("scroll", () => {
-        if (queued) return;
-        queued = true;
-        requestAnimationFrame(() => { queued = false; update(); });
-      }, { passive: true, signal });
-      update();
-    }
-  });
+  // 分类导航跟随阅读位置高亮
+  const navLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-faq-nav]")];
+  const sections = navLinks.map((link) => document.getElementById(link.dataset.faqNav!)).filter(Boolean) as HTMLElement[];
+  if (sections.length) {
+    const update = () => {
+      const offset = innerHeight * 0.35;
+      let current = sections[0];
+      for (const section of sections) if (section.getBoundingClientRect().top <= offset) current = section;
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) current = sections.at(-1)!;
+      navLinks.forEach((link) => link.setAttribute("aria-current", String(link.dataset.faqNav === current.id)));
+    };
+    let queued = false;
+    addEventListener("scroll", () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; update(); });
+    }, { passive: true });
+    update();
+  }
 </script>

@@ -182,17 +182,28 @@
   --shadow-pop: 0 24px 80px rgba(0, 0, 0, 0.6);
 }
 
-/* —— 换页过渡：导航栏保持不动，正文原地淡入淡出，不做位移 —— */
+/* —— 跨页面过渡：导航栏保持不动，正文原地淡入淡出，不做位移 —— */
+@view-transition {
+  navigation: auto;
+}
 /* 用浏览器默认的交叉淡化：新旧画面不透明度互补，中途不会变暗 */
 ::view-transition-group(root) {
   animation-duration: 240ms;
 }
-/* 导航栏跨页保留，直接显示实时画面：当前栏目的底色自己滑过去，交叉淡化反而会闪 */
+/* 导航栏直接换成新页面的（只是当前栏目变化，交叉淡化反而会闪）；
+   品牌区在过渡期间保持旧画面，避免标志图片尚未绘制时闪一下 */
 ::view-transition-old(site-nav) {
   display: none;
 }
 ::view-transition-new(site-nav) {
   animation: none;
+}
+::view-transition-old(site-brand) {
+  animation: none;
+}
+::view-transition-new(site-brand) {
+  animation: none;
+  opacity: 0;
 }
 
 /* 切换主题：整页一次性展开，不做淡入淡出，也不单独处理导航和标题 */
@@ -229,15 +240,9 @@ html[data-theme-switch]::view-transition-new(root) {
 
 html {
   -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 20px);
   -webkit-text-size-adjust: 100%;
-}
-
-/* 页内跳转平滑滚动；换页时路由给 <html> 加上 data-astro-transition，滚动位置直接恢复 */
-@media (prefers-reduced-motion: no-preference) {
-  html:not([data-astro-transition]) {
-    scroll-behavior: smooth;
-  }
 }
 
 body {
@@ -575,6 +580,12 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

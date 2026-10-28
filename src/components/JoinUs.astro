@@ -168,24 +168,22 @@ const spaced = (number: string) => number.replace(/(\d{3})(?=\d)/g, "$1 ");
 </style>
 
 <script>
-  onEveryPage(() => {
-    document.querySelectorAll<HTMLButtonElement>(".join__btn--copy").forEach((btn) => {
-      const label = btn.querySelector<HTMLElement>("[data-copy-label]")!;
-      let timer: ReturnType<typeof setTimeout>;
-      btn.addEventListener("click", async () => {
-        clearTimeout(timer);
-        try {
-          await navigator.clipboard.writeText(btn.dataset.copy ?? "");
-          btn.dataset.copied = "";
-          label.textContent = "已复制";
-        } catch {
-          label.textContent = "复制失败，请手动选中群号";
-        }
-        timer = setTimeout(() => {
-          delete btn.dataset.copied;
-          label.textContent = "复制群号";
-        }, 1800);
-      });
+  document.querySelectorAll<HTMLButtonElement>(".join__btn--copy").forEach((btn) => {
+    const label = btn.querySelector<HTMLElement>("[data-copy-label]")!;
+    let timer: ReturnType<typeof setTimeout>;
+    btn.addEventListener("click", async () => {
+      clearTimeout(timer);
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? "");
+        btn.dataset.copied = "";
+        label.textContent = "已复制";
+      } catch {
+        label.textContent = "复制失败，请手动选中群号";
+      }
+      timer = setTimeout(() => {
+        delete btn.dataset.copied;
+        label.textContent = "复制群号";
+      }, 1800);
     });
   });
 </script>

@@ -482,157 +482,153 @@ const firstLine = (page: number) => slides.text[page - 1]?.split("\n")[0] ?? "";
 
 
 <script>
-  onEveryPage((signal) => {
-    for (const deck of document.querySelectorAll<HTMLElement>("[data-deck]")) {
-      const id = deck.dataset.deck!;
-      const total = Number(deck.dataset.pages);
-      const stage = deck.querySelector<HTMLElement>(".deck__stage")!;
-      const slides = [...deck.querySelectorAll<HTMLElement>(".deck__slide")];
-      const prevs = [...deck.querySelectorAll<HTMLButtonElement>("[data-deck-prev]")];
-      const nexts = [...deck.querySelectorAll<HTMLButtonElement>("[data-deck-next]")];
-      const current = deck.querySelector<HTMLElement>("[data-deck-current]")!;
-      const progress = deck.querySelector<HTMLElement>("[data-deck-progress]")!;
-      const thumbsToggle = deck.querySelector<HTMLButtonElement>("[data-deck-thumbs]")!;
-      const thumbs = deck.querySelector<HTMLElement>(".deck__thumbs")!;
-      const thumbButtons = [...thumbs.querySelectorAll<HTMLButtonElement>("[data-deck-goto]")];
-      const chapters = [...deck.querySelectorAll<HTMLAnchorElement>(".deck__chapters [data-deck-goto]")];
-      // 章节栏可以横向滑动时，在放不下的一侧显示渐隐
-      const chapterBar = deck.querySelector<HTMLElement>(".deck__chapters");
-      if (chapterBar) {
-        const markOverflow = () => {
-          const start = chapterBar.scrollLeft > 2;
-          const end = chapterBar.scrollLeft + chapterBar.clientWidth < chapterBar.scrollWidth - 2;
-          if (start && end) chapterBar.dataset.overflow = "both";
-          else if (start) chapterBar.dataset.overflow = "start";
-          else if (end) chapterBar.dataset.overflow = "end";
-          else delete chapterBar.dataset.overflow;
-        };
-        chapterBar.addEventListener("scroll", markOverflow, { passive: true });
-        new ResizeObserver(markOverflow).observe(chapterBar);
-      }
-      const fullscreen = deck.querySelector<HTMLButtonElement>("[data-deck-fullscreen]")!;
-      const fullscreenLabel = deck.querySelector<HTMLElement>("[data-deck-fullscreen-label]")!;
-      let page = 0;
-
-      // 预先加载相邻页面，翻页时不必等待图片
-      const warm = (target: number) => {
-        const image = slides[target - 1]?.querySelector("img");
-        if (image) image.loading = "eager";
+  for (const deck of document.querySelectorAll<HTMLElement>("[data-deck]")) {
+    const id = deck.dataset.deck!;
+    const total = Number(deck.dataset.pages);
+    const stage = deck.querySelector<HTMLElement>(".deck__stage")!;
+    const slides = [...deck.querySelectorAll<HTMLElement>(".deck__slide")];
+    const prevs = [...deck.querySelectorAll<HTMLButtonElement>("[data-deck-prev]")];
+    const nexts = [...deck.querySelectorAll<HTMLButtonElement>("[data-deck-next]")];
+    const current = deck.querySelector<HTMLElement>("[data-deck-current]")!;
+    const progress = deck.querySelector<HTMLElement>("[data-deck-progress]")!;
+    const thumbsToggle = deck.querySelector<HTMLButtonElement>("[data-deck-thumbs]")!;
+    const thumbs = deck.querySelector<HTMLElement>(".deck__thumbs")!;
+    const thumbButtons = [...thumbs.querySelectorAll<HTMLButtonElement>("[data-deck-goto]")];
+    const chapters = [...deck.querySelectorAll<HTMLAnchorElement>(".deck__chapters [data-deck-goto]")];
+    // 章节栏可以横向滑动时，在放不下的一侧显示渐隐
+    const chapterBar = deck.querySelector<HTMLElement>(".deck__chapters");
+    if (chapterBar) {
+      const markOverflow = () => {
+        const start = chapterBar.scrollLeft > 2;
+        const end = chapterBar.scrollLeft + chapterBar.clientWidth < chapterBar.scrollWidth - 2;
+        if (start && end) chapterBar.dataset.overflow = "both";
+        else if (start) chapterBar.dataset.overflow = "start";
+        else if (end) chapterBar.dataset.overflow = "end";
+        else delete chapterBar.dataset.overflow;
       };
-
-      function show(target: number, { updateHash = true } = {}) {
-        target = Math.min(total, Math.max(1, target));
-        if (target === page) return;
-        slides[page - 1]?.removeAttribute("data-active");
-        page = target;
-        slides[page - 1].setAttribute("data-active", "");
-        warm(page);
-        warm(page + 1);
-        warm(page - 1);
-        current.textContent = String(page);
-        progress.style.transform = `scaleX(${page / total})`;
-        prevs.forEach((button) => { button.disabled = page === 1; });
-        nexts.forEach((button) => { button.disabled = page === total; });
-        thumbButtons.forEach((button) => {
-          const active = Number(button.dataset.deckGoto) === page;
-          if (active) button.setAttribute("aria-current", "true");
-          else button.removeAttribute("aria-current");
-        });
-        const chapter = chapters.filter((link) => Number(link.dataset.deckGoto) <= page).at(-1);
-        chapters.forEach((link) => link.toggleAttribute("aria-current", false));
-        if (chapter) {
-          chapter.setAttribute("aria-current", "true");
-          const bar = chapter.parentElement!;
-          const offset = chapter.offsetLeft - bar.offsetLeft;
-          if (offset < bar.scrollLeft || offset + chapter.offsetWidth > bar.scrollLeft + bar.clientWidth) {
-            bar.scrollTo({ left: offset - 16, behavior: "smooth" });
-          }
-        }
-        // 保留路由记在历史记录里的状态，否则后退回到这一页时不会换回页面内容
-        if (updateHash) history.replaceState(history.state, "", page === 1 ? location.pathname + location.search : `#${id}-${page}`);
-      }
-
-      // 用户翻页：旧页滑出、新页滑入；连续翻页时直接结束上一段动画
-      const motion = matchMedia("(prefers-reduced-motion: no-preference)");
-      function navigate(target: number) {
-        target = Math.min(total, Math.max(1, target));
-        if (target === page) return;
-        const direction = target > page ? "forward" : "backward";
-        const leaving = slides[page - 1];
-        slides.forEach((slide) => {
-          slide.removeAttribute("data-leaving");
-          slide.removeAttribute("data-entering");
-        });
-        show(target);
-        if (!motion.matches || document.fullscreenElement) return;
-        const entering = slides[target - 1];
-        leaving.dataset.leaving = direction;
-        entering.dataset.entering = direction;
-        leaving.addEventListener("animationend", () => leaving.removeAttribute("data-leaving"), { once: true });
-        entering.addEventListener("animationend", () => entering.removeAttribute("data-entering"), { once: true });
-      }
-
-      deck.setAttribute("data-ready", "");
-      deck.querySelector<HTMLElement>(".deck__bar")!.hidden = false;
-      prevs.forEach((button) => { button.hidden = false; button.addEventListener("click", () => navigate(page - 1)); });
-      nexts.forEach((button) => { button.hidden = false; button.addEventListener("click", () => navigate(page + 1)); });
-
-      deck.querySelectorAll<HTMLElement>("[data-deck-goto]").forEach((control) => control.addEventListener("click", (event) => {
-        event.preventDefault();
-        navigate(Number(control.dataset.deckGoto));
-        if (control.classList.contains("deck__thumb")) stage.scrollIntoView({ block: "nearest", behavior: "smooth" });
-        stage.focus({ preventScroll: true });
-      }));
-
-      deck.addEventListener("keydown", (event) => {
-        if (event.altKey || event.ctrlKey || event.metaKey) return;
-        const keys: Record<string, () => number> = {
-          ArrowLeft: () => page - 1, ArrowUp: () => page - 1, PageUp: () => page - 1,
-          ArrowRight: () => page + 1, ArrowDown: () => page + 1, PageDown: () => page + 1, " ": () => page + 1,
-          Home: () => 1, End: () => total,
-        };
-        // 上下键与空格只在幻灯片区域内翻页，避免影响页面滚动
-        if (!keys[event.key] || (["ArrowUp", "ArrowDown", " "].includes(event.key) && !stage.contains(event.target as Node) && !document.fullscreenElement)) return;
-        if (event.target instanceof HTMLButtonElement && event.key === " ") return;
-        event.preventDefault();
-        navigate(keys[event.key]());
-      });
-
-      let startX = 0;
-      let startY = 0;
-      stage.addEventListener("pointerdown", (event) => { startX = event.clientX; startY = event.clientY; });
-      stage.addEventListener("pointerup", (event) => {
-        const dx = event.clientX - startX;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) navigate(page + (dx < 0 ? 1 : -1));
-      });
-
-      thumbsToggle.addEventListener("click", () => {
-        const open = thumbs.hidden;
-        thumbs.hidden = !open;
-        thumbsToggle.setAttribute("aria-expanded", String(open));
-      });
-
-      if (document.fullscreenEnabled) {
-        fullscreen.hidden = false;
-        fullscreen.addEventListener("click", () => {
-          if (document.fullscreenElement === deck) void document.exitFullscreen();
-          else void deck.requestFullscreen().then(() => stage.focus({ preventScroll: true }));
-        });
-        // 全屏切换的事件派发到进入、退出全屏的元素本身
-        deck.addEventListener("fullscreenchange", () => {
-          fullscreenLabel.textContent = document.fullscreenElement === deck ? "退出全屏" : "全屏";
-        });
-      }
-
-      const fromHash = () => {
-        const match = location.hash.match(new RegExp(`^#${id}-(\\d+)$`));
-        if (!match) return false;
-        show(Number(match[1]), { updateHash: false });
-        requestAnimationFrame(() => deck.scrollIntoView({ block: "start" }));
-        return true;
-      };
-      if (!fromHash()) show(1, { updateHash: false });
-      window.addEventListener("hashchange", fromHash, { signal });
+      chapterBar.addEventListener("scroll", markOverflow, { passive: true });
+      new ResizeObserver(markOverflow).observe(chapterBar);
     }
-  });
+    const fullscreen = deck.querySelector<HTMLButtonElement>("[data-deck-fullscreen]")!;
+    const fullscreenLabel = deck.querySelector<HTMLElement>("[data-deck-fullscreen-label]")!;
+    let page = 0;
+
+    // 预先加载相邻页面，翻页时不必等待图片
+    const warm = (target: number) => {
+      const image = slides[target - 1]?.querySelector("img");
+      if (image) image.loading = "eager";
+    };
+
+    function show(target: number, { updateHash = true } = {}) {
+      target = Math.min(total, Math.max(1, target));
+      if (target === page) return;
+      slides[page - 1]?.removeAttribute("data-active");
+      page = target;
+      slides[page - 1].setAttribute("data-active", "");
+      warm(page);
+      warm(page + 1);
+      warm(page - 1);
+      current.textContent = String(page);
+      progress.style.transform = `scaleX(${page / total})`;
+      prevs.forEach((button) => { button.disabled = page === 1; });
+      nexts.forEach((button) => { button.disabled = page === total; });
+      thumbButtons.forEach((button) => {
+        const active = Number(button.dataset.deckGoto) === page;
+        if (active) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+      });
+      const chapter = chapters.filter((link) => Number(link.dataset.deckGoto) <= page).at(-1);
+      chapters.forEach((link) => link.toggleAttribute("aria-current", false));
+      if (chapter) {
+        chapter.setAttribute("aria-current", "true");
+        const bar = chapter.parentElement!;
+        const offset = chapter.offsetLeft - bar.offsetLeft;
+        if (offset < bar.scrollLeft || offset + chapter.offsetWidth > bar.scrollLeft + bar.clientWidth) {
+          bar.scrollTo({ left: offset - 16, behavior: "smooth" });
+        }
+      }
+      if (updateHash) history.replaceState(null, "", page === 1 ? location.pathname + location.search : `#${id}-${page}`);
+    }
+
+    // 用户翻页：旧页滑出、新页滑入；连续翻页时直接结束上一段动画
+    const motion = matchMedia("(prefers-reduced-motion: no-preference)");
+    function navigate(target: number) {
+      target = Math.min(total, Math.max(1, target));
+      if (target === page) return;
+      const direction = target > page ? "forward" : "backward";
+      const leaving = slides[page - 1];
+      slides.forEach((slide) => {
+        slide.removeAttribute("data-leaving");
+        slide.removeAttribute("data-entering");
+      });
+      show(target);
+      if (!motion.matches || document.fullscreenElement) return;
+      const entering = slides[target - 1];
+      leaving.dataset.leaving = direction;
+      entering.dataset.entering = direction;
+      leaving.addEventListener("animationend", () => leaving.removeAttribute("data-leaving"), { once: true });
+      entering.addEventListener("animationend", () => entering.removeAttribute("data-entering"), { once: true });
+    }
+
+    deck.setAttribute("data-ready", "");
+    deck.querySelector<HTMLElement>(".deck__bar")!.hidden = false;
+    prevs.forEach((button) => { button.hidden = false; button.addEventListener("click", () => navigate(page - 1)); });
+    nexts.forEach((button) => { button.hidden = false; button.addEventListener("click", () => navigate(page + 1)); });
+
+    deck.querySelectorAll<HTMLElement>("[data-deck-goto]").forEach((control) => control.addEventListener("click", (event) => {
+      event.preventDefault();
+      navigate(Number(control.dataset.deckGoto));
+      if (control.classList.contains("deck__thumb")) stage.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      stage.focus({ preventScroll: true });
+    }));
+
+    deck.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      const keys: Record<string, () => number> = {
+        ArrowLeft: () => page - 1, ArrowUp: () => page - 1, PageUp: () => page - 1,
+        ArrowRight: () => page + 1, ArrowDown: () => page + 1, PageDown: () => page + 1, " ": () => page + 1,
+        Home: () => 1, End: () => total,
+      };
+      // 上下键与空格只在幻灯片区域内翻页，避免影响页面滚动
+      if (!keys[event.key] || (["ArrowUp", "ArrowDown", " "].includes(event.key) && !stage.contains(event.target as Node) && !document.fullscreenElement)) return;
+      if (event.target instanceof HTMLButtonElement && event.key === " ") return;
+      event.preventDefault();
+      navigate(keys[event.key]());
+    });
+
+    let startX = 0;
+    let startY = 0;
+    stage.addEventListener("pointerdown", (event) => { startX = event.clientX; startY = event.clientY; });
+    stage.addEventListener("pointerup", (event) => {
+      const dx = event.clientX - startX;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) navigate(page + (dx < 0 ? 1 : -1));
+    });
+
+    thumbsToggle.addEventListener("click", () => {
+      const open = thumbs.hidden;
+      thumbs.hidden = !open;
+      thumbsToggle.setAttribute("aria-expanded", String(open));
+    });
+
+    if (document.fullscreenEnabled) {
+      fullscreen.hidden = false;
+      fullscreen.addEventListener("click", () => {
+        if (document.fullscreenElement === deck) void document.exitFullscreen();
+        else void deck.requestFullscreen().then(() => stage.focus({ preventScroll: true }));
+      });
+      document.addEventListener("fullscreenchange", () => {
+        fullscreenLabel.textContent = document.fullscreenElement === deck ? "退出全屏" : "全屏";
+      });
+    }
+
+    const fromHash = () => {
+      const match = location.hash.match(new RegExp(`^#${id}-(\\d+)$`));
+      if (!match) return false;
+      show(Number(match[1]), { updateHash: false });
+      requestAnimationFrame(() => deck.scrollIntoView({ block: "start" }));
+      return true;
+    };
+    if (!fromHash()) show(1, { updateHash: false });
+    window.addEventListener("hashchange", fromHash);
+  }
 </script>

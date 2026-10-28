@@ -3,7 +3,7 @@ import { notice } from "../site.config";
 ---
 
 {notice && (
-  <dialog class="notice" id="site-notice" tabindex="-1" aria-labelledby="notice-title" data-notice-id={notice.id} transition:persist="site-notice">
+  <dialog class="notice" id="site-notice" tabindex="-1" aria-labelledby="notice-title" data-notice-id={notice.id}>
     <header class="notice__head">
       <p class="notice__meta">
         <span class="notice__status"><span class="notice__dot" aria-hidden="true"></span>{notice.status}</span>

@@ -10,12 +10,6 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'always',
   },
-  // 页面脚本也写进 HTML（默认只内联 4KB 以下的），站内换页后不用再下载就能运行
-  vite: {
-    build: {
-      assetsInlineLimit: 8192,
-    },
-  },
   markdown: {
     // 代码高亮同时生成浅色与深色配色，由页面主题决定使用哪一套
     shikiConfig: {

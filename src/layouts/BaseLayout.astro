@@ -4,7 +4,6 @@ import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import SiteSearch from "../components/SiteSearch.astro";
 import Notice from "../components/Notice.astro";
-import { ClientRouter } from "astro:transitions";
 import { site } from "../site.config";
 
 interface Props {
@@ -36,26 +35,7 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
         if (!internal) document.documentElement.dataset.entrance = "";
         // iOS Safari 只有页面监听了 touchstart 才会应用 :active 样式（按下时的反馈）
         document.addEventListener("touchstart", () => {}, { passive: true });
-        // 站内换页时 <html> 的属性会换成新页面的：带上当前主题，入场动画标记随之去掉
-        document.addEventListener("astro:before-swap", (event) => {
-          event.newDocument.documentElement.dataset.theme = document.documentElement.dataset.theme;
-        });
       })();
-    </script>
-    <script is:inline>
-      // 站内跳转由 ClientRouter 替换页面内容，打包的脚本只在第一次出现时运行。
-      // 页面脚本把初始化交给 onEveryPage：当前页面运行一次，之后每次换页后再运行一次；
-      // 挂在 window、document 上的监听器传入 signal，离开页面时自动移除。
-      // 定义成全局函数：页面脚本没有 import 才会内联进 HTML，换页时不用再下载
-      window.onEveryPage = (setup) => {
-        let controller = new AbortController();
-        setup(controller.signal);
-        document.addEventListener("astro:after-swap", () => {
-          controller.abort();
-          controller = new AbortController();
-          setup(controller.signal);
-        });
-      };
     </script>
     <noscript><style>[data-search-open] { display: none !important; }</style></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -71,7 +51,6 @@ const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)" />
     <slot name="head" />
-    <ClientRouter />
   </head>
   <body>
     <Nav />

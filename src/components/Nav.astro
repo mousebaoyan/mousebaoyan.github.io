@@ -8,9 +8,8 @@ const isActive = (href: string) =>
   href === "/" ? pathname === "/" : pathname.startsWith(href);
 ---
 
-<!-- 导航目标在页面加载后就预取：手机上没有悬停，等到点按时再取已经来不及。
-     导航栏跨页保留，换页时只更新当前栏目 -->
-<header class="nav" id="top" transition:persist="site-nav">
+<!-- 导航目标在页面加载后就预取：手机上没有悬停，等到点按时再取已经来不及 -->
+<header class="nav" id="top">
   <div class="nav__bar container">
     <a class="nav__brand" href="/" aria-label={site.name} data-astro-prefetch="load">
       <img class="nav__logo" src={logo} alt="" width="34" height="34" decoding="sync" />
@@ -96,6 +95,7 @@ const isActive = (href: string) =>
     gap: 24px;
   }
   .nav__brand {
+    view-transition-name: site-brand;
     display: inline-flex;
     align-items: center;
     justify-self: start;
@@ -446,14 +446,13 @@ const isActive = (href: string) =>
     window.matchMedia("(min-width: 901px)").addEventListener("change", (event) => {
       if (event.matches) close();
     });
-    document.addEventListener("astro:before-swap", close);
   }
 
   // 滑动底色：停在当前栏目上，悬停时滑到对应链接
   const links = document.querySelector<HTMLElement>(".nav__links");
   const pill = links?.querySelector<HTMLElement>(".nav__pill");
   if (links && pill) {
-    let active = links.querySelector<HTMLAnchorElement>("a.active");
+    const active = links.querySelector<HTMLAnchorElement>("a.active");
     const moveTo = (link: HTMLAnchorElement | null, state: string) => {
       if (!link) {
         links.dataset.pill = "none";
@@ -476,17 +475,6 @@ const isActive = (href: string) =>
       if (!links.contains(event.relatedTarget as Node)) moveTo(active, "active");
     });
     document.fonts?.ready.then(() => moveTo(active, "active"));
-    // 换页时照新页面标出当前栏目，底色滑到新栏目上
-    const sections = (root: ParentNode) => root.querySelectorAll<HTMLAnchorElement>(".nav__links a, .nav__mobile a");
-    document.addEventListener("astro:before-swap", ({ newDocument }) => {
-      const next = sections(newDocument);
-      sections(document).forEach((link, index) => {
-        link.className = next[index].className;
-        link.ariaCurrent = next[index].ariaCurrent;
-      });
-      active = links.querySelector<HTMLAnchorElement>("a.active");
-      moveTo(active, "active");
-    });
   }
 
   // 主题切换：与系统一致时不记录选择，系统切换时继续跟随
