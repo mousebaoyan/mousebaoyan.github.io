@@ -15,7 +15,6 @@
   --surface: #ffffff;          /* 卡片、弹窗 */
   --surface-hover: #f9fafb;
   --glass: rgba(255, 255, 255, 0.88);
-  --nav-bg: rgba(255, 255, 255, 0.84);
 
   --ink: #14161b;              /* 主文字 */
   --ink-1: #343a46;            /* 较强的次要文字：数值、小标题 */
@@ -120,7 +119,6 @@
   --surface: #15171c;
   --surface-hover: #1a1d24;
   --glass: rgba(26, 28, 34, 0.88);
-  --nav-bg: rgba(14, 15, 18, 0.78);
 
   --ink: #f3f4f6;
   --ink-1: #d5d8de;

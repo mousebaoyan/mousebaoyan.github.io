@@ -67,9 +67,7 @@ const isActive = (href: string) =>
     position: sticky;
     top: 0;
     z-index: var(--z-nav);
-    background: var(--nav-bg);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: var(--bg);
     border-bottom: 1px solid var(--line-soft);
     view-transition-name: site-nav;
   }
@@ -83,7 +81,6 @@ const isActive = (href: string) =>
     @keyframes nav-settle {
       from {
         border-bottom-color: transparent;
-        background-color: transparent;
       }
     }
   }
